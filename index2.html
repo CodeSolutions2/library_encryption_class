@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+	
+  <h1 style='text-align: center; margin-bottom: -35px;'>Model deployment: Tensorflow.js hand-written letter and number classification webapp</h1>
+  <br><br>
+	
+<h2 id="select_model" style='text-align: left; display:block'>Write captial letters or numbers in the canvas box, then click the button 'Classify writing' to classify each character made with one stroke.</h2>
+
+<button id="cut_images_using_boundingboxes" onclick="cut_images_using_boundingboxes()" style="display:block">Classify writing</button>
+	
+<!-- Once image and model are selected, make image appear in canvas and run model -->
+<canvas id="canvasId" width="500" height="500" style="display:block; 'text-align: center"></canvas>
+
+
+<div id="output" style="font-family:courier;font-size:24px;height:300px"></div>
+	    
+<style>canvas {border: 1px solid black;}</style>
+  
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  
+<script>
+  // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+  var canvasElement = document.getElementById("canvasId");
+  const ctx = canvasElement.getContext("2d");
+
+  // -------------------------------------------------
+	
+  const outp = document.getElementById('output');
+
+  // -------------------------------------------------
+  var canvasWidth = 500;
+  var canvasHeight = 500;
+  var maxX = 0;
+  var maxY = 0;
+  var minX = canvasWidth;
+  var minY = canvasHeight;
+  var width = maxX-minX;
+  var height = minY-maxY;
+  var boundingbox_vec = [];
+  var padboundary = 40;
+  var spaceBorder = padboundary/2; // the distance from the letter to boundingbox
+  var x_start_bottomleft_corner = minX - spaceBorder;
+  var y_start_bottomleft_corner = maxY + spaceBorder;
+
+  var rect = canvasElement.getBoundingClientRect();
+
+// -------------------------------------------------
+  
+// For Desktop
+  canvasElement.addEventListener("mousedown", (e) => {
+     ctx.lineTo(e.offsetX, e.offsetY);
+     ctx.lineWidth = 5; //15;  // thickness of line
+     ctx.beginPath();
+     canvasElement.addEventListener("mousemove", createlines, false);
+			 
+  }, false);
+
+// For Touchscreens
+  canvasElement.addEventListener("touchstart", (e) => {
+     e.preventDefault();
+     ctx.lineTo(e.offsetX, e.offsetY);
+     ctx.lineWidth = 5; //15;  // thickness of line
+     ctx.beginPath();
+     canvasElement.addEventListener("touchmove", createlines_touch, false);
+			 
+  }, { passive: false });
+
+// -------------------------------------------------
+
+// For Desktop
+  var createlines = function(e){
+     // provides the offset in the X coordinate of the pointer between that event and the padding edge of the target node. (CORRECT!!)
+     ctx.lineTo(e.offsetX, e.offsetY);
+	  
+     ctx.strokeStyle = "green";  // color of line
+     ctx.stroke();
+
+     if (e.offsetX > maxX) {
+        maxX = e.offsetX;
+     } else {
+        maxX = maxX; 
+     }
+     if (e.offsetY > maxY) {
+        maxY = e.offsetY;
+     } else {
+        maxY = maxY; 
+     }
+     if (e.offsetX < minX) {
+        minX = e.offsetX;
+     } else {
+        minX = minX; 
+     }
+     if (e.offsetY < minY) {
+        minY = e.offsetY;
+     } else {
+        minY = minY; 
+     }
+  };
+
+// For Touchscreens
+var createlines_touch = function(e){
+
+     const touch = e.changedTouches;
+	
+     // provides the offset in the X coordinate of the pointer between that event and the padding edge of the target node. (CORRECT!!)
+     ctx.lineTo(e.touches[0].clientX-rect.left, e.touches[0].clientY-rect.top);
+	  
+     ctx.strokeStyle = "green";  // color of line
+     ctx.stroke();
+
+     if (e.touches[0].clientX-rect.left > maxX) {
+        maxX = e.touches[0].clientX-rect.left;
+     } else {
+        maxX = maxX; 
+     }
+     if (e.touches[0].clientY-rect.top > maxY) {
+	maxY = e.touches[0].clientY-rect.top;
+     } else {
+        maxY = maxY; 
+     }
+     if (e.touches[0].clientX-rect.left < minX) {
+        minX = e.touches[0].clientX-rect.left;
+     } else {
+        minX = minX; 
+     }
+     if (e.touches[0].clientY-rect.top < minY) {
+        minY = e.touches[0].clientY-rect.top;
+     } else {
+        minY = minY; 
+     }
+  };
+	
+  // -------------------------------------------------
+
+  // For Desktop
+  canvasElement.addEventListener("mouseup", () => {
+	  
+     canvasElement.removeEventListener('mousemove', createlines, false);
+
+     const img = new Image();
+     img.onload = () => {
+     ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+     };
+
+     // Put each box in a vector: [x_start_bottomleft_corner, y_start_bottomleft_corner, width, height]
+     x_start_bottomleft_corner = minX - spaceBorder;
+     y_start_bottomleft_corner = maxY + spaceBorder;
+	  
+     //The rectangle's width. Positive values are to the right, and negative to the left.  
+     width = maxX-minX;
+
+     // The rectangle's height. Positive values are down, and negative are up.
+     height = minY-maxY;
+	  
+     if (width < 0){
+        width = width - (2*spaceBorder);
+     } else {
+        width = width + (2*spaceBorder);
+     }
+
+     if (height < 0){
+        height = height - (2*spaceBorder);
+     } else {
+        height = height + (2*spaceBorder);
+     }
+
+     // -------------------------
+	  
+     // Coordinates for image: tensorflow.js cropAndResize
+     boundingbox_vec.push([minY-spaceBorder, minX-spaceBorder, maxY+spaceBorder, maxX+spaceBorder]);
+	  
+     // -------------------------
+
+     // Coordinates for browser
+     ctx.beginPath();
+     ctx.lineWidth = '1';
+     ctx.strokeStyle = 'red';
+     ctx.fillStyle = 'red';
+     ctx.rect(x_start_bottomleft_corner, y_start_bottomleft_corner, width, height);
+     ctx.stroke();
+
+     maxX = 0;
+     maxY = 0;
+     minX = canvasWidth;
+     minY = canvasHeight;
+	  
+  }, false);
+
+	
+// For Touchscreens
+canvasElement.addEventListener("touchend", () => {
+	
+     canvasElement.removeEventListener('touchmove', createlines_touch, false);
+
+     const img = new Image();
+     img.onload = () => {
+     ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+     };
+
+     // Put each box in a vector: [x_start_bottomleft_corner, y_start_bottomleft_corner, width, height]
+     x_start_bottomleft_corner = minX - spaceBorder;
+     y_start_bottomleft_corner = maxY + spaceBorder;
+	  
+     //The rectangle's width. Positive values are to the right, and negative to the left.  
+     width = maxX-minX;
+
+     // The rectangle's height. Positive values are down, and negative are up.
+     height = minY-maxY; 
+     if (width < 0){
+        width = width - (2*spaceBorder);
+     } else {
+        width = width + (2*spaceBorder);
+     }
+
+     if (height < 0){
+        height = height - (2*spaceBorder);
+     } else {
+        height = height + (2*spaceBorder);
+     }
+
+     // -------------------------
+	  
+     // Coordinates for image: tensorflow.js cropAndResize
+     boundingbox_vec.push([minY-spaceBorder, minX-spaceBorder, maxY+spaceBorder, maxX+spaceBorder]);
+	  
+     // -------------------------
+
+     // Coordinates for browser
+     ctx.beginPath();
+     ctx.lineWidth = '1';
+     ctx.strokeStyle = 'red';
+     ctx.fillStyle = 'red';
+     ctx.rect(x_start_bottomleft_corner, y_start_bottomleft_corner, width, height);
+     ctx.stroke();
+
+     maxX = 0;
+     maxY = 0;
+     minX = canvasWidth;
+     minY = canvasHeight;
+	  
+  }, false);
+	
+  // -------------------------------------------------
+
+  async function cut_images_using_boundingboxes() {
+
+	const MODEL_URL = 'model.json';
+	const model = await tf.loadLayersModel(MODEL_URL);
+	  
+	// Obtain image from canvas
+	const image = new Image();
+	image.src = canvasElement.toDataURL();  // This gives the url to the image drawn on the canvas
+
+	image.onload = async () => {
+
+		var word_out = [];
+		
+		ctx.drawImage(image, 0, 0, canvasWidth, canvasHeight);
+
+		var tensor_image = tf.browser.fromPixels(image); // This is size 224,224,3
+
+		const image_4D = tensor_image.expandDims(0); // This is size 1,224,224,3
+		
+		// Make image values from 0 to 1
+		const shape_out = image_4D.shape;
+		
+		// Ensure that tensor is 4d
+		const x = tf.reshape(image_4D, [1, shape_out[1], shape_out[2], shape_out[3]])
+
+		// -----------------------------------------------
+		
+		var boxes = tf.tensor2d([[0, 0, 1, 1]], [1, 4]);  // initialize variable
+		const boxIndices = tf.tensor1d([0], 'int32');
+		const newSize = [28, 28];
+		var resizedTensor = tf.image.cropAndResize(x, boxes, boxIndices, newSize);  // resizedTensor.shape= 1,28,28,3
+
+		// -------------------------
+		
+		var resizedTensor_grayscale = resizedTensor.max(3); // resizedTensor_grayscale.shape= 1,28,28
+		
+		var resizedTensor_grayscale_4D = tf.reshape(resizedTensor_grayscale, [1,28,28,1]); // resizedTensor_grayscale_4D.shape= 1,28,28,1
+		
+		// -------------------------
+
+		const decode_index2numletter = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+		
+		// -----------------------------------------------
+		
+		for (var i = 0; i<boundingbox_vec.length; i++){
+			
+			const tensor = tf.tensor(boundingbox_vec[i]);
+			const b = tf.scalar(canvasWidth);
+			const tensor_from0to1 = tensor.div(b);
+
+			// -------------------------
+			
+			const tensor_from0to1_data = await tensor_from0to1.data();
+			boxes = tf.tensor2d([tensor_from0to1_data], [1, 4]);
+			
+			resizedTensor = tf.image.cropAndResize(x, boxes, boxIndices, newSize);
+			
+			// -----------------------------------------------
+			
+			// Convert RGB image [28,28,3] to grayscale [28,28,1]
+			resizedTensor_grayscale = resizedTensor.max(3); // This is size 28,28,1
+			resizedTensor_grayscale_4D = tf.reshape(resizedTensor_grayscale, [1,28,28,1]);  // OK
+			
+			// -----------------------------------------------
+
+			// Create a canvas element
+			var canvasElement = document.createElement('canvas');
+
+			// Set the width and height of the canvas
+			canvasElement.width = 28;
+			canvasElement.height = canvasElement.width;
+
+			// Get the 2D rendering context
+			const ctx = canvasElement.getContext("2d");
+			
+			// Add the canvas to the document body or any other desired element
+			document.body.appendChild(canvasElement);
+
+			// ----------------------
+			
+			// for loop method
+			let imageDataArray = new Uint8ClampedArray(28 * 28 * 4);
+			for (let i = 0; i < 28 * 28; i++) {
+			     let value = resizedTensor_grayscale_4D.dataSync()[i];
+			     imageDataArray[i * 4] = value > 0.5 ? 255 : 0; // Red component
+			     imageDataArray[i * 4 + 1] = value > 0.5 ? 255 : 0; // Green component
+			     imageDataArray[i * 4 + 2] = value > 0.5 ? 255 : 0; // Blue component
+			     imageDataArray[i * 4 + 3] = 255; // Alpha component, set to 255 to make it fully opaque
+			}
+
+			let imageData = new ImageData(imageDataArray, 28, 28);
+			
+			// ----------------------
+
+			// Draw the image data onto the canvas
+			ctx.putImageData(imageData, 0, 0);
+			
+			// -----------------------------------------------
+			
+			// Give image to model
+			const result = model.predict(resizedTensor_grayscale_4D); 
+
+			// ----------------------
+			// Way 0
+			// Get index of maximum softmax probability 
+			const index = result.as1D().argMax().dataSync()[0];  // 11
+			
+			// Get maximum softmax probability 
+			const resultData = await result.data(); // correct
+			const maxprob = resultData[index]; // 0.058055195957422256
+			
+			// ----------------------
+
+			outp.innerHTML += 'index= ' + index + '<br/>';
+			outp.innerHTML += 'maxprob= ' + maxprob + '<br/>';
+
+			// ----------------------
+
+			// Decode the index to the label
+			word_out.push(decode_index2numletter[index])
+			
+			// ----------------------
+			
+		} // end of for
+
+		outp.innerHTML += 'word_out= ' + word_out + '<br/>';
+
+	}  // end of image.onload
+	  
+  }
+	
+  // -------------------------------------------------
+
+</script>
+</body>
+</html>
