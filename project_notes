@@ -36,4 +36,12 @@ You can check docs for more info about touch events.
 
 I also guess that may be you will also need to stop some events from bubbling, and if so, you can take a look at events bubbling and event.stopPropagation() to prevent them from bubbling.
 
+
+
+https://developer.mozilla.org/en-US/docs/Web/API/Touch_events
+
+https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
+
+
+
 If the logic should be the same for both mousedown/touchstart and mouseup/touchend events, you can bind multiple events to the listener as described here.
