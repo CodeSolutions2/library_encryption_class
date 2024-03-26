@@ -1,8 +1,28 @@
 
+------------------------
 Touch screen commands
-touchstart
+------------------------
+
+touchstart : Start an event using an eventListener
+https://developer.mozilla.org/en-US/docs/Web/API/Element/touchstart_event
+
+
+
 
 touchend
+
+
+
+touchmove
+
+
+
+------------------------
+Desktop commands
+------------------------
+mousedown
+https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/clientX
+
 
 events for touch screens will be touchstart and touchend, they are totally the same as mousedown and mouseup events for desktop. From docs:
 
