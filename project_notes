@@ -1,0 +1,19 @@
+
+Touch screen commands
+touchstart
+
+touchend
+
+events for touch screens will be touchstart and touchend, they are totally the same as mousedown and mouseup events for desktop. From docs:
+
+    The touchstart event is fired when one or more touch points are placed on the touch surface.
+
+and
+
+    The touchend event is fired when one or more touch points are removed from the touch surface.
+
+You can check docs for more info about touch events.
+
+I also guess that may be you will also need to stop some events from bubbling, and if so, you can take a look at events bubbling and event.stopPropagation() to prevent them from bubbling.
+
+If the logic should be the same for both mousedown/touchstart and mouseup/touchend events, you can bind multiple events to the listener as described here.
