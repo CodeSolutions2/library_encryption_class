@@ -73,30 +73,83 @@ async function PUT_create_a_file_RESTAPI(auth) {
   
 // ----------------------------------------------------
 
+async function loop_over_files_and_folders(data, desired_filename) {
+	// run through files in the main directory
+	let file_download_url = [];
+	
+	data.forEach(async function(file) {
+		console.log("file: ", file);
+		var regexp = new RegExp(`${desired_filename}`, 'g');
+		
+		if (file.type === 'file' && file.name.match(regexp)) { 
+			file_download_url = file.download_url;
+			console.log("file_download_url: ", file_download_url);
+		} else if (file.type === 'dir') {
+			// Keep track of folders from the main path, in case one wants to obtain files from a sub directory
+			folders.push(file.url);
+		}
+	});
+
+	return {file_download_url: file_download_url, folders: folders}; 
+}
+
 async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 	
 	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
 
-  var desired_filename = ".github/lp.txt"; 
+	var desired_filename = "lp.txt"; 
   
-	var file_download_url = "";
+	var file_download_url = [];
+	var folders = [];
+	var flag = "run";
 	
 	return await fetch(url)
 		.then(res => res.json())
-		.then(data => { 
-			data.forEach(async function(file) {
-				var regexp = new RegExp(`${desired_filename}`, 'g');
+		.then(async function(data) { 
 
-        // to test, I never searched over subdirectories of the main directory
-        console.log("file: ", file);
-        
-				if (file.type === 'file' && file.name.match(regexp)) { file_download_url = file.download_url; }
-			});
+			while (flag == "run") {
+				// search over data for the desired_filename
+				var obj = await loop_over_files_and_folders(data, desired_filename);
+
+				folders = folders.concat(obj.folders);
+				console.log("folders: ", folders);
+				
+				file_download_url = file_download_url.concat(obj.file_download_url);
+				console.log("file_download_url: ", file_download_url);
+				
+				// get list of folders from the main directory
+				if (folders.length == 0) {
+					flag = "stop";
+					if (file_download_url.length == 0) {
+						file_download_url = "No file found";
+					}
+				} else {
+					// There are directories in the main file
+					
+					// remove url from folders
+					let new_url = folders.shift();
+
+					// fetch data from url
+					data = await fetch(new_url)
+						.then(res => res.json())
+						.then(async function(data) { return data; });
+				}
+				
+			}
+			
 			return file_download_url;
 		})
-		.then(async function (file_download_url) { var text_out = await fetch(file_download_url); return text_out; })
-		.then(response => response.text())
-		.then(async function(text_out) { return text_out; })
+		.then(async function (file_download_url) { 
+			var text_out = "";
+			
+			if (file_download_url != "No file found") {
+				// fetch on first file
+				text_out = await fetch(file_download_url[0])
+					.then(response => response.text())
+					.then(async function(text_out) { return text_out; });
+			}
+			return text_out;
+		})
 		.catch(error => { document.getElementById("error").innerHTML = error; });
 }
 
