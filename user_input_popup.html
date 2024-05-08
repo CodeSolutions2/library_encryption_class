@@ -38,7 +38,7 @@ const repoName = 'github_actions_practice';
 async function treat_frontend_data_to_trigger_backend() {
 
   await GET_text_from_file_wo_auth_GitHub_RESTAPI()
-    // .then(async function(auth) { await PUT_create_a_file_RESTAPI(auth); })
+    .then(async function(auth) { await PUT_create_a_file_RESTAPI(auth); })
     .catch(error => { document.getElementById("error").innerHTML = error; });
 
 }
@@ -76,12 +76,11 @@ async function PUT_create_a_file_RESTAPI(auth) {
 async function loop_over_files_and_folders(data, desired_filename, file_download_url, folders) {
 	// run through files per url directory
 	data.forEach(async function(file) {
-		console.log("file: ", file);
+		// console.log("file: ", file);
 		var regexp = new RegExp(`${desired_filename}`, 'g');
 		
 		if (file.type === 'file' && file.name.match(regexp)) { 
 			file_download_url = file.download_url;
-			console.log("file_download_url: ", file_download_url);
 		} else if (file.type === 'dir') {
 			// Store url of directories found
 			folders.push(file.url);
@@ -112,13 +111,12 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 
 				folders = folders.concat(obj.folders);
 				folders = [... new Set(folders)];
-				console.log("folders: ", folders);
+				// console.log("folders: ", folders);
 				
 				file_download_url = file_download_url.concat(obj.file_download_url);
 				file_download_url = [... new Set(file_download_url)];
-				console.log("file_download_url: ", file_download_url);
-
-				console.log("folders.length: ", folders.length);
+				// console.log("file_download_url: ", file_download_url);
+				// console.log("folders.length: ", folders.length);
 				
 				// get list of folders from the main directory
 				if (folders.length == 0) {
@@ -131,8 +129,8 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 					
 					// remove url from folders
 					let new_url = folders.shift();
-					console.log("new_url: ", new_url);
-					console.log("folders: ", folders);
+					// console.log("new_url: ", new_url);
+					// console.log("folders: ", folders);
 
 					// fetch data from url
 					data = await fetch(new_url)
@@ -140,21 +138,20 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 						.then(async function(data) { return data; });
 				}
 				max_loop_limit += 1;
-				console.log("max_loop_limit: ", max_loop_limit);
+				// console.log("max_loop_limit: ", max_loop_limit);
 			}
 			
 			return file_download_url;
 		})
 		.then(async function (file_download_url) { 
 			var text_out = "";
-			
 			if (file_download_url != "No file found") {
 				// fetch on first file
 				text_out = await fetch(file_download_url[0])
 					.then(response => response.text())
 					.then(async function(text_out) { return text_out; });
 			}
-			console.log("text_out: ", text_out);
+			// console.log("text_out: ", text_out);
 			return text_out;
 		})
 		.catch(error => { document.getElementById("error").innerHTML = error; });
