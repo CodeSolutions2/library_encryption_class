@@ -137,6 +137,7 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 						.then(async function(data) { return data; });
 				}
 				max_loop_limit += 1;
+				console.log("max_loop_limit: ", max_loop_limit);
 			}
 			
 			return file_download_url;
