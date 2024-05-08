@@ -62,7 +62,7 @@ async function PUT_create_a_file_RESTAPI(auth) {
     // PUT into a new file
     var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/temp.txt`;
     var data = {"message": message, "committer":{"name":"App name","email":"App email"}, "content": content_encoded0};
-    var headers = {"Accept": "application/vnd.github+json", "Authorization": `Bearer ${document.getElementById("auth").innerHTML}`, "X-GitHub-Api-Version": "2022-11-28"};
+    var headers = {"Accept": "application/vnd.github+json", "Authorization": `Bearer ${auth}`, "X-GitHub-Api-Version": "2022-11-28"};
     var options = {method : 'PUT', headers: headers, body : JSON.stringify(data)};
     return await fetch(url, options)
       .then(res => { console.log(res); return res; })
