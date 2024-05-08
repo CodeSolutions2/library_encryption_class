@@ -63,10 +63,8 @@ async function PUT_add_to_a_file_RESTAPI(auth) {
     auth = auth.replace(/\s/g, '');
     console.log("auth: ", auth);
 
-	var filename = 'temp';
-
    // PUT into an existing file
-   var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filename}`;
+   var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/temp`;
    return await fetch(url).then(res => res.json()).then(data => {
 	   let sha_val = data.sha; console.log('sha_val: ', sha_val); return sha_val; })
 	   .then(async function (sha_val) { 
@@ -98,7 +96,7 @@ async function PUT_create_a_file_RESTAPI(auth) {
     console.log("auth: ", auth);
     
     // PUT into a new file
-    var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/temp.txt`;
+    var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/temp`;
     var data = {"message": message, "committer":{"name":"App name","email":"App email"}, "content": content_encoded0};
     var headers = {"Accept": "application/vnd.github+json", "Authorization": `Bearer ${auth}`, "X-GitHub-Api-Version": "2022-11-28"};
     var options = {method : 'PUT', headers: headers, body : JSON.stringify(data)};
