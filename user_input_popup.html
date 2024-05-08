@@ -38,11 +38,46 @@ const repoName = 'github_actions_practice';
 async function treat_frontend_data_to_trigger_backend() {
 
   await GET_text_from_file_wo_auth_GitHub_RESTAPI()
-    .then(async function(auth) { await PUT_create_a_file_RESTAPI(auth); })
+    //.then(async function(auth) { await PUT_create_a_file_RESTAPI(auth); })
+    .then(async function(auth) { await PUT_add_to_a_file_RESTAPI(auth); })
     .catch(error => { document.getElementById("error").innerHTML = error; });
 
 }
 
+
+// ----------------------------------------------------
+// PUT add to an existing file - Way 0: REST API
+// Can only write to a public repository, can not write to a private repository even if the key grants access
+// https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents
+// ----------------------------------------------------
+async function PUT_add_to_a_file_RESTAPI(auth) {
+
+   var message = 'add user input to file for backend';
+    var content = document.getElementById("user_input").value;
+  
+    // https://developer.mozilla.org/en-US/docs/Web/API/btoa
+    var content_encoded0 = btoa(content);
+    // console.log("content_encoded0: ", content_encoded0);
+
+    // Ensure that spaces are removed from auth
+    auth = auth.replace(/\s/g, '');
+    console.log("auth: ", auth);
+
+	var filename = 'temp';
+
+   // PUT into an existing file
+   var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filename}`;
+   return await fetch(url).then(res => res.json()).then(data => {
+	   let sha_val = data.sha; console.log('sha_val: ', sha_val); return sha_val; })
+	   .then(async function (sha_val) { 
+		   var data = {"message": message, "committer":{"name":"App name","email":"App email"}, "content": content_encoded0, "sha": sha_val};
+		   var headers = {"Accept": "application/vnd.github+json", "Authorization": `Bearer ${auth}`, "X-GitHub-Api-Version": "2022-11-28"};
+		   var options = {method : 'PUT', headers: headers, body : JSON.stringify(data)};
+		   var out = await fetch(url, options); return out; })
+	   		.then(res => { console.log(res); } )
+	   		.catch(error => { console.log(error); });
+
+}
 
 // ----------------------------------------------------
 // PUT create a file - Way 0: REST API (WORKS!)
@@ -154,7 +189,7 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 					.then(response => response.text())
 					.then(async function(text_out) { return text_out; });
 			}
-			console.log("text_out: ", text_out);
+			// console.log("text_out: ", text_out);
 			return text_out;
 		})
 		.catch(error => { document.getElementById("error").innerHTML = error; });
