@@ -73,7 +73,7 @@ async function PUT_create_a_file_RESTAPI(auth) {
   
 // ----------------------------------------------------
 
-async function loop_over_files_and_folders(data, desired_filename) {
+async function loop_over_files_and_folders(data, desired_filename, file_download_url, folders) {
 	// run through files in the main directory
 	let file_download_url = [];
 	
@@ -109,7 +109,7 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 
 			while (flag == "run") {
 				// search over data for the desired_filename
-				var obj = await loop_over_files_and_folders(data, desired_filename);
+				var obj = await loop_over_files_and_folders(data, desired_filename, file_download_url, folders);
 
 				folders = folders.concat(obj.folders);
 				console.log("folders: ", folders);
