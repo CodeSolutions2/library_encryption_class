@@ -1,3 +1,5 @@
 # github_actions_practice
 
-The goal of this repository is to understand how to make a system between the [Frontend:GitHub page webapp and the Backend:GitHub actions], such that the webapp is functional using backend computed information.
+The goal of this repository is serve as a popup window/intermediate area for user's to submit or request their information with GitHub Pages webapps. This popup window/intermediate area creates a secure way for users to access their information stored in a secure GitHub repository.
+
+https://CodeSolutions2.github.io/github_actions_practice/user_input_popup.html
