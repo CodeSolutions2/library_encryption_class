@@ -57,7 +57,7 @@ async function PUT_create_a_file_RESTAPI(auth) {
   
     // https://developer.mozilla.org/en-US/docs/Web/API/btoa
     var content_encoded0 = btoa(content);
-    console.log("content_encoded0: ", content_encoded0);
+    // console.log("content_encoded0: ", content_encoded0);
     
     // PUT into a new file
     var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/temp.txt`;
@@ -151,7 +151,7 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI() {
 					.then(response => response.text())
 					.then(async function(text_out) { return text_out; });
 			}
-			// console.log("text_out: ", text_out);
+			console.log("text_out: ", text_out);
 			return text_out;
 		})
 		.catch(error => { document.getElementById("error").innerHTML = error; });
