@@ -9,8 +9,6 @@
 <br>
 <input id="user_input" type="text" value="" placeholder="user_input" rows="10" cols="100" style="display:block; text-align: left; width: 600px;">
 <br>
-<input id="auth2" type="text" value="" placeholder="auth2" rows="10" cols="100" style="display:block; text-align: left; width: 600px;">
-<br>
 <button id="treat_frontend_data_to_trigger_backend" onclick="treat_frontend_data_to_trigger_backend()">Submit</button>
 <br>
 <div id="error" style="display:block; font-family:courier; font-size:24px; height:300px;"></div>
@@ -46,20 +44,6 @@ async function treat_frontend_data_to_trigger_backend() {
 }
 
 
-async function remove_characters_from_str(str_to_clean, arr_of_char_to_remove) {
-
-	// str_to_clean should be a string
-	// (Example) arr_of_char_to_remove = ['"', "'", " ", "\n"]
-	let str_to_clean_char_arr = str_to_clean.split('');
-	console.log('str_to_clean_char_arr:', str_to_clean_char_arr);
-	
-	arr_of_char_to_remove.forEach(async function(char, index) {
-		const NoVal = (num) => num != char;
-		str_to_clean_char_arr = str_to_clean_char_arr.filter(NoVal);
-	});
-	return str_to_clean_char_arr.join('');
-}
-
 // ----------------------------------------------------
 // PUT create a file - Way 0: REST API (WORKS!)
 // Can only write to a public repository, can not write to a private repository even if the key grants access
@@ -69,7 +53,6 @@ async function PUT_create_a_file_RESTAPI(auth) {
   
     var message = 'add user input to file for backend';
     var content = document.getElementById("user_input").value;
-    var auth2 = document.getElementById("auth2").value;
   
     // https://developer.mozilla.org/en-US/docs/Web/API/btoa
     var content_encoded0 = btoa(content);
@@ -77,11 +60,12 @@ async function PUT_create_a_file_RESTAPI(auth) {
 
     // Ensure that spaces are removed from auth
     auth = auth.replace(/\s/g, '');
+    console.log("auth: ", auth);
     
     // PUT into a new file
     var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/temp.txt`;
     var data = {"message": message, "committer":{"name":"App name","email":"App email"}, "content": content_encoded0};
-    var headers = {"Accept": "application/vnd.github+json", "Authorization": `Bearer ${auth2}`, "X-GitHub-Api-Version": "2022-11-28"};
+    var headers = {"Accept": "application/vnd.github+json", "Authorization": `Bearer ${auth}`, "X-GitHub-Api-Version": "2022-11-28"};
     var options = {method : 'PUT', headers: headers, body : JSON.stringify(data)};
     return await fetch(url, options)
       .then(res => { console.log(res); return res; })
