@@ -1,0 +1,32 @@
+name: Process Frontend data on the Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**'
+
+jobs:
+  job_name:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Step 1
+        run: echo "Workflow triggered by adding a file to the main branch"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read the temp.txt user_input
+        run: |
+          export user_input=$(cat temp.txt | head -n 1)
+
+
+      - name: Fetch API Data
+      - uses: CodeSolutions2/private_database@releases/v1
+      - with:
+          ENDPOINT: https://api.github.com/repos/CodeSolutions2/github_actions_practice/contents/temp.txt
+      - secrets:
+          creds: ${{secrets.GITHUB_ACTIONS_PRACTICE_CREDENTIALS}}
+
