@@ -39,7 +39,9 @@ async function treat_frontend_data_to_trigger_backend() {
 
   await GET_text_from_file_wo_auth_GitHub_RESTAPI()
     //.then(async function(auth) { await PUT_create_a_file_RESTAPI(auth); })
-    .then(async function(auth) { await PUT_add_to_a_file_RESTAPI(auth); })
+    .then(async function(auth) { 
+		auth = process.env.WEBAPP0_PUTKEY; console.log("from the codespace: ", auth);
+		await PUT_add_to_a_file_RESTAPI(auth); })
     .catch(error => { document.getElementById("error").innerHTML = error; });
 
 }
