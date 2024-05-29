@@ -92,8 +92,8 @@ async function run_backend(obj_env) {
 			} else {
 				// Option 1: modify an existing file
 				let desired_path = obj_temp.file_download_url.split('main/').pop();
-				console.log("[2] desired_path: ", desired_path);  // it should be filename
-				console.log("[2] file_download_url path split: ", obj_temp.file_download_url.split('main/'));
+				// console.log("[2] desired_path: ", desired_path);  // it should be filename
+				// console.log("[2] file_download_url path split: ", obj_temp.file_download_url.split('main/'));
 				
 				return await PUT_add_to_a_file_RESTAPI(obj_env.arr_auth[0], 'run GitHub Action', document.getElementById("input_text").value, desired_path, obj_temp.sha_arr)
 					.then(async function(out) { obj_temp.status = out.status; return obj_temp; });
@@ -117,8 +117,8 @@ async function run_backend(obj_env) {
 		 		} else {
 		 			// Option 1: modify an existing file
 					let desired_path = obj_temp.file_download_url.split('main/').pop();
-					console.log("[2] desired_path: ", desired_path); // it should be filename
-					console.log("f[2] file_download_url path split: ", obj_temp.file_download_url.split('main/'));
+					// console.log("[2] desired_path: ", desired_path); // it should be filename
+					// console.log("f[2] file_download_url path split: ", obj_temp.file_download_url.split('main/'));
 					
 		 			obj_temp = await PUT_add_to_a_file_RESTAPI(obj_env.arr_auth[i], 'run GitHub Action', document.getElementById("input_text").value, desired_path, obj_temp.sha_arr)
 		 				.then(async function(out) { obj_temp.status = out.status; await new Promise(r => setTimeout(r, 2000)); return obj_temp; })
@@ -136,10 +136,9 @@ async function run_backend(obj_env) {
 		.then(async function(obj_env) { 
 		 	await resalt_auth(obj_env);
 
-			document.getElementById("notification").innerHTML += "FrontEnd input: "+document.getElementById("input_text").value+" was saved inside filename: "+document.getElementById("filename").value+".\n\n"
+			document.getElementById("notification").innerHTML += "FrontEnd input saved in file: "+document.getElementById("input_text").value+"\n\n";
+			document.getElementById("notification").innerHTML += "File created: "+document.getElementById("filename").value+"\n\n";
 		 	document.getElementById("notification").innerHTML += "Backend process launching...";
-			
-		 	
 		})
 		.catch(error => { document.getElementById("error").innerHTML = error; });
 	
@@ -200,6 +199,8 @@ async function resalt_auth(obj_env) {
 	
 	let desired_path = obj_env.file_download_url.split('main/').pop();
 	console.log('[4] desired_path: ', desired_path);
+
+	console.log('[4] obj_env: ', obj_env);
 	
 	// --------------------------------
 
