@@ -3,8 +3,6 @@
 <head></head>
 <body>    
 
-<button id="run_backend_process" onclick="run_backend_process()" style="display:block">run_backend_process</button>
-
 <label for="filename" id="filename_label" style="display:block">Enter the filename that you wish to create in run_GitHub_Actions that will contain the user_input:</label>
 <input id="filename" type="text" value="" placeholder="filename" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
 <br>
@@ -12,7 +10,8 @@
 <label for="user_input" id="user_input_label" style="display:block">Enter user_input that will be put in filename, in run_GitHub_Actions, for the BackEnd to process:</label>
 <input id="user_input" type="text" value="" placeholder="user_input" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
 <br>
-	
+
+<button id="run_backend_process" onclick="run_backend_process()" style="display:block">run_backend_process</button>
 	
 <div id="notification" style="display:block"></div>
 <div id="error" style="display:block"></div>
