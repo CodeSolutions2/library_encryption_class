@@ -49,8 +49,7 @@ async function run_backend(obj) {
 	// Try each of the 'de-salted' authorization keys to identify the correct key: loop over a REST API request and identify which key succeeds
 	console.log("filename: ", document.getElementById("filename").value);
 	console.log("input_text: ", document.getElementById("input_text").value);
-
-
+	
 	// [0] Determine if filename exists
 	var obj_temp = await GET_fileDownloadUrl_and_sha(document.getElementById("filename").value)
 
@@ -120,10 +119,7 @@ async function decode_desalt(obj, i, n) {
 	const text = atob(obj.env_text);
 	
 	// 1. 'de-salt' the authorization key read from the file
-	let half_of_n = Math.round(n/2);
-	console.log("half_of_n: ", half_of_n);
-	
-	if (i < half_of_n) {
+	if (i <= n) {
 		// remove end
 		obj.auth = text.slice(0, text.length-i);
 	} else {
@@ -148,7 +144,7 @@ async function create_salt(obj) {
 	// Determine the salt length - it can be up to length n
 
 	// Randomly choose the salt length from 1 to n
-	var new_salt_length = Math.round(Math.random())*(n-1) + 1;
+	var new_salt_length = Math.round(Math.random())*(n-1) + 1; // first part is [0 to n-1], we do not want 0 so shift it by one [1 to n]
 	console.log('new_salt_length: ', new_salt_length);
 
 	// Fill a vector new_salt_length long with 0 or 1; 0=salt a letter, 1=salt a number
