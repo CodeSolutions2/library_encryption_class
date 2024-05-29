@@ -70,7 +70,7 @@ async function run_backend(obj) {
 	// [2] Loop over the number of possible values
 	let i = 1;
 	var regexp = /^20/g;
-	var x = Array.from({ length: n }, (_, ind) => ind);
+	var x = Array.from({ length: n }, (_, ind) => ind+1);
 	console.log('x: ', x);
 	var x_rand = await rand_perm(x);
 	console.log('x_rand: ', x_rand);
