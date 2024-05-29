@@ -71,7 +71,8 @@ async function run_backend(obj) {
 	let i = 1;
 	var regexp = /^20/g;
 	
-	while (regexp.test(obj.status) == false && obj.auth != null && i < n*2) {
+	// i goes from 1 to 6
+	while (regexp.test(obj.status) == false && obj.auth != null && i < (n*2)+1) {
 		
 		obj = await decode_desalt(obj, i, n)
 			.then(async function(obj) {
@@ -124,7 +125,7 @@ async function decode_desalt(obj, i, n) {
 		obj.auth = text.slice(0, text.length-i);
 	} else {
 		// remove beginning
-		obj.auth = text.slice(i, text.length);
+		obj.auth = text.slice(i-n, text.length);
 	}
 	return obj;
 }
