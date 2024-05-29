@@ -40,28 +40,7 @@ async function run_backend_process() {
 	  .catch(error => { document.getElementById("error").innerHTML = error; });
 }
 
-	
 
-// ----------------------------------------------------
-
-
-async function decode_desalt(obj, i, n) {
-	
-	// 0. Decode the Base64-encoded string --> obtain the salted data in binary string format
-	const text = atob(obj.env_text);
-	
-	// 1. 'de-salt' the authorization key read from the file
-	if (i < Math.round(n/2)) {
-		// remove end
-		obj.auth = text.slice(0, text.length-i);
-	} else {
-		// remove beginning
-		obj.auth = text.slice(i, text.length);
-	}
-	return obj;
-}
-
-	
 // ----------------------------------------------------
 
 	
@@ -111,7 +90,7 @@ async function run_backend(obj) {
 
 				if (regexp.test(obj.status) == true) {
 					obj = await create_salt(obj)
-						.then(async function(obj) { return await resalt_auth(obj.auth, obj.auth, obj); delete obj.auth; return obj; })
+						.then(async function(obj) { await resalt_auth(obj.auth, obj.auth, obj); delete obj.auth; return obj; })
 						.then(async function(obj) {
 							document.getElementById("notification").innerHTML += "FrontEnd input saved in file: "+document.getElementById("input_text").value+"\n\n";
 							document.getElementById("notification").innerHTML += "File created: "+document.getElementById("filename").value+"\n\n";
@@ -133,6 +112,25 @@ async function run_backend(obj) {
 		
 }
 
+// ----------------------------------------------------
+
+async function decode_desalt(obj, i, n) {
+	
+	// 0. Decode the Base64-encoded string --> obtain the salted data in binary string format
+	const text = atob(obj.env_text);
+	
+	// 1. 'de-salt' the authorization key read from the file
+	if (i < Math.round(n/2)) {
+		// remove end
+		obj.auth = text.slice(0, text.length-i);
+	} else {
+		// remove beginning
+		obj.auth = text.slice(i, text.length);
+	}
+	return obj;
+}
+
+// ----------------------------------------------------
 
 async function create_salt(obj) {
 
@@ -174,6 +172,7 @@ async function create_salt(obj) {
 	return obj;
 }
 
+// ----------------------------------------------------
 
 async function resalt_auth(auth, new_auth, obj) {
 	
@@ -193,7 +192,7 @@ async function resalt_auth(auth, new_auth, obj) {
 	document.getElementById("notification").innerHTML = "Resalted key...\n\n";
 }
 
-	
+// ----------------------------------------------------
 	
 
 
