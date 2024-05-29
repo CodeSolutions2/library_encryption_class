@@ -82,6 +82,7 @@ async function run_backend(obj_env) {
 		.then(async function(obj_temp) { return {file_download_url: obj_temp.file_download_url[0], sha_arr: obj_temp.sha_arr[0]}; })
 		// [2] Test for the correct key, save input_text to filename
 		.then(async function(obj_temp) {
+			console.log("[2] obj_temp: ", obj_temp);
 			
 			if (obj_temp.file_download_url == "No file found") {
 				// Option 0: create a new file
