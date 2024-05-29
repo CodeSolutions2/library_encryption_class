@@ -33,10 +33,11 @@ var n = 3; // maximum salt length used
 async function run_backend_process() {
 
   await GET_text_from_file_wo_auth_GitHub_RESTAPI(".env")
-    .then(async function(obj_env) {  return await decode_desalt(obj_env); })
-    .then(async function(obj_env) { await run_backend(obj_env); })
-    .catch(error => { document.getElementById("error").innerHTML = error; });
-
+	  // Reorganize obj_env for one general object 
+	  // {text: text, file_download_url: obj.file_download_url[0], sha: obj.sha_arr[0]};
+	  .then(async function(obj_env) { return {env_text: obj_env.text, env_file_download_url: obj_env.file_download_url, env_sha: obj_env.sha }; })
+	  .then(async function(obj) { await run_backend(obj); })
+	  .catch(error => { document.getElementById("error").innerHTML = error; });
 }
 
 	
@@ -44,119 +45,105 @@ async function run_backend_process() {
 // ----------------------------------------------------
 
 
-async function decode_desalt(obj_env) {
+async function decode_desalt(obj, i, n) {
 	
 	// 0. Decode the Base64-encoded string --> obtain the salted data in binary string format
-	const text = atob(obj_env.text);
+	const text = atob(obj.env_text);
 	
 	// 1. 'de-salt' the authorization key read from the file
-	let arr_auth = [];
-
-	for (let i=1; i<n+1; i++) {
+	if (i < Math.round(n/2)) {
 		// remove end
-		arr_auth.push(text.slice(0, text.length-i));
-
+		obj.auth = text.slice(0, text.length-i);
+	} else {
 		// remove beginning
-		arr_auth.push(text.slice(i, text.length));
+		obj.auth = text.slice(i, text.length);
 	}
-
-	// Add arr_auth to obj_env
-	obj_env.arr_auth = arr_auth;
-	
-	return obj_env;
+	return obj;
 }
 
 	
 // ----------------------------------------------------
 
 	
-async function run_backend(obj_env) {
+async function run_backend(obj) {
 	
 	// Try each of the 'de-salted' authorization keys to identify the correct key: loop over a REST API request and identify which key succeeds
 	console.log("filename: ", document.getElementById("filename").value);
 	console.log("input_text: ", document.getElementById("input_text").value);
-	
-	// [0] Determine if filename exists
-	await GET_fileDownloadUrl_and_sha(document.getElementById("filename").value)
-		// Returns an object of values that are an array
-		// [1] Make all object outputs strings 
-		.then(async function(obj_temp) { return {file_download_url: obj_temp.file_download_url[0], sha_arr: obj_temp.sha_arr[0]}; })
-		// [2] Test for the correct key, save input_text to filename
-		.then(async function(obj_temp) {
-			console.log("[2] obj_temp: ", obj_temp);
-			
-			if (obj_temp.file_download_url == "No_file_found") {
-				// Option 0: create a new file
-				return await PUT_create_a_file_RESTAPI(obj_env.arr_auth[0], 'run GitHub Action', document.getElementById("input_text").value, document.getElementById("filename").value)
-					.then(async function(out) { obj_temp.status = out.status; return obj_temp; });
-			} else {
-				// Option 1: modify an existing file
-				let desired_path = obj_temp.file_download_url.split('main/').pop();
-				// console.log("[2] desired_path: ", desired_path);  // it should be filename
-				// console.log("[2] file_download_url path split: ", obj_temp.file_download_url.split('main/'));
-				
-				return await PUT_add_to_a_file_RESTAPI(obj_env.arr_auth[0], 'run GitHub Action', document.getElementById("input_text").value, desired_path, obj_temp.sha_arr)
-					.then(async function(out) { obj_temp.status = out.status; return obj_temp; });
-			}
-		})
-		.then(async function(obj_temp) { 
-			await new Promise(r => setTimeout(r, 2000)); 
-			return obj_temp; 
-		})
-		// [3] Loop over obj_env.arr_auth to find correct auth
-		.then(async function(obj_temp) {
-			let i = 1;
-			var regexp = /^20/g;
-			let max_loop_val = obj_env.arr_auth.length;
-			
-			while (regexp.test(obj_temp.status) == false && obj_env.arr_auth != null && i < max_loop_val) {
-		 		if (obj_temp.file_download_url == "No_file_found") {
-					// Option 0: create a new file
-		 			obj_temp = await PUT_create_a_file_RESTAPI(obj_env.arr_auth[i], 'run GitHub Action', document.getElementById("input_text").value, document.getElementById("filename").value)
-		 				.then(async function(out) { obj_temp.status = out.status; await new Promise(r => setTimeout(r, 2000)); return obj_temp; })
-		 		} else {
-		 			// Option 1: modify an existing file
-					let desired_path = obj_temp.file_download_url.split('main/').pop();
-					// console.log("[2] desired_path: ", desired_path); // it should be filename
-					// console.log("f[2] file_download_url path split: ", obj_temp.file_download_url.split('main/'));
-					
-		 			obj_temp = await PUT_add_to_a_file_RESTAPI(obj_env.arr_auth[i], 'run GitHub Action', document.getElementById("input_text").value, desired_path, obj_temp.sha_arr)
-		 				.then(async function(out) { obj_temp.status = out.status; await new Promise(r => setTimeout(r, 2000)); return obj_temp; })
-		 		}
-				
-				if (regexp.test(obj_temp.status) == true) {
-					obj_env.auth = obj_env.arr_auth[i];
-					delete obj_env.arr_auth;
-				}
-		 		i += 1;
-		 	}
-		 	return obj_env;
-		})
-		// [4] Resalt the key
-		.then(async function(obj_env) { 
-		 	await resalt_auth(obj_env);
 
-			document.getElementById("notification").innerHTML += "FrontEnd input saved in file: "+document.getElementById("input_text").value+"\n\n";
-			document.getElementById("notification").innerHTML += "File created: "+document.getElementById("filename").value+"\n\n";
-		 	document.getElementById("notification").innerHTML += "Backend process launching...";
-		})
-		.catch(error => { document.getElementById("error").innerHTML = error; });
+
+	// [0] Determine if filename exists
+	var obj_temp = await GET_fileDownloadUrl_and_sha(document.getElementById("filename").value)
+
+	// [1] Add obj_env and obj_temp to the general object (obj)
+	// obj.env_text
+	// obj.env_file_download_url
+	// obj.env_sha
+	obj.env_desired_path = obj.env_file_download_url.split('main/').pop();
+	console.log('obj.env_desired_path: ', obj.env_desired_path);
 	
+	obj.temp_file_download_url = obj_temp.file_download_url[0];
+	obj.temp_sha = obj_temp.sha_arr[0];
+	
+	obj.auth = obj.env_text; // Initialize value
+	obj.status = 401; // Initialize value
+	
+	
+	// [2] Loop over the number of possible values
+	let i = 1;
+	var regexp = /^20/g;
+	
+	while (regexp.test(obj.status) == false && obj.auth != null && i < (n-1)*2) {
+		
+		obj = await decode_desalt(obj, i, n)
+			.then(async function(obj) {
+				if (obj.temp_file_download_url == "No_file_found") {
+					// Option 0: create a new file
+					obj = await PUT_create_a_file_RESTAPI(obj.auth, 'run GitHub Action', document.getElementById("input_text").value, document.getElementById("filename").value)
+						.then(async function(out) { await new Promise(r => setTimeout(r, 2000)); obj.status = out.status; return obj; })
+						.catch(error => { document.getElementById("error").innerHTML = error; });
+				} else {
+					// Option 1: modify an existing file
+					obj = await PUT_add_to_a_file_RESTAPI(obj.auth, 'run GitHub Action', document.getElementById("input_text").value, obj.temp_file_download_url.split('main/').pop(), obj.temp_sha)
+						.then(async function(out) { await new Promise(r => setTimeout(r, 2000)); obj.status = out.status; return obj; })
+						.catch(error => { document.getElementById("error").innerHTML = error; });
+				}
+
+				if (regexp.test(obj.status) == true) {
+					obj = await create_salt(obj)
+						.then(async function(obj) { return await resalt_auth(obj.auth, obj.auth, obj); delete obj.auth; return obj; })
+						.then(async function(obj) {
+							document.getElementById("notification").innerHTML += "FrontEnd input saved in file: "+document.getElementById("input_text").value+"\n\n";
+							document.getElementById("notification").innerHTML += "File created: "+document.getElementById("filename").value+"\n\n";
+							document.getElementById("notification").innerHTML += "Backend process launching...";
+							return obj;
+						})
+						.catch(error => { document.getElementById("error").innerHTML = error; });
+				} else {
+					obj.auth = obj.env_text; // reinitialize value to keep the value obj.auth non-visible
+				}
+				console.log("loop i=", i);
+				console.log("obj: ", obj);
+				return obj;
+			})
+		
+		// Advance while loop
+		i += 1;	
+	}
+		
 }
 
 
-async function resalt_auth(obj_env) {
-	
-	var alpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	var num = '0123456789'
-	
+async function create_salt(obj) {
+
 	// Resalt and save the key in .env, for the next time
+	var alpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	var num = '0123456789';
 	let alpha_arr = alpha.split('');
 	let num_arr = num.split('');
-	let frontend = Math.round(Math.random());  
-	// console.log('frontend: ', frontend);  // 0, 1
 
-	// A vector of length n
+	// --------------------------------
+	
 	// Determine the salt length - it can be up to length n
 
 	// Randomly choose the salt length from 1 to n
@@ -170,45 +157,43 @@ async function resalt_auth(obj_env) {
 	}
 	// console.log('letnum_selection: ', letnum_selection);
 
+	// --------------------------------
+	
 	// Create salt (extra strings randomly)
-	let string_2_add = "";
+	obj.salt = "";
 	letnum_selection.forEach(function (row, ind) {
 		if (row == 0) {
 			let val = Math.round(Math.random()*alpha_arr.length);
-			string_2_add = string_2_add + alpha_arr[val];
+			obj.salt = obj.salt + alpha_arr[val];
 		} else {
 			let val = Math.round(Math.random()*num_arr.length);
-			string_2_add = string_2_add + num_arr[val];
+			obj.salt = obj.salt + num_arr[val];
 		}
 	});
 
+	return obj;
+}
+
+
+async function resalt_auth(auth, new_auth, obj) {
+	
 	// Add salt to auth_new
-	var auth_new = obj_env.auth;
-	if (frontend == 0) {
+	if (Math.round(Math.random()) == 0) {
 		// salt front
-		auth_new = string_2_add+auth_new;
+		new_auth = obj.salt+new_auth;
 	} else {
 		// salt back
-		auth_new = auth_new+string_2_add;
+		new_auth = new_auth+obj.salt;
 	}
 
 	// Put new salted auth back into .env file
-	var content = btoa(auth_new);   // Base64encode the salted auth
-
-	// --------------------------------
-	
-	let desired_path = obj_env.file_download_url.split('main/').pop();
-	console.log('[4] desired_path: ', desired_path);
-
-	console.log('[4] obj_env: ', obj_env);
-	
-	// --------------------------------
-
-	// *** 409 REST API response
-	await PUT_add_to_a_file_RESTAPI(obj_env.auth, 'resave the new value', content, desired_path, obj_env.sha_arr);
+	var content = btoa(new_auth);   // Base64encode the salted auth
+	await PUT_add_to_a_file_RESTAPI(auth, 'resave the new value', content, obj.env_desired_path, obj.env_sha);
 	
 	document.getElementById("notification").innerHTML = "Resalted key...\n\n";
 }
+
+	
 	
 
 
@@ -269,7 +254,7 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI(desired_filename) {
 					.then(response => response.text())
 					.then(async function(text) { return text; });
 			}
-			return {text: text, file_download_url: obj.file_download_url[0], sha_arr: obj.sha_arr[0]};
+			return {text: text, file_download_url: obj.file_download_url[0], sha: obj.sha_arr[0]};
 		})
 		.catch(error => { document.getElementById("error").innerHTML = error; });
 }
