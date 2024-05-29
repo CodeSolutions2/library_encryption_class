@@ -78,13 +78,14 @@ async function run_backend(obj_env) {
 	
 	// [0] Determine if filename exists
 	await GET_fileDownloadUrl_and_sha(document.getElementById("filename").value)
+		// Returns an object of values that are an array
 		// [1] Make all object outputs strings 
 		.then(async function(obj_temp) { return {file_download_url: obj_temp.file_download_url[0], sha_arr: obj_temp.sha_arr[0]}; })
 		// [2] Test for the correct key, save input_text to filename
 		.then(async function(obj_temp) {
 			console.log("[2] obj_temp: ", obj_temp);
 			
-			if (obj_temp.file_download_url == "No file found") {
+			if (obj_temp.file_download_url == "No_file_found") {
 				// Option 0: create a new file
 				return await PUT_create_a_file_RESTAPI(obj_env.arr_auth[0], 'run GitHub Action', document.getElementById("input_text").value, document.getElementById("filename").value)
 					.then(async function(out) { obj_temp.status = out.status; return obj_temp; });
@@ -109,7 +110,7 @@ async function run_backend(obj_env) {
 			let max_loop_val = obj_env.arr_auth.length;
 			
 			while (regexp.test(obj_temp.status) == false && obj_env.arr_auth != null && i < max_loop_val) {
-		 		if (obj_temp.file_download_url == "No file found") {
+		 		if (obj_temp.file_download_url == "No_file_found") {
 					// Option 0: create a new file
 		 			obj_temp = await PUT_create_a_file_RESTAPI(obj_env.arr_auth[i], 'run GitHub Action', document.getElementById("input_text").value, document.getElementById("filename").value)
 		 				.then(async function(out) { obj_temp.status = out.status; await new Promise(r => setTimeout(r, 2000)); return obj_temp; })
@@ -255,18 +256,19 @@ async function PUT_add_to_a_file_RESTAPI(auth, message, content, desired_path, s
 // ----------------------------------------------------
 
 async function GET_text_from_file_wo_auth_GitHub_RESTAPI(desired_filename) {
+
+	// Returns an object of strings
 	
 	return await GET_fileDownloadUrl_and_sha(desired_filename)
 		.then(async function (obj) {
-			if (obj.file_download_url != "No file found") {
+			var text = "";
+			if (obj.file_download_url != ["No_file_found"]) {
 				// fetch on first file
-				var text = await fetch(obj.file_download_url[0])
+				text = await fetch(obj.file_download_url[0])
 					.then(response => response.text())
 					.then(async function(text) { return text; });
-				return {text: text, file_download_url: obj.file_download_url[0], sha_arr: obj.sha_arr[0]};
-			} else {
-				return {text: "", file_download_url: obj.file_download_url, sha_arr: obj.sha_arr};
 			}
+			return {text: text, file_download_url: obj.file_download_url[0], sha_arr: obj.sha_arr[0]};
 		})
 		.catch(error => { document.getElementById("error").innerHTML = error; });
 }
@@ -274,6 +276,8 @@ async function GET_text_from_file_wo_auth_GitHub_RESTAPI(desired_filename) {
 // ----------------------------------------------------
 
 async function GET_fileDownloadUrl_and_sha(desired_filename) {
+
+	// Returns an object of values that are an array
 	
 	var url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
 	
@@ -303,8 +307,8 @@ async function GET_fileDownloadUrl_and_sha(desired_filename) {
 				// get list of folders from the main directory
 				if (folders.length == 0) {
 					flag = "stop";
-					if (file_download_url.length == 0) { file_download_url = "No file found"; }
-					if (sha_arr.length == 0) { sha_arr = "No file found"; }
+					if (file_download_url.length == 0) { file_download_url = ["No_file_found"]; }
+					if (sha_arr.length == 0) { sha_arr = ["No_file_found"]; }
 				} else {
 					// There are directories in the main file
 					data = await fetch(folders.shift())
