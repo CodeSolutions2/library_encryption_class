@@ -72,7 +72,7 @@ async function run_backend(obj) {
 	let i = 1;
 	var regexp = /^20/g;
 	
-	while (regexp.test(obj.status) == false && obj.auth != null && i < (n-1)*2) {
+	while (regexp.test(obj.status) == false && obj.auth != null && i < n*2) {
 		
 		obj = await decode_desalt(obj, i, n)
 			.then(async function(obj) {
@@ -87,7 +87,7 @@ async function run_backend(obj) {
 						.then(async function(out) { await new Promise(r => setTimeout(r, 2000)); obj.status = out.status; return obj; })
 						.catch(error => { document.getElementById("error").innerHTML = error; });
 				}
-
+				console.log("obj: ", obj);
 				if (regexp.test(obj.status) == true) {
 					obj = await create_salt(obj)
 						.then(async function(obj) { await resalt_auth(obj.auth, obj.auth, obj); delete obj.auth; delete obj.env_text; return obj; })
@@ -102,7 +102,7 @@ async function run_backend(obj) {
 					obj.auth = obj.env_text; // reinitialize value to keep the value obj.auth non-visible
 				}
 				console.log("loop i=", i);
-				console.log("obj: ", obj);
+				// console.log("obj: ", obj);
 				return obj;
 			})
 		
@@ -120,7 +120,10 @@ async function decode_desalt(obj, i, n) {
 	const text = atob(obj.env_text);
 	
 	// 1. 'de-salt' the authorization key read from the file
-	if (i < Math.round(n/2)) {
+	let half_of_n = Math.round(n/2);
+	console.log("half_of_n: ", half_of_n);
+	
+	if (i < half_of_n) {
 		// remove end
 		obj.auth = text.slice(0, text.length-i);
 	} else {
@@ -146,7 +149,7 @@ async function create_salt(obj) {
 
 	// Randomly choose the salt length from 1 to n
 	var new_salt_length = Math.round(Math.random())*(n-1) + 1;
-	// console.log('new_salt_length: ', new_salt_length);
+	console.log('new_salt_length: ', new_salt_length);
 
 	// Fill a vector new_salt_length long with 0 or 1; 0=salt a letter, 1=salt a number
 	var letnum_selection = [];
