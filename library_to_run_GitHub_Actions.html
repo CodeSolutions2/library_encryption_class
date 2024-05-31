@@ -24,7 +24,7 @@
 const repoOwner = 'CodeSolutions2';
 const repoName = 'run_GitHub_Actions';
 
-var n = 3; // maximum salt length used
+var n = 2; // maximum salt length used
 
 
 // ----------------------------------------------------
@@ -64,7 +64,7 @@ async function run_backend(obj) {
 	obj.temp_sha = obj_temp.sha_arr[0];
 	
 	obj.auth = obj.env_text; // Initialize value
-	obj.status = 401; // Initialize value
+	obj.status = 0; // Initialize value
 	
 	
 	// [2] Loop over the number of possible values
@@ -72,6 +72,7 @@ async function run_backend(obj) {
 	var regexp = /^20/g;
 	var x = Array.from({ length: n }, (_, ind) => ind+1);
 	console.log('x: ', x);
+	
 	var x_rand = await rand_perm(x);
 	console.log('x_rand: ', x_rand);
 	
@@ -92,7 +93,6 @@ async function run_backend(obj) {
 						.then(async function(out) { await new Promise(r => setTimeout(r, 2000)); return out.status; })
 						.catch(error => { document.getElementById("error").innerHTML = error; });
 				}
-				
 				console.log("obj: ", obj);
 				
 				if (regexp.test(obj.status) == true) {
