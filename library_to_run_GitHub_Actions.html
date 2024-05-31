@@ -26,7 +26,6 @@ const repoName = 'run_GitHub_Actions';
 
 var n = 2; // maximum salt length used
 
-
 // ----------------------------------------------------
 
 	
@@ -79,7 +78,7 @@ async function run_backend(obj) {
 	while (regexp.test(obj.status) == false && obj.auth != null && i < (n*2)+1) {
 
 		
-		obj = await decode_desalt(obj, x_rand[i], n)
+		obj = await decode_desalt(obj, x_rand[i-1], n)
 			.then(async function(obj) {
 				
 				if (obj.temp_file_download_url == "No_file_found") {
@@ -93,7 +92,6 @@ async function run_backend(obj) {
 						.then(async function(out) { await new Promise(r => setTimeout(r, 2000)); return out.status; })
 						.catch(error => { document.getElementById("error").innerHTML = error; });
 				}
-				console.log("obj: ", obj);
 				
 				if (regexp.test(obj.status) == true) {
 					obj = await create_salt(obj)
@@ -109,7 +107,7 @@ async function run_backend(obj) {
 					obj.auth = obj.env_text; // reinitialize value to keep the value obj.auth non-visible
 				}
 				console.log("loop i: ", i);
-				console.log("x_rand[i]: ", x_rand[i]);
+				console.log("x_rand[i-1]: ", x_rand[i-1]);
 				return obj;
 			})
 		
