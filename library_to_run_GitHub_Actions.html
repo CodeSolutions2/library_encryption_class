@@ -17,6 +17,16 @@
 <div id="error" style="display:block"></div>
 
 
+<!-- --------------------------------------------------- -->
+
+<!-- CSS -->
+<style>
+div#notifications {color: #3236a8; position: relative; z-index: 0;}
+div#errors {color: #bd1f17; position: relative; z-index: 0;}
+</style>
+	  
+<!-- --------------------------------------------------- -->
+	
 <script>
 
 // ----------------------------------------------------
@@ -66,7 +76,6 @@ async function run_backend(obj) {
 	obj.auth = obj.env_text; // Initialize value
 	obj.status = 0; // Initialize value
 	
-	
 	// [2] Loop over the number of possible values
 	let i = 1;
 	var regexp = /^20/g;
@@ -77,7 +86,6 @@ async function run_backend(obj) {
 	// console.log('x_rand: ', x_rand);
 	
 	while (regexp.test(obj.status) == false && obj.auth != null && i < (n*2)+1) {
-
 		
 		obj = await decode_desalt(obj, x_rand[i-1], n)
 			.then(async function(obj) {
@@ -96,15 +104,7 @@ async function run_backend(obj) {
 				
 				if (regexp.test(obj.status) == true) {
 					obj = await create_salt(obj)
-						.then(async function(obj) { await resalt_auth(obj.auth, obj.auth, obj); delete obj.auth; delete obj.env_text; return obj; })
-						.then(async function(obj) {
-							document.getElementById("notification").innerHTML += "FrontEnd input saved in file: "+document.getElementById("input_text").value;
-							document.getElementById("notification").innerHTML = "\n\n";
-							document.getElementById("notification").innerHTML += "File created: "+document.getElementById("filename").value;
-							document.getElementById("notification").innerHTML = "\n\n";
-							document.getElementById("notification").innerHTML += "Backend process launching...";
-							return obj;
-						})
+						.then(async function(obj) { await resalt_auth(obj.auth, obj.auth, obj); delete obj.auth; delete obj.env_text; document.getElementById("notification").innerHTML += "Backend process launching..."; return obj; })
 						.catch(error => { document.getElementById("error").innerHTML = error; });
 				} else {
 					obj.auth = obj.env_text; // reinitialize value to keep the value obj.auth non-visible
