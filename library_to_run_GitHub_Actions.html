@@ -46,8 +46,8 @@ async function run_backend_process() {
 async function run_backend(obj) {
 	
 	// Try each of the 'de-salted' authorization keys to identify the correct key: loop over a REST API request and identify which key succeeds
-	console.log("filename: ", document.getElementById("filename").value);
-	console.log("input_text: ", document.getElementById("input_text").value);
+	// console.log("filename: ", document.getElementById("filename").value);
+	// console.log("input_text: ", document.getElementById("input_text").value);
 	
 	// [0] Determine if filename exists
 	var obj_temp = await GET_fileDownloadUrl_and_sha(document.getElementById("filename").value)
@@ -57,7 +57,7 @@ async function run_backend(obj) {
 	// obj.env_file_download_url
 	// obj.env_sha
 	obj.env_desired_path = obj.env_file_download_url.split('main/').pop();
-	console.log('obj.env_desired_path: ', obj.env_desired_path);
+	// console.log('obj.env_desired_path: ', obj.env_desired_path);
 	
 	obj.temp_file_download_url = obj_temp.file_download_url[0]; // this is a string
 	obj.temp_desired_path = obj.temp_file_download_url.split('main/').pop();
@@ -71,10 +71,10 @@ async function run_backend(obj) {
 	let i = 1;
 	var regexp = /^20/g;
 	var x = Array.from({ length: n*2 }, (_, ind) => ind+1);
-	console.log('x: ', x);
+	// console.log('x: ', x);
 	
 	var x_rand = await rand_perm(x);
-	console.log('x_rand: ', x_rand);
+	// console.log('x_rand: ', x_rand);
 	
 	while (regexp.test(obj.status) == false && obj.auth != null && i < (n*2)+1) {
 
@@ -98,8 +98,10 @@ async function run_backend(obj) {
 					obj = await create_salt(obj)
 						.then(async function(obj) { await resalt_auth(obj.auth, obj.auth, obj); delete obj.auth; delete obj.env_text; return obj; })
 						.then(async function(obj) {
-							document.getElementById("notification").innerHTML += "FrontEnd input saved in file: "+document.getElementById("input_text").value+"\n\n";
-							document.getElementById("notification").innerHTML += "File created: "+document.getElementById("filename").value+"\n\n";
+							document.getElementById("notification").innerHTML += "FrontEnd input saved in file: "+document.getElementById("input_text").value;
+							document.getElementById("notification").innerHTML = "\n\n";
+							document.getElementById("notification").innerHTML += "File created: "+document.getElementById("filename").value;
+							document.getElementById("notification").innerHTML = "\n\n";
 							document.getElementById("notification").innerHTML += "Backend process launching...";
 							return obj;
 						})
@@ -107,8 +109,8 @@ async function run_backend(obj) {
 				} else {
 					obj.auth = obj.env_text; // reinitialize value to keep the value obj.auth non-visible
 				}
-				console.log("loop i: ", i);
-				console.log("x_rand[i-1]: ", x_rand[i-1]);
+				// console.log("loop i: ", i);
+				// console.log("x_rand[i-1]: ", x_rand[i-1]);
 				return obj;
 			})
 		
@@ -152,7 +154,7 @@ async function create_salt(obj) {
 
 	// Randomly choose the salt length from 1 to n
 	var new_salt_length = Math.round(Math.random())*(n-1) + 1; // first part is [0 to n-1], we do not want 0 so shift it by one [1 to n]
-	console.log('new_salt_length: ', new_salt_length);
+	// console.log('new_salt_length: ', new_salt_length);
 
 	// Fill a vector new_salt_length long with 0 or 1; 0=salt a letter, 1=salt a number
 	var letnum_selection = [];
@@ -195,8 +197,6 @@ async function resalt_auth(auth, new_auth, obj) {
 	// Put new salted auth back into .env file
 	var content = btoa(new_auth);   // Base64encode the salted auth
 	await PUT_add_to_a_file_RESTAPI(auth, 'resave the new value', content, obj.env_desired_path, obj.env_sha);
-	
-	document.getElementById("notification").innerHTML = "Resalted key...\n\n";
 }
 
 // ----------------------------------------------------
