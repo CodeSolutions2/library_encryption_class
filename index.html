@@ -135,12 +135,14 @@ async function run_window_crypto_subtle_decryption(obj) {
 
 	// let privateKey_obj = await window.crypto.subtle.importKey("jwk", privateKey_jwk_obj, {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["deriveKey", "deriveBits"]);
 
-	try {
-		while ((/^20/g).test(obj.status) == false && obj.auth != null && i < (obj.n*2)+1) {
-			
-			obj = await decode_desalt(obj,  x_rand[i])
-				.then(async function(obj) {
 
+	
+	while ((/^20/g).test(obj.status) == false && obj.auth != null && i < (obj.n*2)+1) {
+		
+		obj = await decode_desalt(obj,  x_rand[i])
+			.then(async function(obj) {
+
+				try {
 					// A process to determine if it is the correct key
 					// Step 1: convert the JSON Web key (privateKey_jwk_obj) to an object (publicKey_obj)
 					let publicKey_obj = await window.crypto.subtle.importKey("jwk", obj.auth, {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, []);
@@ -149,33 +151,32 @@ async function run_window_crypto_subtle_decryption(obj) {
 					// figure out what it outputs for error and what it outputs for correct()
 					var var_type = typeof publicKey_obj;
 					console.log('var_type: ', var_type);
-					
-					return obj;
-				})
-				.then(async function(obj) {
-					// console.log("obj.status:", obj.status);
-					
-					if ((/^20/g).test(obj.status) == true) {
-						console.log("Match found");
-						delete obj.auth; // the variable is deleted to force it to stop the loop as quickly as possible, it will then throw an error for the while loop thus the while loop is called in a try catch to prevent errors.
-					} else {
-						obj.auth = obj.public_text; // reinitialize value to keep the value obj.auth non-visible
-					}
-					
-					return obj;
-				})
-				.then(async function(obj) { await new Promise(r => setTimeout(r, 2000)); return obj; })
-			
-			// Advance while loop
-			// console.log("loop i: ", i);
-			// console.log("x_rand[i]: ", x_rand[i]);
-			i += 1;	
-		}
+				} catch (error) {
+					obj.status = 404; 
+				}
+				
+				return obj;
+			})
+			.then(async function(obj) {
+				// console.log("obj.status:", obj.status);
+				
+				if ((/^20/g).test(obj.status) == true) {
+					console.log("Match found");
+					delete obj.auth; // the variable is deleted to force it to stop the loop as quickly as possible, it will then throw an error for the while loop thus the while loop is called in a try catch to prevent errors.
+				} else {
+					obj.auth = obj.public_text; // reinitialize value to keep the value obj.auth non-visible
+				}
+				
+				return obj;
+			})
+			.then(async function(obj) { await new Promise(r => setTimeout(r, 2000)); return obj; })
 		
-	} catch (error) {
-		console.log("error: ", error);
-		console.log("loop finished!");
+		// Advance while loop
+		// console.log("loop i: ", i);
+		// console.log("x_rand[i]: ", x_rand[i]);
+		i += 1;	
 	}
+		
 }
 
 // ------------------------------------------------
