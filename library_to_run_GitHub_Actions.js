@@ -300,7 +300,7 @@ async function get_number(x) {
 	return x[Math.round(x.length*Math.random())-1];
 }
 	  
-async function rand_perm(x) {
+export async function rand_perm(x) {
 
 	var out = [];
 	while (out.length != x.length) {
