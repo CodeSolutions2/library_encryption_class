@@ -87,7 +87,7 @@ jobs:
 
             // --------------------------------
             
-            if (call_type == 'add_username') {
+            if (call_type == 'insert_username') {
               // --------------------------------
               // Procedure to add a name 
               // --------------------------------
