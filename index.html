@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+
+<h1>Testing secure payment and username retrival from database</h1>
+    
+<p style="text-align: center;"></p>
+<label>Enter and leave the payAccess key to unlock Observations 5-21:</label><input id="username" type="text" value="" placeholder="username" rows="1" cols="50" style='text-align: center; width: 400px;'>
+
+<button> 
+<br>
+<div id="notification"></div>
+<div id="error"></div>
+<div id="response"></div>
+<div id="verification" style="display:block"></div>
+
+
+
+<!-- Insert CDN library HERE  -->
+<!-- <script type="module" src="./index.js"></script> -->
+
+<!-- --------------------------------------------------- -->
+    
+<script>
+
+// ------------------------------------------------
+  
+window.addEventListener('beforeunload', function() {
+    window.location.href = window.location.href + '?nocache=' + new Date().getTime();
+});
+  
+// ------------------------------------------------
+
+async function submit_username() {
+
+  RepoAobj = {};
+  
+  RepoAobj.repoOwner = "CodeSolutions2";
+  RepoAobj.filename = "cb.txt";
+  RepoAobj.repoA_name = "frontend_backend_message_passing_central_repository_v1"; // normally this would be a different repository
+  RepoAobj.repoB_name = "frontend_backend_message_passing_central_repository_v1";
+  RepoAobj.call_type = "insert_username";  // File database functions: insert_username, comparator_username_search
+  RepoAobj.input = document.getElementById("username").value+"|"+RepoAobj.call_type;
+  RepoAobj.foldername = "webappb";
+  
+  var output_file_path = RepoAobj.foldername+"/response;
+  
+  await run_backend_process(RepoAobj);
+
+  // No persistance version - basic version 0
+  // RepoB does all processing: decrypt file_storage, add username to file_storage OR search for username in file_storage, encrypt file_storage, creates a file called response with [Present, Not Present] if it searches for username
+  
+  // RepoA webscrapes response file if it searches for username
+  await verify_usage(output_file_path);
+
+  // Every time the user moves to a new locked observation, the workflows re-verifies.
+}
+    
+// ------------------------------------------------
+
+async function verify_usage(output_file_path) {
+
+  var text_out = "404: Not Found";
+  var i = 0;
+  while (text_out != "404: Not Found" && i < 15) {
+
+      text_out = await GET_response(output_file_path)
+        .then(async function (text_out) {
+          if (text_out != "404: Not Found") {
+            document.getElementById('verification').innerHTML = "OK";
+          }
+        })
+        .then(async function (text_out) { await new Promise(r => setTimeout(r, 10000)); })
+        .catch(error => {console.log("error: ", error)})
+      i += 1;
+      console.log("i: ", i);
+  }
+}
+
+// ------------------------------------------------
+
+async function GET_response(output_file_path) {
+  return await fetch(`https://raw.githubusercontent.com/CodeSolutions2/frontend_backend_message_passing_central_repository_v1/main/${output_file_path}`)
+      .then(res => res.text())
+      .then(async function(result) {return result;})
+      .catch(error => {console.log("error: ", error)})
+
+}
+
+// ------------------------------------------------
+    
+  </script>
+
+  </body>
+</html>
