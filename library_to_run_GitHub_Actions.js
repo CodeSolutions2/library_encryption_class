@@ -122,7 +122,7 @@ export async function decode_desalt(obj, x_i) {
 		obj.auth = var0_str.slice(x_i - obj.n, var0_str.length);
 		obj.auth = await descramble_ver1(obj.auth);
 	}
-	
+	console.log('result: ', obj.auth.slice(0,5));
   return obj;
 }
 
