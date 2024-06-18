@@ -140,6 +140,9 @@ async function run_window_crypto_subtle_decryption(obj) {
 	console.log('obj.filedatabase_text: ', obj.filedatabase_text);
 	console.log('obj.filedatabase_text.length: ', obj.filedatabase_text.length);
 
+
+	var decrypted_file_database = "";
+	
 	if (obj.filedatabase_text.length > 1) {
 		// Convert string into arraybuffer
 		const uint8Array = new TextEncoder().encode(obj.filedatabase_text);
@@ -151,12 +154,12 @@ async function run_window_crypto_subtle_decryption(obj) {
 		// Decode with respect to RSA privateKey
 		let data_decoded_String = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, obj.privateKey_obj, arrayBuffer);
 		console.log("data_decoded_String:", data_decoded_String);
-	
-		delete obj.privateKey_obj;
 		
-		var decrypted_file_database = new TextDecoder().decode(data_decoded_String);
-		console.log("decrypted_file_database:", decrypted_file_database);
+		decrypted_file_database = new TextDecoder().decode(data_decoded_String);
 	}
+
+	delete obj.privateKey_obj;
+	console.log("decrypted_file_database:", decrypted_file_database);
 	
        	// --------------------------------
 
