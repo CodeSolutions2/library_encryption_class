@@ -1,5 +1,5 @@
 name: automatically reset public_subtle_crypto REPOB key with any change to repo
-
+  
 on:
   push:
     branches:
@@ -118,7 +118,7 @@ jobs:
             // --------------------------------
             
             const fs = require('fs');
-            fs.writeFileSync('.github/.public_subtle_crypto', new_auth);
+            fs.writeFileSync('.github/.public_window_crypto_subtle', new_auth);
 
 
       - name: Commit and push changes back to repository
