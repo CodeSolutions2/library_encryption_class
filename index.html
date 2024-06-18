@@ -7,8 +7,7 @@
     
 <p style="text-align: center;"></p>
 <label>Enter and leave the payAccess key to unlock Observations 5-21:</label><input id="username" type="text" value="" placeholder="username" rows="1" cols="50" style='text-align: center; width: 400px;'>
-
-<button> 
+<button id="submit_username" onclick="submit_username()" style="display:block">submit_username</button>
 <br>
 <div id="notification"></div>
 <div id="error"></div>
@@ -17,7 +16,11 @@
 
 
 
-<!-- Insert CDN library HERE  -->
+<!-- Insert library_to_run_GitHub_Actions.js CDN library HERE  -->
+<!-- <script type="module" src="./index.js"></script> -->
+
+
+<!-- Insert library_window_crypto_subtle.js CDN library HERE  -->
 <!-- <script type="module" src="./index.js"></script> -->
 
 <!-- --------------------------------------------------- -->
@@ -44,19 +47,48 @@ async function submit_username() {
   RepoAobj.input = document.getElementById("username").value+"|"+RepoAobj.call_type;
   RepoAobj.foldername = "webappb";
   
-  var output_file_path = RepoAobj.foldername+"/response;
+  var output_file_path = RepoAobj.foldername+"/response";
+
   
-  await run_backend_process(RepoAobj);
+  await string_to_objects_keys(RepoAobj);
 
   // No persistance version - basic version 0
   // RepoB does all processing: decrypt file_storage, add username to file_storage OR search for username in file_storage, encrypt file_storage, creates a file called response with [Present, Not Present] if it searches for username
   
   // RepoA webscrapes response file if it searches for username
-  await verify_usage(output_file_path);
+  // await verify_usage(output_file_path);
 
   // Every time the user moves to a new locked observation, the workflows re-verifies.
 }
     
+// ------------------------------------------------
+
+async function string_to_objects_keys(RepoAobj) {
+
+	// RepoAobj.repoOwner, RepoAobj.repoA_name, RepoAobj.foldername, RepoAobj.filename, RepoAobj.input, RepoAobj.repoB_name, RepoAobj.repoOwner
+	
+	// n is the maximum salt length used
+	
+	var obj_env = await GET_text_from_file_wo_auth_GitHub_RESTAPI(".env", ".github", RepoAobj.repoB_name, RepoAobj.repoOwner);
+	
+	var obj = {env_text: obj_env.text.replace(/[\n\s]/g, ""), 
+		   env_file_download_url: obj_env.file_download_url, 
+		   env_sha: obj_env.sha, 
+		   n: 1,
+		   repoOwner: RepoAobj.repoOwner,
+		   filename: RepoAobj.filename, 
+		   foldername: RepoAobj.foldername, 
+		   input_text: RepoAobj.input, 
+		   repoB_name: RepoAobj.repoB_name};
+
+	Object.freeze(obj.env_text); // make the original value non-changeable
+	await run_decryption(obj);
+	
+}
+
+// ------------------------------------------------
+
+
 // ------------------------------------------------
 
 async function verify_usage(output_file_path) {
@@ -89,6 +121,8 @@ async function GET_response(output_file_path) {
 }
 
 // ------------------------------------------------
+
+  
     
   </script>
 
