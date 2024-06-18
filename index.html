@@ -141,8 +141,11 @@ async function run_window_crypto_subtle_decryption(obj) {
 		
 		obj = await decode_desalt(obj,  x_rand[i])
 			.then(async function(obj) {
-
+				
+				console.log('obj.auth: ', obj.auth.slice(0,5));
 				try {
+					console.log('HERE');
+					
 					// A process to determine if it is the correct key
 					// Step 1: convert the JSON Web key (privateKey_jwk_obj) to an object (publicKey_obj)
 					let publicKey_obj = await window.crypto.subtle.importKey("jwk", obj.auth, {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, []);
