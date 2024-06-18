@@ -227,6 +227,71 @@ async function run_window_crypto_subtle_decryption(obj) {
 
 // ------------------------------------------------
 
+async function insert_username(decrypted_file_database, username, publicKey_obj) {
+	
+	// Add new content to file
+	str_text = decrypted_file_database + "\n" + username;  // with RSA encryption
+	console.log('str_text:', str_text); 
+    
+	// Convert string raw_text to an arrayBuffer
+	// Encode arrayBuffer with RSA publicKey (so encoded data is only visible to the public, to protect user's data)
+	const textBuffer = new TextEncoder().encode(str_text);
+	console.log('textBuffer:', textBuffer);
+    
+	// --------------------------------
+                
+	// Use the public key object to re-encrypt the string data, it returns an new arrayBuffer
+	let data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, publicKey_obj, textBuffer);
+    
+	// --------------------------------
+                
+	// Encrypt data : Convert the encoded/encrypted arrayBuffer to a string, such that it is saved in the public file
+    
+	// Way 1
+	const data_encoded0_String = String.fromCharCode(...(new Uint8Array(data_encoded_arrayBuffer)));
+	console.log("data_encoded0_String:", data_encoded0_String);
+    
+	// Way 2
+	// Convert it to Uint8Array (a standard array format)
+	const uint8Array = new Uint8Array(data_encoded_arrayBuffer);
+	console.log('uint8Array:', uint8Array); 
+	const textDecoder = new TextDecoder('utf-8');
+	const data_encoded1_String = textDecoder.decode(uint8Array);
+	console.log("data_encoded1_String:", data_encoded1_String);
+
+	return data_encoded0_String;
+}
+
+// ------------------------------------------------
+
+async function comparator_search_for_a_username(decrypted_file_database, username) {
+	
+	let arr_db = decrypted_file_database.split('\n');
+	console.log("arr_db:", arr_db);
+	
+	// Make usernames unique by adding | before and after each username
+	let arr_db_uq_str = arr_db.map((val, ind) => { 
+		if (ind == 0) {
+			return "|"+val+"|"; 
+		} else {
+			return val+"|";
+		}
+	}).join('');
+	console.log("arr_db_uq_str:", arr_db_uq_str);
+
+	// Search for a unique username
+	let regex = new RegExp(`|${username}|`, 'g');
+
+	// true=name is present in database, false=name is not present in database
+	if (regex.test(arr_db_uq_str) == true) {
+		return 'Present';
+	} else {
+		return 'Not Present';
+	}
+}
+	
+// ------------------------------------------------
+
 async function find_a_key_match(obj) {
 
 	obj.status = 404; // Initialize value
