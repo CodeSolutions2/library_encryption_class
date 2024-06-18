@@ -296,7 +296,7 @@ async function comparator_search_for_a_username(decrypted_file_database, usernam
 
 	// It says that |test| is in ||, which is wrong
 	// Search for a unique username
-	let regex = new RegExp("|"+username+"|", 'g');
+	let regex = new RegExp("\|"+username+"\|", 'g');
 	console.log("regex: ", regex);
 	
 	// true=name is present in database, false=name is not present in database
