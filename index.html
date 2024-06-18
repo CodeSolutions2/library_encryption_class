@@ -162,7 +162,7 @@ async function run_window_crypto_subtle_decryption(obj) {
 	console.log("username:", username);
 
 	var call_type = obj.input_text.split('|').pop();
-	console.log("username:", username);
+	console.log("call_type:", call_type);
 
 	// --------------------------------
 	
@@ -311,17 +311,17 @@ async function find_a_key_match(obj) {
 					// A process to determine if it is the correct key: it will throw an error if the key is incorrect
 					// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
 					if ((/encrypt/g).test(obj.auth) == true) {
-						// public key
-						obj.Key_obj = await window.crypto.subtle.importKey("jwk", JSON.parse(obj.auth), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, []);
+						console.log('JWT public key');
+						obj.Key_obj = await window.crypto.subtle.importKey("jwk", JSON.parse(obj.auth), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["encrypt"]);
 						obj.status = 200;
 						
 					} else if ((/decrypt/g).test(obj.auth) == true) {
-						// private key
-						obj.Key_obj = await window.crypto.subtle.importKey("jwk", JSON.parse(obj.auth), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["deriveKey", "deriveBits"]);
+						console.log('JWT private key');
+						obj.Key_obj = await window.crypto.subtle.importKey("jwk", JSON.parse(obj.auth), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["decrypt"]);
 						obj.status = 200;
 						
 					} else {
-						// Github key
+						console.log('Github key');
 						if (obj.temp_file_download_url == "No_file_found") {
 							// Option 0: create a new file
 						  	obj.status = await PUT_create_a_file_RESTAPI(obj.auth, obj.put_message, obj.input_text, obj.foldername+"/"+obj.filename, obj.repoB_name, obj.repoOwner)
