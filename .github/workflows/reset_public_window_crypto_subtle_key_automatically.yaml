@@ -1,4 +1,4 @@
-name: automatically reset public_subtle_crypto REPOB key with any change to repo
+name: automatically reset public_window_crypto_subtle REPOB key with any change to repo
   
 on:
   push:
