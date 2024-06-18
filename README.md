@@ -8,7 +8,11 @@ This is the second version of RepoB, it will be more secure than the first versi
 
 ## Frontend library script (library_to_run_GitHub_Actions.js) [in progress]
 The purpose of the frontend library script is to trigger the intermediate repository RepoB to start backend processes for RepoA.
-- The current version of the frontend library script in developement at [library_to_run_GitHub_Actions.js](https://github.com/CodeSolutions2/my_chatbot/edit/main/library_to_run_GitHub_Actions.js)
+- The current version of the frontend library script in developement at [library_to_run_GitHub_Actions.js](https://github.com/CodeSolutions2/library_to_run_GitHub_Actions)
+
+
+## Most recent test version
+https://codesolutions2.github.io/frontend_backend_message_passing_central_repository_v1/index.html
 
 
 ## First version of RepoB
