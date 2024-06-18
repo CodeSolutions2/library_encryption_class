@@ -204,6 +204,8 @@ async function run_window_crypto_subtle_decryption(obj) {
 	delete obj.Key_obj;
 
 	// Obtain the sha of the created file
+	console.log('obj.filename: ', obj.filename);
+	console.log('obj.foldername: ', obj.foldername);
 	obj_temp = await GET_fileDownloadUrl_and_sha(obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner)
 	obj.temp_file_download_url = obj_temp.file_download_url[0];
 	console.log('obj.temp_file_download_url: ', obj.temp_file_download_url);
