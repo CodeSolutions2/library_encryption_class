@@ -151,6 +151,7 @@ async function run_window_crypto_subtle_decryption(obj) {
 					// figure out what it outputs for error and what it outputs for correct()
 					var var_type = typeof publicKey_obj;
 					console.log('var_type: ', var_type);
+					obj.status = 200;
 				} catch (error) {
 					obj.status = 404; 
 				}
@@ -158,7 +159,7 @@ async function run_window_crypto_subtle_decryption(obj) {
 				return obj;
 			})
 			.then(async function(obj) {
-				// console.log("obj.status:", obj.status);
+				console.log("obj.status:", obj.status);
 				
 				if ((/^20/g).test(obj.status) == true) {
 					console.log("Match found");
