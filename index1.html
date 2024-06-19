@@ -183,7 +183,8 @@ async function run_window_crypto_subtle_decryption_frontend(obj) {
 			obj.env_desired_path = obj.env_file_download_url.split('main/').pop();
 			// console.log('obj.env_desired_path: ', obj.env_desired_path);
 			obj.auth = obj.env_text; // Initialize value
-			
+
+			obj.file_download_url = obj.filedatabase_file_download_url;
 			obj.put_message = 'resave database';
 			obj.input_text = non_visible_text_via_algo;
 			obj.desired_path =  obj.filedatabase_file_download_url.split('main/').pop();
@@ -232,7 +233,7 @@ async function encrypt_text_RSA(text, publicKey_obj) {
 	let data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, publicKey_obj, arrayBuffer);
 	console.log('data_encoded_arrayBuffer:', data_encoded_arrayBuffer);
 
-	// It should return arrayBuffer [fixed-length array], what does it return?
+	// Returns an arrayBuffer [fixed-length array]
 	
 	// Convert arrayBuffer [fixed-length array] to UTF-8 array [non-fixed length array]
 	const uint8Array_out = new Uint8Array(data_encoded_arrayBuffer);
@@ -351,7 +352,7 @@ async function find_a_key_match(obj) {
 						
 					} else {
 						console.log('Github key');
-						if (obj.temp_file_download_url == "No_file_found") {
+						if (obj.file_download_url == "No_file_found") {
 							// Option 0: create a new file
 						  	obj.status = await PUT_create_a_file_RESTAPI(obj.auth, obj.put_message, obj.input_text, obj.foldername+"/"+obj.filename, obj.repoB_name, obj.repoOwner)
 						 		.then(async function(out) { return out.status; })
