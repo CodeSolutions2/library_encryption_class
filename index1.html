@@ -245,18 +245,14 @@ async function encrypt_text_RSA(text, publicKey_obj) {
 	// Problem: the characters in the string are not recognized, and thus can not be saved to file
 	// OR
 	// Convert UTF-8 array [non-fixed length array] to hexadecimal string
-	let hexString = Array.prototype.map.call(uint8Array_out, x => ('00' + x.toString(16)).slice(-2)).join('');
-	console.log('hexString:', hexString);
-	const non_visible_text_via_algo0 = hexString.replace(/[^a-zA-Z0-9]/g, ''); // remove "noise" from conversion (non-alphanumeric characters)
-	console.log('non_visible_text_via_algo0:', non_visible_text_via_algo0);
-	// OR
-	// Make the Uint8Array a string
-	const non_visible_text_via_algo = await convert_arr_to_str(uint8Array_out, "-1");
+	const non_visible_text_via_algo = await convert_uint8Array_to_hexstr(uint8Array_out);
 	console.log('non_visible_text_via_algo:', non_visible_text_via_algo);
 	
 	return non_visible_text_via_algo;
 }
 
+
+	
 // ------------------------------------------------
 	
 async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
@@ -267,14 +263,8 @@ async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
 	// console.log("uint8Array:", uint8Array);
 	// OR
 	// Convert UTF-8 array [non-fixed length array] to hexadecimal string
-	// let hexString = Array.prototype.map.call(uint8Array_out, x => ('00' + x.toString(16)).slice(-2)).join('');
-	// console.log('hexString:', hexString);
-	// const non_visible_text_via_algo0 = hexString.replace(/[^a-zA-Z0-9]/g, ''); // remove "noise" from conversion (non-alphanumeric characters)
+	const uint8Array = await convert_hexstr_to_uint8Array(non_visible_text_via_algo);
 	// console.log('uint8Array:', uint8Array);
-	// OR
-	// Make the Uint8Array a string
-	const uint8Array = await convert_str_to_arr(non_visible_text_via_algo, "-1");
-	console.log('uint8Array:', uint8Array);
 	
 	// Convert UTF-8 array [non-fixed length array] to a binary arrayBuffer [fixed-length array]
 	const arrayBuffer = uint8Array.buffer;
@@ -297,8 +287,25 @@ async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
 
 // ------------------------------------------------
 
-async function convert_str_to_arr(str, sep) {
-	return str.split(sep);
+async function convert_hexstr_to_uint8Array(hexString) {
+	// Convert a Hexadecimal string to a Uint8Array
+	let arr_out = hexString.split('').map((val, ind) => {
+	if (ind % 2 != 0) {
+	      console.log('ind: ', ind, map2.slice(ind-1, ind+1))
+			return parseInt(map2.slice(ind-1, ind+1), 16);
+		} else {
+			return '';
+		}
+	});
+	const NonEmptyVals_toKeep = (x) => x.length != 0;
+	return arr_out.filter(NonEmptyVals_toKeep);
+}
+
+// ------------------------------------------------
+
+async function convert_uint8Array_to_hexstr(uint8Array) {
+	var hexString = Array.prototype.map.call(uint8Array, x => ('00' + x.toString(16)).slice(-2)).join('');
+	return hexString.replace(/[^a-zA-Z0-9]/g, ''); // remove "noise" from conversion (non-alphanumeric characters), there should be nothing removed in theory but done just in case
 }
 
 // ------------------------------------------------
