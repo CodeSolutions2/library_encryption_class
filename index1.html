@@ -265,7 +265,7 @@ async function insert_username(decrypted_file_database, username, publicKey_obj)
 	// Encrypt data : Convert the encoded/encrypted arrayBuffer to a string, such that it is saved in the public file
     
 	// Way 1
-	const data_encoded0_String = String.fromCharCode(...(new Uint8Array(data_encoded_arrayBuffer)));
+	// const data_encoded0_String = String.fromCharCode(...(new Uint8Array(data_encoded_arrayBuffer)));
 	console.log("data_encoded0_String:", data_encoded0_String);
     
 	// Way 2
@@ -279,7 +279,7 @@ async function insert_username(decrypted_file_database, username, publicKey_obj)
 	const data_encoded1_String = textDecoder.decode(uint8Array);
 	console.log("data_encoded1_String:", data_encoded1_String);
 
-	return data_encoded0_String;
+	return data_encoded1_String;
 }
 
 // ------------------------------------------------
