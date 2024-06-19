@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+
+<h1>Testing secure payment and username retrival from database</h1>
+    
+<p style="text-align: center;"></p>
+<label>Enter and leave the payAccess key to unlock Observations 5-21:</label><input id="username" type="text" value="" placeholder="username" rows="1" cols="50" style='text-align: center; width: 400px;'>
+<button id="submit_username" onclick="submit_username()" style="display:block">submit_username</button>
+<br>
+<div id="notification"></div>
+<div id="error"></div>
+<div id="response"></div>
+<div id="verification" style="display:block"></div>
+
+
+
+<!-- Insert library_to_run_GitHub_Actions.js CDN library HERE  -->
+<script type="module" src="./index.js"></script>
+
+
+<!-- Insert library_window_crypto_subtle.js CDN library HERE  -->
+<!-- <script type="module" src="./index.js"></script> -->
+
+<!-- --------------------------------------------------- -->
+    
+<script>
+
+// ------------------------------------------------
+  
+window.addEventListener('beforeunload', function() {
+    window.location.href = window.location.href + '?nocache=' + new Date().getTime();
+});
+  
+// ------------------------------------------------
+
+async function submit_username() {
+
+  RepoAobj = {};
+  
+  RepoAobj.repoOwner = "CodeSolutions2";
+  RepoAobj.filename = "cb.txt";
+  RepoAobj.repoA_name = "frontend_backend_message_passing_central_repository_v1"; // normally this would be a different repository
+  RepoAobj.repoB_name = "frontend_backend_message_passing_central_repository_v1";
+  RepoAobj.call_type = "insert_username";  // File database functions: insert_username, comparator_username_search
+  RepoAobj.input_text = document.getElementById("username").value+"|"+RepoAobj.call_type; // these are values to be sent to the backend in one variable
+  RepoAobj.foldername = "webappb";
+  
+  var output_file_path = RepoAobj.foldername+"/response";
+
+  
+  await string_to_object_key(RepoAobj);
+
+  // No persistance version - basic version 0
+  // RepoB does all processing: decrypt file_storage, add username to file_storage OR search for username in file_storage, encrypt file_storage, creates a file called response with [Present, Not Present] if it searches for username
+  
+  // RepoA webscrapes response file if it searches for username
+  // await verify_usage(output_file_path);
+
+  // Every time the user moves to a new locked observation, the workflows re-verifies.
+}
+    
+// ------------------------------------------------
+
+async function string_to_object_key(RepoAobj) {
+
+	// RepoAobj.repoOwner, RepoAobj.repoA_name, RepoAobj.foldername, RepoAobj.filename, RepoAobj.input, RepoAobj.repoB_name, RepoAobj.repoOwner
+	
+	// n is the maximum salt length used
+
+	var obj_env = await GET_text_from_file_wo_auth_GitHub_RESTAPI(".env", ".github", RepoAobj.repoB_name, RepoAobj.repoOwner);
+	
+	var obj_public = await GET_text_from_file_wo_auth_GitHub_RESTAPI(".public_window_crypto_subtle", ".github", RepoAobj.repoB_name, RepoAobj.repoOwner);
+
+	var obj_private = await GET_text_from_file_wo_auth_GitHub_RESTAPI(".private_window_crypto_subtle", ".github", RepoAobj.repoB_name, RepoAobj.repoOwner);
+	
+	var obj = {env_text: obj_env.text.replace(/[\n\s]/g, ""), 
+		   env_file_download_url: obj_env.file_download_url, 
+		   env_sha: obj_env.sha, 
+		   public_text: obj_public.text.replace(/[\n\s]/g, ""), 
+		   public_file_download_url: obj_public.file_download_url, 
+		   public_sha: obj_public.sha,
+		   private_text: obj_private.text.replace(/[\n\s]/g, ""), 
+		   private_file_download_url: obj_private.file_download_url, 
+		   private_sha: obj_private.sha,
+		   n: 1,
+		   repoOwner: RepoAobj.repoOwner,
+		   filename: RepoAobj.filename, 
+		   foldername: RepoAobj.foldername, 
+		   input_text: RepoAobj.input_text, 
+		   repoB_name: RepoAobj.repoB_name,
+	};
+
+	Object.freeze(obj.env_text); // make the original value non-changeable
+	Object.freeze(obj.public_text); // make the original value non-changeable
+	Object.freeze(obj.private_text); // make the original value non-changeable
+	await run_window_crypto_subtle_decryption(obj);
+	
+}
+
+// ------------------------------------------------
+
+async function run_window_crypto_subtle_decryption(obj) {
+	
+	// [1] Add obj_public, obj_private, and obj_temp to the general object (obj)
+	// obj.public_text
+	// obj.public_file_download_url
+	// obj.public_sha
+	obj.public_desired_path = obj.public_file_download_url.split('main/').pop();
+	// console.log('obj.public_desired_path: ', obj.public_desired_path);
+
+	// obj.private_text
+	// obj.private_file_download_url
+	// obj.private_sha
+	obj.private_desired_path = obj.private_file_download_url.split('main/').pop();
+	// console.log('obj.private_desired_path: ', obj.private_desired_path);
+	
+	// ------------------------------------------------
+
+	// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
+	obj.auth = obj.public_text; // Initialize value
+	obj = await find_a_key_match(obj);
+	obj.publicKey_obj = obj.Key_obj;
+	delete obj.Key_obj;
+
+	obj.auth = obj.private_text; // Initialize value
+	obj = await find_a_key_match(obj);
+	obj.privateKey_obj = obj.Key_obj;
+	delete obj.Key_obj;
+	
+	// ------------------------------------------------
+
+	// Step 1: decrypt the file_database
+	var obj_filedatabase = await GET_text_from_file_wo_auth_GitHub_RESTAPI("file_database.csv", obj.foldername, obj.repoB_name, obj.repoOwner)
+	obj.filedatabase_text = obj_filedatabase.text;
+	obj.filedatabase_file_download_url = obj_filedatabase.file_download_url; // this is a string
+	obj.filedatabase_sha = obj_filedatabase.sha; // this is a string
+
+	console.log('obj.filedatabase_text: ', obj.filedatabase_text);
+	console.log('obj.filedatabase_text.length: ', obj.filedatabase_text.length);
+
+
+	var decrypted_file_database = "";
+	
+	if (obj.filedatabase_text.length > 1) {
+		// Convert string into arraybuffer
+		const uint8Array = new TextEncoder().encode(obj.filedatabase_text);
+		console.log("uint8Array:", uint8Array);
+		
+		const arrayBuffer = uint8Array.buffer;
+		console.log("arrayBuffer:", arrayBuffer);
+	            
+		// Decode with respect to RSA privateKey
+		let data_decoded_String = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, obj.privateKey_obj, arrayBuffer);
+		console.log("data_decoded_String:", data_decoded_String);
+		
+		decrypted_file_database = new TextDecoder().decode(data_decoded_String);
+	}
+
+	delete obj.privateKey_obj;
+	console.log("decrypted_file_database:", decrypted_file_database);
+	
+       	// --------------------------------
+
+	// Obtain username
+	var username = obj.input_text.split('|').shift();
+	console.log("username:", username);
+
+	var call_type = obj.input_text.split('|').pop();
+	console.log("call_type:", call_type);
+
+	// --------------------------------
+	
+	
+	let result = await comparator_search_for_a_username(decrypted_file_database, username);
+	console.log("result:", result);
+
+	// Find the k and always put an initial response in a file: Procedure to search for a username in file_database
+	// obj.env_text
+	// obj.env_file_download_url
+	// obj.env_sha
+	obj.env_desired_path = obj.env_file_download_url.split('main/').pop();
+	// console.log('obj.env_desired_path: ', obj.env_desired_path);
+	obj.auth = obj.env_text; // Initialize value
+	
+	obj.put_message = 'initial response';
+	obj.input_text = result;  // Present, Not Present
+	obj.filename = "response";
+
+	// [0] Determine if filename exists
+	var obj_temp = await GET_fileDownloadUrl_and_sha(obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner)
+	obj.temp_file_download_url = obj_temp.file_download_url[0];
+	console.log('obj.temp_file_download_url: ', obj.temp_file_download_url);
+	
+	obj.temp_desired_path = obj.temp_file_download_url.split('main/').pop();
+	console.log('obj.temp_desired_path: ', obj.temp_desired_path);
+	
+	obj.temp_sha = obj_temp.sha_arr[0];
+	console.log('obj.temp_sha: ', obj.temp_sha);
+	
+	obj = await find_a_key_match(obj);
+	obj.auth = obj.Key_obj;
+	delete obj.Key_obj;
+
+	// Obtain the sha of the created file
+	console.log('obj.filename: ', obj.filename);
+	console.log('obj.foldername: ', obj.foldername);
+	obj_temp = await GET_fileDownloadUrl_and_sha(obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner)
+	obj.temp_file_download_url = obj_temp.file_download_url[0];
+	console.log('obj.temp_file_download_url: ', obj.temp_file_download_url);
+	
+	obj.temp_desired_path = obj.temp_file_download_url.split('main/').pop();
+	console.log('obj.temp_desired_path: ', obj.temp_desired_path);
+	
+	obj.temp_sha = obj_temp.sha_arr[0];
+	console.log('obj.temp_sha: ', obj.temp_sha);
+	
+	// --------------------------------
+
+	// Modify the response and file_database if a name needs to be inserted
+	//if (call_type == 'insert_username') {
+		// --------------------------------
+		// Procedure to add a name 
+		// --------------------------------
+	//	if (result == 'Not Present') {
+			// Add username to file_database.csv
+	//		let data_encoded_String = await insert_username(decrypted_file_database, username, obj.publicKey_obj);
+                
+			// Save encrypted data back to file_database.csv
+	//		await PUT_add_to_a_file_RESTAPI(obj.auth, 'resave database', data_encoded_String, obj.foldername+"/file_database.csv", obj.filedatabase_sha, obj.repoB_name, obj.repoOwner);
+		
+	//		await PUT_add_to_a_file_RESTAPI(obj.auth, 'modify response', "Username added", obj.foldername+"/response", obj.temp_sha, obj.repoB_name, obj.repoOwner);
+	//	} else {
+	//		await PUT_add_to_a_file_RESTAPI(obj.auth, 'modify response', "Username is Present, select another username", obj.foldername+"/response", obj.temp_sha, obj.repoB_name, obj.repoOwner);
+	//	}
+
+	//}
+  	delete obj.publicKey_obj;
+	delete obj.auth;
+	
+		
+}
+
+// ------------------------------------------------
+
+async function insert_username(decrypted_file_database, username, publicKey_obj) {
+	
+	// Add new content to file
+	str_text = decrypted_file_database + "\n" + username;  // with RSA encryption
+	console.log('str_text:', str_text); 
+    
+	// Convert string raw_text to an arrayBuffer
+	// Encode arrayBuffer with RSA publicKey (so encoded data is only visible to the public, to protect user's data)
+	const textBuffer = new TextEncoder().encode(str_text);
+	console.log('textBuffer:', textBuffer);
+    
+	// --------------------------------
+                
+	// Use the public key object to re-encrypt the string data, it returns an new arrayBuffer
+	let data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, publicKey_obj, textBuffer);
+    
+	// --------------------------------
+                
+	// Encrypt data : Convert the encoded/encrypted arrayBuffer to a string, such that it is saved in the public file
+    
+	// Way 1
+	const data_encoded0_String = String.fromCharCode(...(new Uint8Array(data_encoded_arrayBuffer)));
+	console.log("data_encoded0_String:", data_encoded0_String);
+    
+	// Way 2
+	// Convert it to Uint8Array (a standard array format)
+	const uint8Array = new Uint8Array(data_encoded_arrayBuffer);
+	console.log('uint8Array:', uint8Array); 
+	const textDecoder = new TextDecoder('utf-8');
+	const data_encoded1_String = textDecoder.decode(uint8Array);
+	console.log("data_encoded1_String:", data_encoded1_String);
+
+	return data_encoded0_String;
+}
+
+// ------------------------------------------------
+
+async function comparator_search_for_a_username(decrypted_file_database, username) {
+	
+	let arr_db = decrypted_file_database.split('\n');
+	console.log("arr_db:", arr_db);
+	
+	// Make usernames unique by adding | before and after each username
+	let arr_db_uq_str = arr_db.map((val, ind) => { 
+		if (ind == 0) {
+			return "|"+val+"|"; 
+		} else {
+			return val+"|";
+		}
+	}).join('');
+	console.log("arr_db_uq_str:", arr_db_uq_str);
+
+	// It says that |test| is in ||, which is wrong
+	// Search for a unique username
+  let regex = new RegExp(`\\|${output_file_path}\\|`, 'g');
+	console.log("regex: ", regex);
+	
+	// true=name is present in database, false=name is not present in database
+	console.log("regex.test(arr_db_uq_str):", regex.test(arr_db_uq_str));
+	
+	if (regex.test(arr_db_uq_str) == true) {
+		return 'Present';
+	} else {
+		return 'Not Present';
+	}
+}
+	
+// ------------------------------------------------
+
+async function find_a_key_match(obj) {
+
+	obj.status = 404; // Initialize value
+		
+	// [2] Loop over the number of possible values
+	let i = 0;
+	var x = Array.from({ length: (obj.n*2)+1 }, (_, ind) => ind);
+	var x_rand = await rand_perm(x);
+	
+	// console.log('x: ', x);
+	// console.log('x_rand: ', x_rand);
+	
+	while ((/^20/g).test(obj.status) == false && obj.auth != null && i < (obj.n*2)+1) {
+		
+		obj = await decode_desalt(obj,  x_rand[i])
+			.then(async function(obj) {
+				
+				console.log('obj.auth: ', obj.auth.slice(0,5));
+				try {
+					// A process to determine if it is the correct key: it will throw an error if the key is incorrect
+					// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
+					if ((/encrypt/g).test(obj.auth) == true) {
+						console.log('JWT public key');
+						obj.Key_obj = await window.crypto.subtle.importKey("jwk", JSON.parse(obj.auth), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["encrypt"]);
+						obj.status = 200;
+						
+					} else if ((/decrypt/g).test(obj.auth) == true) {
+						console.log('JWT private key');
+						obj.Key_obj = await window.crypto.subtle.importKey("jwk", JSON.parse(obj.auth), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["decrypt"]);
+						obj.status = 200;
+						
+					} else {
+						console.log('Github key');
+						if (obj.temp_file_download_url == "No_file_found") {
+							// Option 0: create a new file
+						  	obj.status = await PUT_create_a_file_RESTAPI(obj.auth, obj.put_message, obj.input_text, obj.foldername+"/"+obj.filename, obj.repoB_name, obj.repoOwner)
+						 		.then(async function(out) { return out.status; })
+			 			 		.catch(error => { console.log("error: ", error); });
+				 		} else {
+							// Option 1: modify an existing file
+					 	 	obj.status = await PUT_add_to_a_file_RESTAPI(obj.auth, obj.put_message, obj.input_text, obj.temp_desired_path, obj.temp_sha, obj.repoB_name, obj.repoOwner)
+						 		.then(async function(out) { return out.status; })
+			 			 		.catch(error => { console.log("error: ", error); });
+				 		}
+					}
+					
+				} catch (error) {
+					console.log('error: ', error);
+					obj.status = 404; 
+				}
+				return obj;
+			})
+			.then(async function(obj) {
+				console.log("obj.status:", obj.status);
+				
+				if ((/^20/g).test(obj.status) == true) {
+					console.log("Match found");
+					if ((/encrypt/g).test(obj.auth) == false && (/decrypt/g).test(obj.auth) == false) {
+						obj.Key_obj = obj.auth;
+					}
+					delete obj.auth; // the variable is deleted to force it to stop the loop as quickly as possible, it will then throw an error for the while loop thus the while loop is called in a try catch to prevent errors.
+				} else {
+					if ((/encrypt/g).test(obj.auth) == true) {
+						obj.auth = obj.public_text; // reinitialize value to keep the value obj.auth non-visible
+					} else if ((/decrypt/g).test(obj.auth) == true) {
+						obj.auth = obj.private_text; // reinitialize value to keep the value obj.auth non-visible
+					} else {
+						obj.auth = obj.env_text; // reinitialize value to keep the value obj.auth non-visible
+					}
+				}
+				
+				return obj;
+			})
+			.then(async function(obj) { await new Promise(r => setTimeout(r, 2000)); return obj; })
+		
+		// Advance while loop
+		// console.log("loop i: ", i);
+		// console.log("x_rand[i]: ", x_rand[i]);
+		i += 1;	
+	}
+	return obj;
+}
+
+// ------------------------------------------------
+
+async function verify_usage(output_file_path) {
+
+  var text_out = "404: Not Found";
+  var i = 0;
+  while (text_out != "404: Not Found" && i < 15) {
+
+      text_out = await GET_response(output_file_path)
+        .then(async function (text_out) {
+          if (text_out != "404: Not Found") {
+            document.getElementById('verification').innerHTML = "OK";
+          }
+        })
+        .then(async function (text_out) { await new Promise(r => setTimeout(r, 10000)); })
+        .catch(error => {console.log("error: ", error)})
+      i += 1;
+      console.log("i: ", i);
+  }
+}
+
+// ------------------------------------------------
+
+async function GET_response(output_file_path) {
+  return await fetch(`https://raw.githubusercontent.com/CodeSolutions2/frontend_backend_message_passing_central_repository_v1/main/${output_file_path}`)
+      .then(res => res.text())
+      .then(async function(result) {return result;})
+      .catch(error => {console.log("error: ", error)})
+
+}
+
+// ------------------------------------------------
+
+  
+    
+  </script>
+
+  </body>
+</html>
