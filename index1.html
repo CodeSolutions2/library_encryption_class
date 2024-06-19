@@ -151,17 +151,6 @@ async function run_window_crypto_subtle_decryption_frontend(obj) {
 }
 
 // ------------------------------------------------
-
-async function insert_username(decrypted_file_database, username, publicKey_obj) {
-	
-	// Add new text to file
-	const str_text = decrypted_file_database + "\n" + username;  // with RSA encryption
-	console.log('str_text:', str_text);
-
-	return await encrypt_text_RSA(str_text, publicKey_obj);
-}
-
-// ------------------------------------------------
 	
 async function convert_arr_to_str(arr, sep) {
 	return arr.map((val, ind) => { 
