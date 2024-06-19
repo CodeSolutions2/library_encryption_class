@@ -191,51 +191,50 @@ async function run_window_crypto_subtle_decryption(obj) {
 	// [0] Determine if filename exists
 	var obj_temp = await GET_fileDownloadUrl_and_sha(obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner)
 	obj.temp_file_download_url = obj_temp.file_download_url[0];
-	console.log('obj.temp_file_download_url: ', obj.temp_file_download_url);
+	// console.log('obj.temp_file_download_url: ', obj.temp_file_download_url);
 	
 	obj.temp_desired_path = obj.temp_file_download_url.split('main/').pop();
-	console.log('obj.temp_desired_path: ', obj.temp_desired_path);
+	// console.log('obj.temp_desired_path: ', obj.temp_desired_path);
 	
 	obj.temp_sha = obj_temp.sha_arr[0];
-	console.log('obj.temp_sha: ', obj.temp_sha);
+	// console.log('obj.temp_sha: ', obj.temp_sha);
 	
 	obj = await find_a_key_match(obj);
 	obj.auth = obj.Key_obj;
 	delete obj.Key_obj;
 
 	// Obtain the sha of the created file
-	console.log('obj.filename: ', obj.filename);
-	console.log('obj.foldername: ', obj.foldername);
+	// console.log('obj.filename: ', obj.filename);
+	// console.log('obj.foldername: ', obj.foldername);
 	obj_temp = await GET_fileDownloadUrl_and_sha(obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner)
 	obj.temp_file_download_url = obj_temp.file_download_url[0];
-	console.log('obj.temp_file_download_url: ', obj.temp_file_download_url);
+	// console.log('obj.temp_file_download_url: ', obj.temp_file_download_url);
 	
 	obj.temp_desired_path = obj.temp_file_download_url.split('main/').pop();
-	console.log('obj.temp_desired_path: ', obj.temp_desired_path);
+	// console.log('obj.temp_desired_path: ', obj.temp_desired_path);
 	
 	obj.temp_sha = obj_temp.sha_arr[0];
-	console.log('obj.temp_sha: ', obj.temp_sha);
+	// console.log('obj.temp_sha: ', obj.temp_sha);
 	
 	// --------------------------------
 
 	// Modify the response and file_database if a name needs to be inserted
-	//if (call_type == 'insert_username') {
+	if (call_type == 'insert_username') {
 		// --------------------------------
 		// Procedure to add a name 
 		// --------------------------------
-	//	if (result == 'Not Present') {
+		if (result == 'Not Present') {
 			// Add username to file_database.csv
-	//		let data_encoded_String = await insert_username(decrypted_file_database, username, obj.publicKey_obj);
+			let data_encoded_String = await insert_username(decrypted_file_database, username, obj.publicKey_obj);
                 
 			// Save encrypted data back to file_database.csv
-	//		await PUT_add_to_a_file_RESTAPI(obj.auth, 'resave database', data_encoded_String, obj.foldername+"/file_database.csv", obj.filedatabase_sha, obj.repoB_name, obj.repoOwner);
-		
-	//		await PUT_add_to_a_file_RESTAPI(obj.auth, 'modify response', "Username added", obj.foldername+"/response", obj.temp_sha, obj.repoB_name, obj.repoOwner);
-	//	} else {
-	//		await PUT_add_to_a_file_RESTAPI(obj.auth, 'modify response', "Username is Present, select another username", obj.foldername+"/response", obj.temp_sha, obj.repoB_name, obj.repoOwner);
-	//	}
-
-	//}
+			await PUT_add_to_a_file_RESTAPI(obj.auth, 'resave database', data_encoded_String, obj.foldername+"/file_database.csv", obj.filedatabase_sha, obj.repoB_name, obj.repoOwner);
+			
+			await PUT_add_to_a_file_RESTAPI(obj.auth, 'modify response', "Username added", obj.foldername+"/response", obj.temp_sha, obj.repoB_name, obj.repoOwner);
+		} else {
+			await PUT_add_to_a_file_RESTAPI(obj.auth, 'modify response', "Username is Present, select another username", obj.foldername+"/response", obj.temp_sha, obj.repoB_name, obj.repoOwner);
+		}
+	}
   	delete obj.publicKey_obj;
 	delete obj.auth;
 	
@@ -259,7 +258,8 @@ async function insert_username(decrypted_file_database, username, publicKey_obj)
                 
 	// Use the public key object to re-encrypt the string data, it returns an new arrayBuffer
 	let data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, publicKey_obj, textBuffer);
-    
+	console.log('data_encoded_arrayBuffer:', data_encoded_arrayBuffer);
+	
 	// --------------------------------
                 
 	// Encrypt data : Convert the encoded/encrypted arrayBuffer to a string, such that it is saved in the public file
@@ -271,8 +271,11 @@ async function insert_username(decrypted_file_database, username, publicKey_obj)
 	// Way 2
 	// Convert it to Uint8Array (a standard array format)
 	const uint8Array = new Uint8Array(data_encoded_arrayBuffer);
-	console.log('uint8Array:', uint8Array); 
+	console.log('uint8Array:', uint8Array);
+	
 	const textDecoder = new TextDecoder('utf-8');
+	console.log('textDecoder:', textDecoder);
+	
 	const data_encoded1_String = textDecoder.decode(uint8Array);
 	console.log("data_encoded1_String:", data_encoded1_String);
 
@@ -295,8 +298,7 @@ async function comparator_search_for_a_username(decrypted_file_database, usernam
 		}
 	}).join('');
 	console.log("arr_db_uq_str:", arr_db_uq_str);
-
-	// It says that |test| is in ||, which is wrong
+	
 	// Search for a unique username
   	let regex = new RegExp(`\\|${username}\\|`, 'g');
 	console.log("regex: ", regex);
