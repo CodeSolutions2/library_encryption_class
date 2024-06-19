@@ -293,8 +293,8 @@ async function convert_hexstr_to_uint8Array(hexString) {
 	// Convert a Hexadecimal string to a Uint8Array
 	let arr_out = hexString.split('').map((val, ind) => {
 	if (ind % 2 != 0) {
-	      console.log('ind: ', ind, map2.slice(ind-1, ind+1))
-			return parseInt(map2.slice(ind-1, ind+1), 16);
+	      console.log('ind: ', ind, hexString.slice(ind-1, ind+1))
+			return parseInt(hexString.slice(ind-1, ind+1), 16);
 		} else {
 			return '';
 		}
