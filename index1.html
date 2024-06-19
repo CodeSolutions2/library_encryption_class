@@ -258,19 +258,7 @@ async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
 	// Convert UTF-8 array [non-fixed length array] to a binary arrayBuffer [fixed-length array]
 	const arrayBuffer = uint8Array.buffer;
 	console.log("arrayBuffer:", arrayBuffer);
-
-	// Way 0
-	// Decode with respect to RSA privateKey : transform arrayBuffer [fixed-length array] via the algorithm
-	// let data_decoded_String = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, privateKey_obj, arrayBuffer);
-	// console.log("data_decoded_String:", data_decoded_String);
 	
-	// It should return an arrayBuffer, what does it return?
-	
-	// Convert UTF-8 (common character) data back into a text string
-	// text = new TextDecoder().decode(data_decoded_String);
-	
-	
-	// Way 1
 	// Decode with respect to RSA privateKey : transform arrayBuffer [fixed-length array] via the algorithm
 	let data_decoded_arrayBuffer = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, privateKey_obj, arrayBuffer);
 	console.log("data_decoded_arrayBuffer:", data_decoded_arrayBuffer);
@@ -352,6 +340,15 @@ async function find_a_key_match(obj) {
 						
 					} else {
 						console.log('Github key');
+						console.log('obj.file_download_url: ', obj.file_download_url);
+
+						console.log('obj.put_message: ', obj.put_message);
+						console.log('obj.input_text: ', obj.input_text);
+						console.log('obj.desired_path: ', obj.desired_path);
+						console.log('obj.sha: ', obj.sha);
+						console.log('obj.repoB_name: ', obj.repoB_name);
+						console.log('obj.repoOwner: ', obj.repoOwner);
+						
 						if (obj.file_download_url == "No_file_found") {
 							// Option 0: create a new file
 						  	obj.status = await PUT_create_a_file_RESTAPI(obj.auth, obj.put_message, obj.input_text, obj.foldername+"/"+obj.filename, obj.repoB_name, obj.repoOwner)
