@@ -133,7 +133,9 @@ async function run_window_crypto_subtle_decryption_frontend(obj) {
 
 	// Step 1: decrypt the file_database
 	var obj_filedatabase = await GET_text_from_file_wo_auth_GitHub_RESTAPI("file_database.txt", obj.foldername, obj.repoB_name, obj.repoOwner)
-	obj.filedatabase_text = obj_filedatabase.text;
+	console.log('obj_filedatabase: ', obj_filedatabase);
+	
+	obj.filedatabase_text = atob(obj_filedatabase.text);
 	obj.filedatabase_file_download_url = obj_filedatabase.file_download_url; // this is a string
 	obj.filedatabase_sha = obj_filedatabase.sha; // this is a string
 
@@ -186,7 +188,7 @@ async function run_window_crypto_subtle_decryption_frontend(obj) {
 
 			obj.file_download_url = obj.filedatabase_file_download_url;
 			obj.put_message = 'resave database';
-			obj.input_text = non_visible_text_via_algo;
+			obj.input_text = btoa(non_visible_text_via_algo);
 			obj.desired_path =  obj.filedatabase_file_download_url.split('main/').pop();
 			obj.sha = obj.filedatabase_sha;
 			
