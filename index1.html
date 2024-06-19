@@ -235,11 +235,11 @@ async function encrypt_text_RSA(text, publicKey_obj) {
 	// It should return arrayBuffer [fixed-length array], what does it return?
 	
 	// Convert arrayBuffer [fixed-length array] to UTF-8 array [non-fixed length array]
-	const uint8Array = new Uint8Array(data_encoded_arrayBuffer);
-	console.log('uint8Array:', uint8Array);
+	const uint8Array_out = new Uint8Array(data_encoded_arrayBuffer);
+	console.log('uint8Array_out:', uint8Array_out);
 
 	// Convert UTF-8 array [non-fixed length array] to non_visible_text_via_algo
-	const non_visible_text_via_algo = new TextDecoder().decode(uint8Array);
+	const non_visible_text_via_algo = new TextDecoder().decode(uint8Array_out);
 	console.log("non_visible_text_via_algo:", non_visible_text_via_algo);
 
 	return non_visible_text_via_algo;
@@ -275,11 +275,11 @@ async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
 	console.log("data_decoded_arrayBuffer:", data_decoded_arrayBuffer);
 	
 	// Convert arrayBuffer [fixed-length array] to UTF-8 array [non-fixed length array]
-	const uint8Array = new Uint8Array(data_decoded_arrayBuffer);
-	console.log('uint8Array:', uint8Array);
+	const uint8Array_out = new Uint8Array(data_decoded_arrayBuffer);
+	console.log('uint8Array_out:', uint8Array_out);
 
 	// Convert UTF-8 array [non-fixed length array] to text
-	const text = new TextDecoder().decode(uint8Array);
+	const text = new TextDecoder().decode(uint8Array_out);
 	console.log("text:", text);
 
 	return text;
