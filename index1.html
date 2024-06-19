@@ -132,7 +132,7 @@ async function run_window_crypto_subtle_decryption(obj) {
 	// ------------------------------------------------
 
 	// Step 1: decrypt the file_database
-	var obj_filedatabase = await GET_text_from_file_wo_auth_GitHub_RESTAPI("file_database.csv", obj.foldername, obj.repoB_name, obj.repoOwner)
+	var obj_filedatabase = await GET_text_from_file_wo_auth_GitHub_RESTAPI("file_database.txt", obj.foldername, obj.repoB_name, obj.repoOwner)
 	obj.filedatabase_text = obj_filedatabase.text;
 	obj.filedatabase_file_download_url = obj_filedatabase.file_download_url; // this is a string
 	obj.filedatabase_sha = obj_filedatabase.sha; // this is a string
@@ -224,11 +224,11 @@ async function run_window_crypto_subtle_decryption(obj) {
 		// Procedure to add a name 
 		// --------------------------------
 		if (result == 'Not Present') {
-			// Add username to file_database.csv
+			// Add username to file_database.txt
 			let data_encoded_String = await insert_username(decrypted_file_database, username, obj.publicKey_obj);
                 
-			// Save encrypted data back to file_database.csv
-			await PUT_add_to_a_file_RESTAPI(obj.auth, 'resave database', data_encoded_String, obj.foldername+"/file_database.csv", obj.filedatabase_sha, obj.repoB_name, obj.repoOwner);
+			// Save encrypted data back to file_database.txt
+			await PUT_add_to_a_file_RESTAPI(obj.auth, 'resave database', data_encoded_String, obj.foldername+"/file_database.txt", obj.filedatabase_sha, obj.repoB_name, obj.repoOwner);
 			
 			await PUT_add_to_a_file_RESTAPI(obj.auth, 'modify response', "Username added", obj.foldername+"/response", obj.temp_sha, obj.repoB_name, obj.repoOwner);
 		} else {
