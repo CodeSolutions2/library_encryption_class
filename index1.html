@@ -239,10 +239,21 @@ async function encrypt_text_RSA(text, publicKey_obj) {
 	const uint8Array_out = new Uint8Array(data_encoded_arrayBuffer);
 	console.log('uint8Array_out:', uint8Array_out);
 
-	// Convert UTF-8 array [non-fixed length array] to non_visible_text_via_algo
-	const non_visible_text_via_algo = new TextDecoder().decode(uint8Array_out);
-	console.log("non_visible_text_via_algo:", non_visible_text_via_algo);
-
+	// Convert UTF-8 array [non-fixed length array] to non_visible_text_via_algo character string
+	// const non_visible_text_via_algo = new TextDecoder().decode(uint8Array_out);
+	// console.log("non_visible_text_via_algo:", non_visible_text_via_algo);
+	// Problem: the characters in the string are not recognized, and thus can not be saved to file
+	// OR
+	// Convert UTF-8 array [non-fixed length array] to hexadecimal string
+	let hexString = Array.prototype.map.call(uint8Array_out, x => ('00' + x.toString(16)).slice(-2)).join('');
+	console.log('hexString:', hexString);
+	const non_visible_text_via_algo0 = hexString.replace(/[^a-zA-Z0-9]/g, ''); // remove "noise" from conversion (non-alphanumeric characters)
+	console.log('non_visible_text_via_algo0:', non_visible_text_via_algo0);
+	// OR
+	// Make the Uint8Array a string
+	const non_visible_text_via_algo = await convert_arr_to_str(uint8Array_out, "-1");
+	console.log('non_visible_text_via_algo:', non_visible_text_via_algo);
+	
 	return non_visible_text_via_algo;
 }
 
@@ -252,8 +263,18 @@ async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
 
 	// Convert string to UTF-8 array [non-fixed length array]
 	// So that the text can be stored as a common character/number (that many different systems can understand/decode)
-	const uint8Array = new TextEncoder().encode(non_visible_text_via_algo);
-	console.log("uint8Array:", uint8Array);
+	// const uint8Array = new TextEncoder().encode(non_visible_text_via_algo);
+	// console.log("uint8Array:", uint8Array);
+	// OR
+	// Convert UTF-8 array [non-fixed length array] to hexadecimal string
+	// let hexString = Array.prototype.map.call(uint8Array_out, x => ('00' + x.toString(16)).slice(-2)).join('');
+	// console.log('hexString:', hexString);
+	// const non_visible_text_via_algo0 = hexString.replace(/[^a-zA-Z0-9]/g, ''); // remove "noise" from conversion (non-alphanumeric characters)
+	// console.log('uint8Array:', uint8Array);
+	// OR
+	// Make the Uint8Array a string
+	const uint8Array = await convert_str_to_arr(non_visible_text_via_algo, "-1");
+	console.log('uint8Array:', uint8Array);
 	
 	// Convert UTF-8 array [non-fixed length array] to a binary arrayBuffer [fixed-length array]
 	const arrayBuffer = uint8Array.buffer;
@@ -276,19 +297,31 @@ async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
 
 // ------------------------------------------------
 
+async function convert_str_to_arr(str, sep) {
+	return str.split(sep);
+}
+
+// ------------------------------------------------
+	
+async function convert_arr_to_str(arr, sep) {
+	return arr.map((val, ind) => { 
+		if (ind == 0) {
+			return sep+val+sep; 
+		} else {
+			return val+sep;
+		}
+	}).join('');
+}
+
+// ------------------------------------------------
+
 async function comparator_search_for_a_username(decrypted_file_database, username) {
 	
 	let arr_db = decrypted_file_database.split('\n');
 	console.log("arr_db:", arr_db);
 	
 	// Make usernames unique by adding | before and after each username
-	let arr_db_uq_str = arr_db.map((val, ind) => { 
-		if (ind == 0) {
-			return "|"+val+"|"; 
-		} else {
-			return val+"|";
-		}
-	}).join('');
+	const arr_db_uq_str = await convert_arr_to_str(arr_db, "|");
 	console.log("arr_db_uq_str:", arr_db_uq_str);
 	
 	// Search for a unique username
