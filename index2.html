@@ -40,7 +40,7 @@ async function submit_username() {
 	RepoAobj.input_text = document.getElementById("username").value+"|"+RepoAobj.call_type;
 	RepoAobj.foldername = "webappb";
   
-	const obj = await encrypt_decrypt_a_file_database(RepoAobj);
+	const obj = await add_username_to_file_database(RepoAobj);
 
 	document.getElementById("response").innerHTML = "Your entered username: "+document.getElementById("username").value+", is "+obj.query0_result+" in the file database. ";
 	
