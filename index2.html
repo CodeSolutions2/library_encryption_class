@@ -16,7 +16,7 @@
 <div id="error"></div>
 <div id="response"></div>
 
-<!-- Insert library_window_crypto_subtle.js CDN library HERE  -->
+<!-- Insert library_window_crypto_subtle.js CDN library -->
 <script type="module" src="./index.js"></script>
 
 <!-- --------------------------------------------------- -->
@@ -42,7 +42,10 @@ async function search_username() {
 	RepoAobj.input_text = document.getElementById("username").value+"|"+RepoAobj.repoA_name;
 	RepoAobj.foldername = "webappb";
   
-	const obj = await search_username_to_file_database(RepoAobj);
+	// const obj = await search_username_to_file_database(RepoAobj);
+	// OR
+	const classObj = new encrypted_CRUD_file_database(RepoAobj);
+	const obj = await classObj.search_username_to_file_database();
 
 	document.getElementById("response").innerHTML = "Your entered username: "+document.getElementById("username").value+", is "+obj.query_search_result+" in the file database.";
 		
@@ -61,7 +64,10 @@ async function add_username() {
 	RepoAobj.input_text = document.getElementById("username").value+"|"+RepoAobj.repoA_name;
 	RepoAobj.foldername = "webappb";
   
-	const obj = await add_username_to_file_database(RepoAobj);
+	// const obj = await add_username_to_file_database(RepoAobj);
+	// OR
+	const classObj = new encrypted_CRUD_file_database(RepoAobj);
+	const obj = await classObj.add_username_to_file_database();
 
 	document.getElementById("response").innerHTML = "Your entered username: "+document.getElementById("username").value+", is "+obj.query_search_result+" in the file database. "+obj.query_insert_result;
 		
@@ -80,7 +86,10 @@ async function view_filedatabase() {
 	RepoAobj.input_text = document.getElementById("username").value+"|"+RepoAobj.repoA_name;
 	RepoAobj.foldername = "webappb";
   
-	const obj = await view_file_database(RepoAobj);
+	// const obj = await view_file_database(RepoAobj);
+	// OR
+	const classObj = new encrypted_CRUD_file_database(RepoAobj);
+	const obj = await classObj.view_file_database();
 
 	document.getElementById("response").innerHTML = obj.query_view_result;
 	
@@ -100,7 +109,10 @@ async function remove_username() {
 	RepoAobj.input_text = document.getElementById("username").value+"|"+RepoAobj.call_type;
 	RepoAobj.foldername = "webappb";
   
-	const obj = await delete_username_from_file_database(RepoAobj);
+	// const obj = await delete_username_from_file_database(RepoAobj);
+	// OR
+	const classObj = new encrypted_CRUD_file_database(RepoAobj);
+	const obj = await classObj.delete_username_from_file_database();
 
 	document.getElementById("response").innerHTML = "Your entered username: "+document.getElementById("username").value+", is "+obj.query_search_result+" in the file database. "+obj.query_delete_result;
 		
