@@ -111,18 +111,18 @@ export async function decode_desalt(obj, x_i) {
 	
 	// 1. 'de-salt' the authorization key read from the file
 	if (x_i == 0) {
-		console.log('Remove nothing:');
+		// console.log('Remove nothing:');
 		obj.auth = await descramble_ver0(var0_str);
 	} else if (x_i <= obj.n) {
-		console.log('Remove end:');
+		// console.log('Remove end:');
 		obj.auth = var0_str.slice(0, var0_str.length - x_i);
 		obj.auth = await descramble_ver0(obj.auth);
 	} else {
-		console.log('Remove beginning:');
+		// console.log('Remove beginning:');
 		obj.auth = var0_str.slice(x_i - obj.n, var0_str.length);
 		obj.auth = await descramble_ver1(obj.auth);
 	}
-	console.log('result: ', obj.auth.slice(0,5));
+	// console.log('result: ', obj.auth.slice(0,5));
   return obj;
 }
 
