@@ -266,7 +266,7 @@ async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
 	// OR
 	// Convert UTF-8 array [non-fixed length array] to hexadecimal string
 	const uint8Array = await convert_hexstr_to_uint8Array(non_visible_text_via_algo);
-	// console.log('uint8Array:', uint8Array);
+	console.log('uint8Array:', uint8Array);
 	
 	// Convert UTF-8 array [non-fixed length array] to a binary arrayBuffer [fixed-length array]
 	const arrayBuffer = uint8Array.buffer;
