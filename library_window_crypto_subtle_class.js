@@ -44,7 +44,7 @@ export class encrypted_CRUD_file_database {
 	
 	async search_username_to_file_database() {
 		
-		obj = await this.initialize();
+		var obj = await this.initialize();
 
 		// ------------------------------------------------
 		
@@ -75,7 +75,7 @@ export class encrypted_CRUD_file_database {
 
 	async add_username_to_file_database() {
 	
-		obj = await this.initialize();
+		var obj = await this.initialize();
 
 		// ------------------------------------------------
 		
@@ -139,7 +139,7 @@ export class encrypted_CRUD_file_database {
 	
 	async view_file_database() {
 
-		obj = await this.initialize();
+		var obj = await this.initialize();
 
 		// ------------------------------------------------
 		
@@ -165,7 +165,7 @@ export class encrypted_CRUD_file_database {
 
 	async delete_username_from_file_database() {
 	
-		obj = await this.initialize();
+		var obj = await this.initialize();
 
 		// ------------------------------------------------
 		
