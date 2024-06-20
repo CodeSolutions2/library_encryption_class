@@ -52,8 +52,8 @@ export async function add_username_to_file_database(RepoAobj) {
 	// console.log("username:", username);
 
 	// [Query 0] Determine if username is in the database
-	obj.query0_result = await comparator_search_for_a_username(obj.decrypted_file_database, username);
-	// console.log("obj.query0_result:", obj.query0_result);
+	obj.query_search_result = await comparator_search_for_a_username(obj.decrypted_file_database, username);
+	// console.log("obj.query_search_result:", obj.query_search_result);
 
 	// --------------------------------
 
@@ -61,35 +61,30 @@ export async function add_username_to_file_database(RepoAobj) {
 	console.log('****** Step 3: Perform query 1 - Add the username to the file_database ******');
 
 	// [Query 1] Add a new username to the file_database
-	var call_type = obj.input_text.split('|').pop();
-	// console.log("call_type: ", call_type);
-	
-	if (call_type == 'insert_username') {
-		if (obj.query0_result == 'Not Present') {
-			// Add username to file_database.txt
-			let non_visible_text_via_algo = await insert_username(obj.decrypted_file_database, username, obj.publicKey_obj);
+	if (obj.query_search_result == 'Not Present') {
+		// Add username to file_database.txt
+		let non_visible_text_via_algo = await insert_username(obj.decrypted_file_database, username, obj.publicKey_obj);
 			
-			// Save updated database to file_database.txt
-			// obj.env_text
-			// obj.env_file_download_url
-			// obj.env_sha
-			obj.env_desired_path = obj.env_file_download_url.split('main/').pop();
-			// console.log('obj.env_desired_path: ', obj.env_desired_path);
-			obj.auth = obj.env_text; // Initialize value
+		// Save updated database to file_database.txt
+		// obj.env_text
+		// obj.env_file_download_url
+		// obj.env_sha
+		obj.env_desired_path = obj.env_file_download_url.split('main/').pop();
+		// console.log('obj.env_desired_path: ', obj.env_desired_path);
+		obj.auth = obj.env_text; // Initialize value
 
-			obj.file_download_url = obj.filedatabase_file_download_url;
-			obj.put_message = 'resave database';
-			obj.input_text = btoa(non_visible_text_via_algo);
-			obj.desired_path =  obj.filedatabase_file_download_url.split('main/').pop();
-			obj.sha = obj.filedatabase_sha;
+		obj.file_download_url = obj.filedatabase_file_download_url;
+		obj.put_message = 'resave database';
+		obj.input_text = btoa(non_visible_text_via_algo);
+		obj.desired_path =  obj.filedatabase_file_download_url.split('main/').pop();
+		obj.sha = obj.filedatabase_sha;
 			
-			obj = await find_a_key_match(obj);
-			delete obj.Key_obj;
+		obj = await find_a_key_match(obj);
+		delete obj.Key_obj;
 			
-			obj.query1_result = "Username added.";
-		} else {
-			obj.query1_result = "Username is Present, select another username.";
-		}
+		obj.query_insert_result = "Username added.";
+	} else {
+		obj.query_insert_result = "Username is Present, select another username.";
 	}
 
 	delete obj.decrypted_file_database;
@@ -149,7 +144,7 @@ export async function view_file_database(RepoAobj) {
 	console.log(obj.decrypted_file_database);
 	delete obj.decrypted_file_database;
 
-	obj.query2_result = "Finished.";
+	obj.query_view_result = "Finished.";
 	
 	return obj;
 }
@@ -206,27 +201,42 @@ export async function delete_username_from_file_database(RepoAobj) {
 	var username = obj.input_text.split('|').shift();
 	// console.log("username:", username);
 
-	let non_visible_text_via_algo = await remove_username(obj.decrypted_file_database, username, obj.publicKey_obj);
-	
-	// Save updated database to file_database.txt
-	// obj.env_text
-	// obj.env_file_download_url
-	// obj.env_sha
-	obj.env_desired_path = obj.env_file_download_url.split('main/').pop();
-	// console.log('obj.env_desired_path: ', obj.env_desired_path);
-	obj.auth = obj.env_text; // Initialize value
+	// [Query 0] Determine if username is in the database
+	obj.query_search_result = await comparator_search_for_a_username(obj.decrypted_file_database, username);
+	// console.log("obj.query_search_result:", obj.query_search_result);
 
-	obj.file_download_url = obj.filedatabase_file_download_url;
-	obj.put_message = 'resave database';
-	obj.input_text = btoa(non_visible_text_via_algo);
-	obj.desired_path =  obj.filedatabase_file_download_url.split('main/').pop();
-	obj.sha = obj.filedatabase_sha;
+	// --------------------------------
+
+	// Step 3: Perform query 1 - Add the username to the file_database
+	console.log('****** Step 3: Perform query 1 - Add the username to the file_database ******');
 	
-	obj = await find_a_key_match(obj);
-	delete obj.Key_obj;
+	if (obj.query_search_result == 'Present') {
+		// Add username to file_database.txt
+		let non_visible_text_via_algo = await remove_username(obj.decrypted_file_database, username, obj.publicKey_obj);
+			
+		// Save updated database to file_database.txt
+		// obj.env_text
+		// obj.env_file_download_url
+		// obj.env_sha
+		obj.env_desired_path = obj.env_file_download_url.split('main/').pop();
+		// console.log('obj.env_desired_path: ', obj.env_desired_path);
+		obj.auth = obj.env_text; // Initialize value
+
+		obj.file_download_url = obj.filedatabase_file_download_url;
+		obj.put_message = 'resave database';
+		obj.input_text = btoa(non_visible_text_via_algo);
+		obj.desired_path =  obj.filedatabase_file_download_url.split('main/').pop();
+		obj.sha = obj.filedatabase_sha;
+			
+		obj = await find_a_key_match(obj);
+		delete obj.Key_obj;
+			
+		obj.query_delete_result = "Username removed.";
+	} else {
+		obj.query_delete_result = "Username is Not Present, select another username to remove.";
+	}
+
 	delete obj.decrypted_file_database;
-	
-	obj.query3_result = "Username removed.";
 	
 	return obj;
 }
