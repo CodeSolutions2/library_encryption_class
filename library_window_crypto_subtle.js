@@ -54,7 +54,6 @@ export async function search_username_to_file_database(RepoAobj) {
 
 	// [Query 0] Determine if username is in the database
 	obj.query_search_result = await comparator_search_for_a_username(obj.decrypted_file_database, username);
-	// console.log("obj.query_search_result:", obj.query_search_result);
 
 	delete obj.decrypted_file_database;
 	
@@ -115,7 +114,7 @@ export async function add_username_to_file_database(RepoAobj) {
 
 	// [Query 0] Determine if username is in the database
 	obj.query_search_result = await comparator_search_for_a_username(obj.decrypted_file_database, username);
-	// console.log("obj.query_search_result:", obj.query_search_result);
+	// console.log("obj.query_search_", obj.query_search_result);
 
 	// --------------------------------
 
@@ -265,7 +264,7 @@ export async function delete_username_from_file_database(RepoAobj) {
 
 	// [Query 0] Determine if username is in the database
 	obj.query_search_result = await comparator_search_for_a_username(obj.decrypted_file_database, username);
-	// console.log("obj.query_search_result:", obj.query_search_result);
+	// console.log("obj.query_search_", obj.query_search_result);
 
 	// --------------------------------
 
@@ -331,19 +330,25 @@ async function GET_public_private_keys(obj) {
 
 // ------------------------------------------------
 
+async function pipe0(obj, obj_filedatabase) {
+	obj.filedatabase_text = atob(obj_filedatabase.text);
+	obj.filedatabase_file_download_url = obj_filedatabase.file_download_url; // this is a string
+	obj.filedatabase_sha = obj_filedatabase.sha; // this is a string
+	return obj;
+}
+
 async function decrypt_file_database(obj) {
 
 	console.log('****** Step 1: decrypt the file_database ******');
 	var obj_filedatabase = await GET_text_from_file_wo_auth_GitHub_RESTAPI("file_database.txt", obj.foldername, obj.repoB_name, obj.repoOwner)
-	// console.log('obj_filedatabase: ', obj_filedatabase);
-	
-	obj.filedatabase_text = atob(obj_filedatabase.text);
-	obj.filedatabase_file_download_url = obj_filedatabase.file_download_url; // this is a string
-	obj.filedatabase_sha = obj_filedatabase.sha; // this is a string
+	console.log('obj_filedatabase: ', obj_filedatabase);
 
-	var decrypted_file_database = "";
+	obj = await pipe0(obj, obj_filedatabase);
+	
 	if (obj.filedatabase_text.length > 1) {
 		obj.decrypted_file_database = await decrypt_text_RSA(obj.filedatabase_text, obj.privateKey_obj);
+	} else {
+		obj.decrypted_file_database = "";
 	}
 
 	return obj;
