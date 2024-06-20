@@ -240,18 +240,11 @@ async function encrypt_text_RSA(text, publicKey_obj) {
 	// Encode with respect to RSA publicKey : transform arrayBuffer [fixed-length array] via the algorithm
 	let data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, publicKey_obj, arrayBuffer);
 	console.log('data_encoded_arrayBuffer:', data_encoded_arrayBuffer);
-
-	// Returns an arrayBuffer [fixed-length array]
 	
 	// Convert arrayBuffer [fixed-length array] to UTF-8 array [non-fixed length array]
 	const uint8Array_out = new Uint8Array(data_encoded_arrayBuffer);
 	console.log('uint8Array_out:', uint8Array_out);
-
-	// Convert UTF-8 array [non-fixed length array] to non_visible_text_via_algo character string
-	// const non_visible_text_via_algo = new TextDecoder().decode(uint8Array_out);
-	// console.log("non_visible_text_via_algo:", non_visible_text_via_algo);
-	// Problem: the characters in the string are not recognized, and thus can not be saved to file
-	// OR
+	
 	// Convert UTF-8 array [non-fixed length array] to hexadecimal string
 	const non_visible_text_via_algo = await convert_uint8Array_to_hexstr(uint8Array_out);
 	console.log('non_visible_text_via_algo:', non_visible_text_via_algo);
@@ -264,30 +257,21 @@ async function encrypt_text_RSA(text, publicKey_obj) {
 // ------------------------------------------------
 	
 async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
-
-	// Convert string to UTF-8 array [non-fixed length array]
-	// So that the text can be stored as a common character/number (that many different systems can understand/decode)
-	// const uint8Array = new TextEncoder().encode(non_visible_text_via_algo);
-	// console.log("uint8Array:", uint8Array);
-	// OR
-	// Convert UTF-8 array [non-fixed length array] to hexadecimal string
-	// The length is 256 because of the hexadecimal format
+	
+	// Convert hexadecimal string to a UTF-8 array [non-fixed length array] where the length is 256
 	const uint8Array = await convert_hexstr_to_uint8Array(non_visible_text_via_algo);
 	console.log('uint8Array:', uint8Array);
 	
 	// Convert UTF-8 array [non-fixed length array] to a binary arrayBuffer [fixed-length array]
-	// const arrayBuffer = uint8Array.buffer;
-	// console.log("arrayBuffer:", arrayBuffer);
+	const arrayBuffer = uint8Array.buffer;
 	// OR
-	// Incorrect: It will always be in the form of an arrayBuffer [fixed-length array] if it was in the hexString format - the output is "Array" and not "ArrayBuffer
-	// OR
-	// Way 2: create an ArrayBuffer object and pass the Array values to the ArrayBuffer
-	const length = uint8Array.length;
-	var arrayBuffer = new ArrayBuffer(length);
-	var uint8ArrayView = new Uint8Array(arrayBuffer);
-	for (let i=0; i<length; i++) {
-		uint8ArrayView[i] = uint8Array[i];
-	}
+	// WORKS : create an ArrayBuffer object and pass the Array values to the ArrayBuffer
+	// const length = uint8Array.length;
+	// var arrayBuffer = new ArrayBuffer(length);
+	// var uint8ArrayView = new Uint8Array(arrayBuffer);
+	//for (let i=0; i<length; i++) {
+	//	uint8ArrayView[i] = uint8Array[i];
+	//}
 	console.log('arrayBuffer:', arrayBuffer);
 	
 	// Decode with respect to RSA privateKey : transform arrayBuffer [fixed-length array] via the algorithm
@@ -308,7 +292,7 @@ async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
 // ------------------------------------------------
 
 async function convert_hexstr_to_uint8Array(hexString) {
-	// Convert a Hexadecimal string to a Uint8Array
+	// Convert a Hexadecimal string to an Array
 	let arr_out = hexString.split('').map((val, ind) => {
 	if (ind % 2 != 0) {
 			return parseInt(hexString.slice(ind-1, ind+1), 16);
@@ -317,7 +301,9 @@ async function convert_hexstr_to_uint8Array(hexString) {
 		}
 	});
 	const NonEmptyVals_toKeep = (x) => x.length != 0;
-	return arr_out.filter(NonEmptyVals_toKeep);
+	const arr = arr_out.filter(NonEmptyVals_toKeep);
+	const uint8Array = new Uint8Array(arr);
+	return uint8Array;
 }
 
 // ------------------------------------------------
