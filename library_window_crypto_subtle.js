@@ -574,7 +574,7 @@ async function remove_username(obj) {
 	// console.log("arr_db:", arr_db);
 	
 	// Make usernames unique by adding | before and after each username
-	const arr_db_uq_str = await convert_arr_to_str(arr_db, "|");
+	let arr_db_uq_str = await convert_arr_to_str(arr_db, "|");
 	// console.log("arr_db_uq_str:", arr_db_uq_str);
 	
 	// Search for a unique username
@@ -589,8 +589,8 @@ async function remove_username(obj) {
 	console.log("arr_db_uq_str: ",  arr_db_uq_str);
 	
 	const NonEmptyVals_toKeep = (x) => x.length != 0;
-	let arr = arr_db_uq_str.filter(NonEmptyVals_toKeep);
-	console.log("arr: ",  arr);
+	arr_db_uq_str = arr_db_uq_str.filter(NonEmptyVals_toKeep);
+	console.log("arr_db_uq_str: ",  arr_db_uq_str);
 	
 	obj.decrypted_file_database = arr.map((val, ind) => { return val+"\n"; });
 	console.log("obj.decrypted_file_database: ", obj.decrypted_file_database);
