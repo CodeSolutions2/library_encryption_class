@@ -586,14 +586,14 @@ async function remove_username(obj) {
 
 	// Undo the convert_arr_to_str transformation
 	arr_db_uq_str = arr_db_uq_str.replace(regex, '|').split('|');
-	console.log("arr_db_uq_str: ",  arr_db_uq_str);
+	// console.log("arr_db_uq_str: ",  arr_db_uq_str);
 	
 	const NonEmptyVals_toKeep = (x) => x.length != 0;
 	arr_db_uq_str = arr_db_uq_str.filter(NonEmptyVals_toKeep);
-	console.log("arr_db_uq_str: ",  arr_db_uq_str);
+	// console.log("arr_db_uq_str: ",  arr_db_uq_str);
 	
-	obj.decrypted_file_database = arr.map((val, ind) => { return val+"\n"; });
-	console.log("obj.decrypted_file_database: ", obj.decrypted_file_database);
+	obj.decrypted_file_database = arr_db_uq_str.map((val, ind) => { return val+"\n"; });
+	// console.log("obj.decrypted_file_database: ", obj.decrypted_file_database);
 	
 	return await encrypt_text_RSA(obj);
 }
