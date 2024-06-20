@@ -181,6 +181,8 @@ export async function PUT_create_a_file_RESTAPI(auth, message, content, desired_
 
 
 export async function PUT_add_to_a_file_RESTAPI(auth, message, content, desired_path, sha, repoName, repoOwner) {
+
+	console.log('Updated the file');
 	
 	// PUT content into an existing file
 	let url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${desired_path}`;
