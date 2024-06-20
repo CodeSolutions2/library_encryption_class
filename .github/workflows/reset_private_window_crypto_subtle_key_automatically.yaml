@@ -1,9 +1,10 @@
 name: automatically reset private_window_crypto_subtle REPOB key with any change to repo
   
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["automatically reset REPOB key with any change to repo"]
+    types:
+      - completed
 
 jobs:
   reset_key:
