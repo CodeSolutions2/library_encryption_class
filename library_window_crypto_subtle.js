@@ -458,7 +458,7 @@ async function encrypt_text_RSA(obj) {
 	// console.log("arrayBuffer:", arrayBuffer);
                 
 	// Encode with respect to RSA publicKey : transform arrayBuffer [fixed-length array] via the algorithm
-	let data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, publicKey_obj, arrayBuffer);
+	let data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, obj.publicKey_obj, arrayBuffer);
 	// console.log('data_encoded_arrayBuffer:', data_encoded_arrayBuffer);
 
 	delete obj.publicKey_obj;
@@ -491,7 +491,7 @@ async function decrypt_text_RSA(obj) {
 	// console.log('arrayBuffer:', arrayBuffer);
 	
 	// Decode with respect to RSA privateKey : transform arrayBuffer [fixed-length array] via the algorithm
-	let data_decoded_arrayBuffer = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, privateKey_obj, arrayBuffer);
+	let data_decoded_arrayBuffer = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, obj.privateKey_obj, arrayBuffer);
 	// console.log("data_decoded_arrayBuffer:", data_decoded_arrayBuffer);
 
 	delete obj.privateKey_obj;
