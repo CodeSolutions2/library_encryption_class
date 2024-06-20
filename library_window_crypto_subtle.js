@@ -384,7 +384,7 @@ async function find_a_key_match(obj) {
 						obj.status = 200;
 						
 					} else {
-						// console.log('Github key');
+						console.log('Github key');
 						if (obj.file_download_url == "No_file_found") {
 							// Option 0: create a new file
 						  	obj.status = await PUT_create_a_file_RESTAPI(obj.auth, obj.put_message, obj.input_text, obj.foldername+"/"+obj.filename, obj.repoB_name, obj.repoOwner)
@@ -405,7 +405,7 @@ async function find_a_key_match(obj) {
 				return obj;
 			})
 			.then(async function(obj) {
-				// console.log("obj.status:", obj.status);
+				console.log("obj.status:", obj.status);
 				
 				if ((/^20/g).test(obj.status) == true) {
 					console.log("Match found");
