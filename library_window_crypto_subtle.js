@@ -49,11 +49,11 @@ export async function search_username_to_file_database(RepoAobj) {
 	console.log('****** Step 2: Perform query 0 - Determine if the username is the file_database ******');
 	
 	// Obtain username
-	var username = obj.input_text.split('|').shift();
-	// console.log("username:", username);
+	obj.username = obj.input_text.split('|').shift();
+	// console.log("obj.username:", obj.username);
 
 	// [Query 0] Determine if username is in the database
-	obj.query_search_result = await comparator_search_for_a_username(obj.decrypted_file_database, username);
+	obj.query_search_result = await comparator_search_for_a_username(obj.decrypted_file_database, obj.username);
 
 	delete obj.decrypted_file_database;
 	
@@ -109,11 +109,11 @@ export async function add_username_to_file_database(RepoAobj) {
 	console.log('****** Step 2: Perform query 0 - Determine if the username is the file_database ******');
 	
 	// Obtain username
-	var username = obj.input_text.split('|').shift();
-	// console.log("username:", username);
+	obj.username = obj.input_text.split('|').shift();
+	// console.log("obj.username:", obj.username);
 
 	// [Query 0] Determine if username is in the database
-	obj.query_search_result = await comparator_search_for_a_username(obj.decrypted_file_database, username);
+	obj.query_search_result = await comparator_search_for_a_username(obj.decrypted_file_database, obj.username);
 	// console.log("obj.query_search_", obj.query_search_result);
 
 	// --------------------------------
@@ -124,7 +124,7 @@ export async function add_username_to_file_database(RepoAobj) {
 	// [Query 1] Add a new username to the file_database
 	if (obj.query_search_result == 'Not Present') {
 		// Add username to file_database.txt
-		let non_visible_text_via_algo = await insert_username(obj.decrypted_file_database, username, obj.publicKey_obj);
+		obj = await insert_username(obj);
 			
 		// Save updated database to file_database.txt
 		// obj.env_text
@@ -136,7 +136,7 @@ export async function add_username_to_file_database(RepoAobj) {
 
 		obj.file_download_url = obj.filedatabase_file_download_url;
 		obj.put_message = 'resave database';
-		obj.input_text = btoa(non_visible_text_via_algo);
+		obj.input_text = btoa(obj.non_visible_text_via_algo);
 		obj.desired_path =  obj.filedatabase_file_download_url.split('main/').pop();
 		obj.sha = obj.filedatabase_sha;
 			
@@ -259,11 +259,11 @@ export async function delete_username_from_file_database(RepoAobj) {
 	console.log('****** Step 2: Delete username from file_database ******');
 	
 	// Obtain username
-	var username = obj.input_text.split('|').shift();
-	// console.log("username:", username);
+	obj.username = obj.input_text.split('|').shift();
+	// console.log("obj.username:", obj.username);
 
 	// [Query 0] Determine if username is in the database
-	obj.query_search_result = await comparator_search_for_a_username(obj.decrypted_file_database, username);
+	obj.query_search_result = await comparator_search_for_a_username(obj.decrypted_file_database, obj.username);
 	// console.log("obj.query_search_", obj.query_search_result);
 
 	// --------------------------------
@@ -273,7 +273,7 @@ export async function delete_username_from_file_database(RepoAobj) {
 	
 	if (obj.query_search_result == 'Present') {
 		// Add username to file_database.txt
-		let non_visible_text_via_algo = await remove_username(obj.decrypted_file_database, username, obj.publicKey_obj);
+		obj = await remove_username(obj);
 			
 		// Save updated database to file_database.txt
 		// obj.env_text
@@ -285,7 +285,7 @@ export async function delete_username_from_file_database(RepoAobj) {
 
 		obj.file_download_url = obj.filedatabase_file_download_url;
 		obj.put_message = 'resave database';
-		obj.input_text = btoa(non_visible_text_via_algo);
+		obj.input_text = btoa(obj.non_visible_text_via_algo);
 		obj.desired_path =  obj.filedatabase_file_download_url.split('main/').pop();
 		obj.sha = obj.filedatabase_sha;
 			
@@ -332,8 +332,8 @@ async function GET_public_private_keys(obj) {
 
 async function pipe0(obj, obj_filedatabase) {
 	obj.filedatabase_text = atob(obj_filedatabase.text);
-	obj.filedatabase_file_download_url = obj_filedatabase.file_download_url; // this is a string
-	obj.filedatabase_sha = obj_filedatabase.sha; // this is a string
+	obj.filedatabase_file_download_url = obj_filedatabase.file_download_url;
+	obj.filedatabase_sha = obj_filedatabase.sha;
 	return obj;
 }
 
@@ -341,12 +341,15 @@ async function decrypt_file_database(obj) {
 
 	console.log('****** Step 1: decrypt the file_database ******');
 	var obj_filedatabase = await GET_text_from_file_wo_auth_GitHub_RESTAPI("file_database.txt", obj.foldername, obj.repoB_name, obj.repoOwner)
-	console.log('obj_filedatabase: ', obj_filedatabase);
+	// console.log('obj_filedatabase: ', obj_filedatabase);
 
-	obj = await pipe0(obj, obj_filedatabase);
+	// obj = await pipe0(obj, obj_filedatabase);
+	obj.filedatabase_text = atob(obj_filedatabase.text);
+	obj.filedatabase_file_download_url = obj_filedatabase.file_download_url;
+	obj.filedatabase_sha = obj_filedatabase.sha;
 	
 	if (obj.filedatabase_text.length > 1) {
-		obj.decrypted_file_database = await decrypt_text_RSA(obj.filedatabase_text, obj.privateKey_obj);
+		obj = await decrypt_text_RSA(obj);
 	} else {
 		obj.decrypted_file_database = "";
 	}
@@ -443,11 +446,11 @@ async function find_a_key_match(obj) {
 
 // ------------------------------------------------
 
-async function encrypt_text_RSA(text, publicKey_obj) {
+async function encrypt_text_RSA(obj) {
 
 	// Convert string to UTF-8 array [non-fixed length array]
 	// So that the text can be stored as a common character/number (that many different systems can understand/decode)
-	const uint8Array = new TextEncoder().encode(text);
+	const uint8Array = new TextEncoder().encode(obj.str_text);
 	// console.log('uint8Array:', uint8Array);
 
 	// Convert UTF-8 array [non-fixed length array] to a binary arrayBuffer [fixed-length array]
@@ -465,17 +468,19 @@ async function encrypt_text_RSA(text, publicKey_obj) {
 	// console.log('uint8Array_out:', uint8Array_out);
 	
 	// Convert UTF-8 array [non-fixed length array] to hexadecimal string
-	const non_visible_text_via_algo = await convert_uint8Array_to_hexstr(uint8Array_out);
-	// console.log('non_visible_text_via_algo:', non_visible_text_via_algo);
+	obj.non_visible_text_via_algo = await convert_uint8Array_to_hexstr(uint8Array_out);
+	// console.log('obj.non_visible_text_via_algo:', obj.non_visible_text_via_algo);
 	
-	return non_visible_text_via_algo;
+	return obj;
 }
 
 
 	
 // ------------------------------------------------
 	
-async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
+async function decrypt_text_RSA(obj) {
+
+	const non_visible_text_via_algo = obj.filedatabase_text;
 	
 	// Convert hexadecimal string to a UTF-8 array [non-fixed length array] where the length is 256
 	const uint8Array = await convert_hexstr_to_uint8Array(non_visible_text_via_algo);
@@ -499,7 +504,9 @@ async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
 	const text = new TextDecoder().decode(uint8Array_out);
 	// console.log("text:", text);
 
-	return text;
+	obj.decrypted_file_database = text;
+
+	return obj;
 }
 
 // ------------------------------------------------
@@ -565,19 +572,19 @@ async function comparator_search_for_a_username(decrypted_file_database, usernam
 
 // ------------------------------------------------
 
-async function insert_username(decrypted_file_database, username, publicKey_obj) {
+async function insert_username(obj) {
 	
 	// Add new text to file
-	const str_text = decrypted_file_database + "\n" + username;  // with RSA encryption
-	return await encrypt_text_RSA(str_text, publicKey_obj);
+	obj.str_text = obj.decrypted_file_database + "\n" + obj.username;  // with RSA encryption
+	return await encrypt_text_RSA(obj);
 }
 
 // ------------------------------------------------
 
-async function remove_username(decrypted_file_database, username, publicKey_obj) {
+async function remove_username(obj) {
 	
 	// Add new text to file
-	let arr_db = decrypted_file_database.split('\n');
+	let arr_db = obj.decrypted_file_database.split('\n');
 	// console.log("arr_db:", arr_db);
 	
 	// Make usernames unique by adding | before and after each username
@@ -585,13 +592,14 @@ async function remove_username(decrypted_file_database, username, publicKey_obj)
 	// console.log("arr_db_uq_str:", arr_db_uq_str);
 	
 	// Search for a unique username
-  	let regex = new RegExp(`\\|${username}\\|`, 'g');
+  	let regex = new RegExp(`\\|${obj.username}\\|`, 'g');
 	// console.log("regex: ", regex);
 
 	// Remove username
-	const str_text = decrypted_file_database.replace(regex, '|');
+	obj.str_text = arr_db_uq_str.replace(regex, '|');
+	console.log("obj.str_text: ", obj.str_text);
 	
-	return await encrypt_text_RSA(str_text, publicKey_obj);
+	return await encrypt_text_RSA(obj);
 }
 
 // ------------------------------------------------
