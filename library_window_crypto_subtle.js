@@ -592,7 +592,7 @@ async function remove_username(obj) {
 	arr_db_uq_str = arr_db_uq_str.filter(NonEmptyVals_toKeep);
 	// console.log("arr_db_uq_str: ",  arr_db_uq_str);
 	
-	obj.decrypted_file_database = arr_db_uq_str.map((val, ind) => { return val+"\n"; });
+	obj.decrypted_file_database = arr_db_uq_str.map((val, ind) => { return val+"\n"; }).join('');
 	// console.log("obj.decrypted_file_database: ", obj.decrypted_file_database);
 	
 	return await encrypt_text_RSA(obj);
