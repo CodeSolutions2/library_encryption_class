@@ -119,6 +119,7 @@ async function run_window_crypto_subtle_decryption_frontend(obj) {
 	// ------------------------------------------------
 
 	// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
+	console.log('****** Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj) ******');
 	obj.auth = obj.public_text; // Initialize value
 	obj = await find_a_key_match(obj);
 	obj.publicKey_obj = obj.Key_obj;
@@ -132,6 +133,7 @@ async function run_window_crypto_subtle_decryption_frontend(obj) {
 	// ------------------------------------------------
 
 	// Step 1: decrypt the file_database
+	console.log('****** Step 1: decrypt the file_database ******');
 	var obj_filedatabase = await GET_text_from_file_wo_auth_GitHub_RESTAPI("file_database.txt", obj.foldername, obj.repoB_name, obj.repoOwner)
 	console.log('obj_filedatabase: ', obj_filedatabase);
 	
@@ -147,34 +149,34 @@ async function run_window_crypto_subtle_decryption_frontend(obj) {
 		decrypted_file_database = await decrypt_text_RSA(obj.filedatabase_text, obj.privateKey_obj);
 	}
 
+	console.log('****** Step 1: View the contents of the file_database ******');
 	delete obj.privateKey_obj;
 	console.log("decrypted_file_database:", decrypted_file_database);
 	
        	// --------------------------------
 
+	// Step 2: Perform query 0 - Determine if the username is the file_database
+	console.log('****** Step 2: Perform query 0 - Determine if the username is the file_database ******');
+	
 	// Obtain username
 	var username = obj.input_text.split('|').shift();
 	console.log("username:", username);
 
+	// [Query 0] Determine if username is in the database
+	obj.query0_result = await comparator_search_for_a_username(decrypted_file_database, username);
+	console.log("obj.query0_result:", obj.query0_result);
+
+	// --------------------------------
+
+	// Step 3: Perform query 1 - Add the username to the file_database
+	console.log('****** Step 3: Perform query 1 - Add the username to the file_database ******');
+
+	// [Query 1] Add a new username to the file_database
 	var call_type = obj.input_text.split('|').pop();
-	console.log("call_type:", call_type);
-
-	// --------------------------------
-
-	// Determine if username is in the database
-	obj.result = await comparator_search_for_a_username(decrypted_file_database, username);
-	console.log("obj.result:", obj.result);
-
-	// **** Give the result to verify user access to different parts of the webapp ****
-
-	// --------------------------------
-
-	// Modify the response and file_database if a name needs to be inserted
+	console.log("call_type: ", call_type);
+	
 	if (call_type == 'insert_username') {
-		// --------------------------------
-		// Procedure to add a name 
-		// --------------------------------
-		if (obj.result == 'Not Present') {
+		if (obj.query0_result == 'Not Present') {
 			// Add username to file_database.txt
 			let non_visible_text_via_algo = await insert_username(decrypted_file_database, username, obj.publicKey_obj);
 			
@@ -196,11 +198,15 @@ async function run_window_crypto_subtle_decryption_frontend(obj) {
 			obj.auth = obj.Key_obj;
 			delete obj.Key_obj;
 			
-			obj.frontend_notification = "Username added.";
+			obj.query1_result = "Username added.";
 		} else {
-			obj.frontend_notification = "Username is Present, select another username.";
+			obj.query1_result = "Username is Present, select another username.";
 		}
+		
+		console.log("obj.query1_result:", obj.query1_result);
 	}
+	
+	
   	delete obj.publicKey_obj;
 	delete obj.auth;
 	
