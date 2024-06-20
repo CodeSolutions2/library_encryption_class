@@ -268,8 +268,8 @@ export async function delete_username_from_file_database(RepoAobj) {
 
 	// --------------------------------
 
-	// Step 3: Perform query 1 - Add the username to the file_database
-	console.log('****** Step 3: Perform query 1 - Add the username to the file_database ******');
+	// Step 3: Perform query 1 - Remove the username to the file_database
+	console.log('****** Step 3: Perform query 1 - Remove the username to the file_database ******');
 	
 	if (obj.query_search_result == 'Present') {
 		// Add username to file_database.txt
@@ -439,6 +439,8 @@ async function find_a_key_match(obj) {
 
 async function encrypt_text_RSA(obj) {
 
+	console.log('Database before encrypting: ', obj.decrypted_file_database);
+
 	// Convert string to UTF-8 array [non-fixed length array]
 	// So that the text can be stored as a common character/number (that many different systems can understand/decode)
 	const uint8Array = new TextEncoder().encode(obj.decrypted_file_database);
@@ -580,8 +582,18 @@ async function remove_username(obj) {
 	// console.log("regex: ", regex);
 
 	// Remove username
-	 obj.decrypted_file_database = arr_db_uq_str.replace(regex, '|');
-	// console.log(" obj.decrypted_file_database: ",  obj.decrypted_file_database);
+	arr_db_uq_str = arr_db_uq_str.replace(regex, '|');
+
+	// Undo the convert_arr_to_str transformation
+	let out = arr_db_uq_str.split('|');
+	console.log("out: ",  out);
+	
+	const NonEmptyVals_toKeep = (x) => x.length != 0;
+	let arr = out.filter(NonEmptyVals_toKeep);
+	console.log("arr: ",  arr);
+	
+	obj.decrypted_file_database = arr.map((val, ind) => { return val+"\n"; });
+	console.log("obj.decrypted_file_database: ", obj.decrypted_file_database);
 	
 	return await encrypt_text_RSA(obj);
 }
