@@ -265,17 +265,27 @@ async function decrypt_text_RSA(non_visible_text_via_algo, privateKey_obj) {
 	// console.log("uint8Array:", uint8Array);
 	// OR
 	// Convert UTF-8 array [non-fixed length array] to hexadecimal string
-	const uint8Array_already_arrayBuffer = await convert_hexstr_to_uint8Array(non_visible_text_via_algo);
-	console.log('uint8Array_already_arrayBuffer:', uint8Array_already_arrayBuffer);
+	// The length is 256 because of the hexadecimal format
+	const uint8Array = await convert_hexstr_to_uint8Array(non_visible_text_via_algo);
+	console.log('uint8Array:', uint8Array);
 	
 	// Convert UTF-8 array [non-fixed length array] to a binary arrayBuffer [fixed-length array]
 	// const arrayBuffer = uint8Array.buffer;
 	// console.log("arrayBuffer:", arrayBuffer);
 	// OR
-	// It will always be in the form of an arrayBuffer [fixed-length array] if it was in the hexString format
+	// Incorrect: It will always be in the form of an arrayBuffer [fixed-length array] if it was in the hexString format - the output is "Array" and not "ArrayBuffer
+	// OR
+	// Way 2: create an ArrayBuffer object and pass the Array values to the ArrayBuffer
+	const length = uint8Array.length;
+	var arrayBuffer = new ArrayBuffer(length);
+	var uint8ArrayView = new Uint8Array(arrayBuffer);
+	for (let i=0; i<length; i++) {
+		uint8ArrayView[i] = uint8Array[i];
+	}
+	console.log('arrayBuffer:', arrayBuffer);
 	
 	// Decode with respect to RSA privateKey : transform arrayBuffer [fixed-length array] via the algorithm
-	let data_decoded_arrayBuffer = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, privateKey_obj, uint8Array_already_arrayBuffer);
+	let data_decoded_arrayBuffer = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, privateKey_obj, arrayBuffer);
 	console.log("data_decoded_arrayBuffer:", data_decoded_arrayBuffer);
 	
 	// Convert arrayBuffer [fixed-length array] to UTF-8 array [non-fixed length array]
