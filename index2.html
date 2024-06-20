@@ -7,7 +7,10 @@
     
 <p style="text-align: center;"></p>
 <label>Enter and leave the payAccess key to unlock Observations 5-21:</label><input id="username" type="text" value="" placeholder="username" rows="1" cols="50" style='text-align: center; width: 400px;'>
-<button id="submit_username" onclick="submit_username()" style="display:block">submit_username</button>
+<button id="search_username" onclick="search_username()" style="display:block">search_username</button>
+<button id="add_username" onclick="add_username()" style="display:block">add_username</button>
+<button id="view_file_database" onclick="view_file_database()" style="display:block">view_file_database</button>
+<button id="remove_username" onclick="remove_username()" style="display:block">remove_username</button>
 <br>
 <div id="notification"></div>
 <div id="error"></div>
@@ -25,10 +28,67 @@
 window.addEventListener('beforeunload', function() {
     window.location.href = window.location.href + '?nocache=' + new Date().getTime();
 });
-  
+
 // ------------------------------------------------
 
-async function submit_username() {
+async function search_username() {
+	
+	var RepoAobj = {};
+  
+	RepoAobj.repoOwner = "CodeSolutions2";
+	RepoAobj.filename = "cb.txt";
+	RepoAobj.repoA_name = "frontend_backend_message_passing_central_repository_v1"; // normally this would be a different repository
+	RepoAobj.repoB_name = "frontend_backend_message_passing_central_repository_v1";
+	RepoAobj.input_text = document.getElementById("username").value+"|"+RepoAobj.repoA_name;
+	RepoAobj.foldername = "webappb";
+  
+	const obj = await search_username_to_file_database(RepoAobj);
+
+	document.getElementById("response").innerHTML = "Your entered username: "+document.getElementById("username").value+", is "+obj.query_search_result+" in the file database.";
+		
+}
+	
+// ------------------------------------------------
+
+async function add_username() {
+	
+	var RepoAobj = {};
+  
+	RepoAobj.repoOwner = "CodeSolutions2";
+	RepoAobj.filename = "cb.txt";
+	RepoAobj.repoA_name = "frontend_backend_message_passing_central_repository_v1"; // normally this would be a different repository
+	RepoAobj.repoB_name = "frontend_backend_message_passing_central_repository_v1";
+	RepoAobj.input_text = document.getElementById("username").value+"|"+RepoAobj.repoA_name;
+	RepoAobj.foldername = "webappb";
+  
+	const obj = await add_username_to_file_database(RepoAobj);
+
+	document.getElementById("response").innerHTML = "Your entered username: "+document.getElementById("username").value+", is "+obj.query_search_result+" in the file database. "+obj.query_insert_result;
+		
+}
+    
+// ------------------------------------------------
+
+async function view_file_database() {
+	
+	var RepoAobj = {};
+  
+	RepoAobj.repoOwner = "CodeSolutions2";
+	RepoAobj.filename = "cb.txt";
+	RepoAobj.repoA_name = "frontend_backend_message_passing_central_repository_v1"; // normally this would be a different repository
+	RepoAobj.repoB_name = "frontend_backend_message_passing_central_repository_v1";
+	RepoAobj.input_text = document.getElementById("username").value+"|"+RepoAobj.repoA_name;
+	RepoAobj.foldername = "webappb";
+  
+	const obj = await view_file_database(RepoAobj);
+
+	document.getElementById("response").innerHTML = obj.query_view_result;
+	
+}
+    
+// ------------------------------------------------
+
+async function remove_username() {
 	
 	var RepoAobj = {};
   
@@ -40,19 +100,11 @@ async function submit_username() {
 	RepoAobj.input_text = document.getElementById("username").value+"|"+RepoAobj.call_type;
 	RepoAobj.foldername = "webappb";
   
-	const obj = await add_username_to_file_database(RepoAobj);
+	const obj = await delete_username_from_file_database(RepoAobj);
 
-	document.getElementById("response").innerHTML = "Your entered username: "+document.getElementById("username").value+", is "+obj.query0_result+" in the file database. ";
-	
-	if (RepoAobj.call_type == "insert_username") {
-		document.getElementById("response").innerHTML += obj.query1_result;
-	}
+	document.getElementById("response").innerHTML = "Your entered username: "+document.getElementById("username").value+", is "+obj.query_search_result+" in the file database. "+obj.query_delete_result;
 		
 }
-    
-// ------------------------------------------------
-
-
 
   
     
