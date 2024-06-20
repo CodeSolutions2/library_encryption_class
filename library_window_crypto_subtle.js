@@ -136,7 +136,7 @@ export async function add_username_to_file_database(RepoAobj) {
 
 		obj.file_download_url = obj.filedatabase_file_download_url;
 		obj.put_message = 'resave database';
-		obj.input_text = btoa(obj.non_visible_text_via_algo);
+		obj.input_text = btoa(obj.encrypted_file_database);
 		obj.desired_path =  obj.filedatabase_file_download_url.split('main/').pop();
 		obj.sha = obj.filedatabase_sha;
 			
@@ -285,7 +285,7 @@ export async function delete_username_from_file_database(RepoAobj) {
 
 		obj.file_download_url = obj.filedatabase_file_download_url;
 		obj.put_message = 'resave database';
-		obj.input_text = btoa(obj.non_visible_text_via_algo);
+		obj.input_text = btoa(obj.encrypted_file_database);
 		obj.desired_path =  obj.filedatabase_file_download_url.split('main/').pop();
 		obj.sha = obj.filedatabase_sha;
 			
@@ -330,28 +330,19 @@ async function GET_public_private_keys(obj) {
 
 // ------------------------------------------------
 
-async function pipe0(obj, obj_filedatabase) {
-	obj.filedatabase_text = atob(obj_filedatabase.text);
-	obj.filedatabase_file_download_url = obj_filedatabase.file_download_url;
-	obj.filedatabase_sha = obj_filedatabase.sha;
-	return obj;
-}
-
 async function decrypt_file_database(obj) {
 
 	console.log('****** Step 1: decrypt the file_database ******');
 	var obj_filedatabase = await GET_text_from_file_wo_auth_GitHub_RESTAPI("file_database.txt", obj.foldername, obj.repoB_name, obj.repoOwner)
 	// console.log('obj_filedatabase: ', obj_filedatabase);
-
-	// obj = await pipe0(obj, obj_filedatabase);
-	obj.filedatabase_text = atob(obj_filedatabase.text);
+	
+	obj.encrypted_file_database = atob(obj_filedatabase.text);
 	obj.filedatabase_file_download_url = obj_filedatabase.file_download_url;
 	obj.filedatabase_sha = obj_filedatabase.sha;
-	
-	if (obj.filedatabase_text.length > 1) {
+
+	obj.decrypted_file_database = "";
+	if (obj.encrypted_file_database.length > 1) {
 		obj = await decrypt_text_RSA(obj);
-	} else {
-		obj.decrypted_file_database = "";
 	}
 
 	return obj;
@@ -450,7 +441,7 @@ async function encrypt_text_RSA(obj) {
 
 	// Convert string to UTF-8 array [non-fixed length array]
 	// So that the text can be stored as a common character/number (that many different systems can understand/decode)
-	const uint8Array = new TextEncoder().encode(obj.str_text);
+	const uint8Array = new TextEncoder().encode(obj.decrypted_file_database);
 	// console.log('uint8Array:', uint8Array);
 
 	// Convert UTF-8 array [non-fixed length array] to a binary arrayBuffer [fixed-length array]
@@ -468,8 +459,8 @@ async function encrypt_text_RSA(obj) {
 	// console.log('uint8Array_out:', uint8Array_out);
 	
 	// Convert UTF-8 array [non-fixed length array] to hexadecimal string
-	obj.non_visible_text_via_algo = await convert_uint8Array_to_hexstr(uint8Array_out);
-	// console.log('obj.non_visible_text_via_algo:', obj.non_visible_text_via_algo);
+	obj.encrypted_file_database = await convert_uint8Array_to_hexstr(uint8Array_out);
+	// console.log('obj.encrypted_file_database:', obj.encrypted_file_database);
 	
 	return obj;
 }
@@ -479,11 +470,9 @@ async function encrypt_text_RSA(obj) {
 // ------------------------------------------------
 	
 async function decrypt_text_RSA(obj) {
-
-	const non_visible_text_via_algo = obj.filedatabase_text;
 	
 	// Convert hexadecimal string to a UTF-8 array [non-fixed length array] where the length is 256
-	const uint8Array = await convert_hexstr_to_uint8Array(non_visible_text_via_algo);
+	const uint8Array = await convert_hexstr_to_uint8Array(obj.encrypted_file_database);
 	// console.log('uint8Array:', uint8Array);
 	
 	// Convert UTF-8 array [non-fixed length array] to a binary arrayBuffer [fixed-length array]
@@ -501,10 +490,7 @@ async function decrypt_text_RSA(obj) {
 	// console.log('uint8Array_out:', uint8Array_out);
 
 	// Convert UTF-8 array [non-fixed length array] to text
-	const text = new TextDecoder().decode(uint8Array_out);
-	// console.log("text:", text);
-
-	obj.decrypted_file_database = text;
+	obj.decrypted_file_database = new TextDecoder().decode(uint8Array_out);
 
 	return obj;
 }
@@ -573,9 +559,7 @@ async function comparator_search_for_a_username(decrypted_file_database, usernam
 // ------------------------------------------------
 
 async function insert_username(obj) {
-	
-	// Add new text to file
-	obj.str_text = obj.decrypted_file_database + "\n" + obj.username;  // with RSA encryption
+	obj.decrypted_file_database = obj.decrypted_file_database + "\n" + obj.username;  // with RSA encryption
 	return await encrypt_text_RSA(obj);
 }
 
@@ -596,8 +580,8 @@ async function remove_username(obj) {
 	// console.log("regex: ", regex);
 
 	// Remove username
-	obj.str_text = arr_db_uq_str.replace(regex, '|');
-	console.log("obj.str_text: ", obj.str_text);
+	 obj.decrypted_file_database = arr_db_uq_str.replace(regex, '|');
+	// console.log(" obj.decrypted_file_database: ",  obj.decrypted_file_database);
 	
 	return await encrypt_text_RSA(obj);
 }
