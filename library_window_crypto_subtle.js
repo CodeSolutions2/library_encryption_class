@@ -582,14 +582,14 @@ async function remove_username(obj) {
 	// console.log("regex: ", regex);
 
 	// Remove username
-	arr_db_uq_str = arr_db_uq_str.replace(regex, '|');
+	// arr_db_uq_str = arr_db_uq_str.replace(regex, '|');
 
 	// Undo the convert_arr_to_str transformation
-	let out = arr_db_uq_str.split('|');
-	console.log("out: ",  out);
+	arr_db_uq_str = arr_db_uq_str.replace(regex, '|').split('|');
+	console.log("arr_db_uq_str: ",  arr_db_uq_str);
 	
 	const NonEmptyVals_toKeep = (x) => x.length != 0;
-	let arr = out.filter(NonEmptyVals_toKeep);
+	let arr = arr_db_uq_str.filter(NonEmptyVals_toKeep);
 	console.log("arr: ",  arr);
 	
 	obj.decrypted_file_database = arr.map((val, ind) => { return val+"\n"; });
