@@ -1,5 +1,67 @@
 import { GET_text_from_file_wo_auth_GitHub_RESTAPI, GET_fileDownloadUrl_and_sha, decode_desalt, PUT_create_a_file_RESTAPI, PUT_add_to_a_file_RESTAPI, rand_perm } from "./library_to_run_GitHub_Actions.js";
 
+// ------------------------------------------------
+
+export async function search_username_to_file_database(RepoAobj) {
+
+	// RepoAobj.repoOwner, RepoAobj.repoA_name, RepoAobj.foldername, RepoAobj.filename, RepoAobj.input, RepoAobj.repoB_name, RepoAobj.repoOwner
+	
+	// n is the maximum salt length used
+
+	var obj_env = await GET_text_from_file_wo_auth_GitHub_RESTAPI(".env", ".github", RepoAobj.repoB_name, RepoAobj.repoOwner);
+	
+	var obj_public = await GET_text_from_file_wo_auth_GitHub_RESTAPI(".public_window_crypto_subtle", ".github", RepoAobj.repoB_name, RepoAobj.repoOwner);
+
+	var obj_private = await GET_text_from_file_wo_auth_GitHub_RESTAPI(".private_window_crypto_subtle", ".github", RepoAobj.repoB_name, RepoAobj.repoOwner);
+	
+	var obj = {env_text: obj_env.text.replace(/[\n\s]/g, ""), 
+		   env_file_download_url: obj_env.file_download_url, 
+		   env_sha: obj_env.sha, 
+		   public_text: obj_public.text.replace(/[\n\s]/g, ""), 
+		   public_file_download_url: obj_public.file_download_url, 
+		   public_sha: obj_public.sha,
+		   private_text: obj_private.text.replace(/[\n\s]/g, ""), 
+		   private_file_download_url: obj_private.file_download_url, 
+		   private_sha: obj_private.sha,
+		   n: 1,
+		   repoOwner: RepoAobj.repoOwner,
+		   filename: RepoAobj.filename, 
+		   foldername: RepoAobj.foldername, 
+		   input_text: RepoAobj.input_text, 
+		   repoB_name: RepoAobj.repoB_name,
+	};
+
+	Object.freeze(obj.env_text); // make the original value non-changeable
+	Object.freeze(obj.public_text); // make the original value non-changeable
+	Object.freeze(obj.private_text); // make the original value non-changeable
+	
+	// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
+	obj = await GET_public_private_keys(obj);
+	
+	// ------------------------------------------------
+
+	// Step 1: decrypt the file_database
+	obj = await decrypt_file_database(obj);
+	
+       	// --------------------------------
+
+	// Step 2: Perform query 0 - Determine if the username is the file_database
+	console.log('****** Step 2: Perform query 0 - Determine if the username is the file_database ******');
+	
+	// Obtain username
+	var username = obj.input_text.split('|').shift();
+	// console.log("username:", username);
+
+	// [Query 0] Determine if username is in the database
+	obj.query_search_result = await comparator_search_for_a_username(obj.decrypted_file_database, username);
+	// console.log("obj.query_search_result:", obj.query_search_result);
+
+	delete obj.decrypted_file_database;
+	
+	return obj;
+}
+
+// ------------------------------------------------
 
 export async function add_username_to_file_database(RepoAobj) {
 
