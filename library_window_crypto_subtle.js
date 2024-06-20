@@ -561,7 +561,12 @@ async function comparator_search_for_a_username(decrypted_file_database, usernam
 // ------------------------------------------------
 
 async function insert_username(obj) {
-	obj.decrypted_file_database = obj.decrypted_file_database + "\n" + obj.username;  // with RSA encryption
+	
+	obj.decrypted_file_database = obj.decrypted_file_database + "\n" + obj.username;
+	obj.decrypted_file_database_arr = obj.decrypted_file_database.split('\n');
+
+	obj = await decrypted_file_database_arr_to_str(obj);
+	
 	return await encrypt_text_RSA(obj);
 }
 
@@ -569,33 +574,42 @@ async function insert_username(obj) {
 
 async function remove_username(obj) {
 	
-	// Add new text to file
-	let arr_db = obj.decrypted_file_database.split('\n');
-	// console.log("arr_db:", arr_db);
+	obj.decrypted_file_database_arr = obj.decrypted_file_database.split('\n');
+	// console.log("obj.decrypted_file_database_arr:", obj.decrypted_file_database_arr);
 	
 	// Make usernames unique by adding | before and after each username
-	let arr_db_uq_str = await convert_arr_to_str(arr_db, "|");
-	// console.log("arr_db_uq_str:", arr_db_uq_str);
+	obj.decrypted_file_database = await convert_arr_to_str(obj.decrypted_file_database_arr, "|");
+	// console.log("obj.decrypted_file_database:", obj.decrypted_file_database);
 	
 	// Search for a unique username
   	let regex = new RegExp(`\\|${obj.username}\\|`, 'g');
 	// console.log("regex: ", regex);
 
-	// Remove username
-	// arr_db_uq_str = arr_db_uq_str.replace(regex, '|');
-
 	// Undo the convert_arr_to_str transformation
-	arr_db_uq_str = arr_db_uq_str.replace(regex, '|').split('|');
-	// console.log("arr_db_uq_str: ",  arr_db_uq_str);
+	obj.decrypted_file_database_arr = obj.decrypted_file_database.replace(regex, '|').split('|');
+	// console.log("obj.decrypted_file_database_arr: ",  obj.decrypted_file_database_arr);
 	
-	const NonEmptyVals_toKeep = (x) => x.length != 0;
-	arr_db_uq_str = arr_db_uq_str.filter(NonEmptyVals_toKeep);
-	// console.log("arr_db_uq_str: ",  arr_db_uq_str);
-	
-	obj.decrypted_file_database = arr_db_uq_str.map((val, ind) => { return val+"\n"; }).join('');
-	// console.log("obj.decrypted_file_database: ", obj.decrypted_file_database);
+	obj = await decrypted_file_database_arr_to_str(obj);
 	
 	return await encrypt_text_RSA(obj);
 }
 
 // ------------------------------------------------
+
+async function decrypted_file_database_arr_to_str(obj) {
+
+	// Remove empty spaces
+	const NonEmptyVals_toKeep = (x) => x.length != 0;
+	obj.decrypted_file_database_arr = obj.decrypted_file_database_arr.filter(NonEmptyVals_toKeep);
+	// console.log("obj.decrypted_file_database_arr: ",  obj.decrypted_file_database_arr);
+	
+	obj.decrypted_file_database = obj.decrypted_file_database_arr.map((val, ind) => { 
+		if (ind < obj.decrypted_file_database_arr.length-1) {
+			return val+"\n";
+		} else {
+			return val;
+		}
+	}).join('');
+
+	return obj;
+}
