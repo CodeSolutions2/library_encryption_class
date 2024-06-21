@@ -6,7 +6,7 @@ RepoB, this repository, is an intermediate processing area where information fro
 
 ## Frontend library script (library_to_run_GitHub_Actions.js)
 The purpose of the frontend library script is to trigger the intermediate repository RepoB to start frontend and/or backend processes for RepoA.
-- The current version of the frontend library script (*to be published on jsdelivr.com*): [library_to_run_GitHub_Actions.js](https://github.com/CodeSolutions2/library_to_run_GitHub_Actions)
+- The current version of the frontend library script ***(to be published on jsdelivr.com)***: [library_to_run_GitHub_Actions.js](https://github.com/CodeSolutions2/library_to_run_GitHub_Actions)
 
 
 ## First version of RepoB
@@ -15,4 +15,4 @@ The [frontend_backend_message_passing_central_repository_v0](https://github.com/
   - Disadvantages of this workflow architecture: RepoB needs RepoA's key on the backend via GitHub Secrets, to create the repository dispatch event. If the backend of RepoB is compromised, it could expose RepoA. Thus, a second version of RepoB, this repository (frontend_backend_message_passing_central_repository_v1), was created.
 
 ## Second version of RepoB
-  - Disadvantages of this workflow architecture: RepoB file contents need to be backed-up in another protected repository to avoid complete loss of data. *(an automated solution is in development)*
+  - Disadvantages of this workflow architecture: RepoB file contents need to be backed-up in another protected repository to avoid complete loss of data. ***(an automated solution is in development)***
