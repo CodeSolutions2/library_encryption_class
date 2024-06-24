@@ -1,4 +1,4 @@
-# frontend_backend_message_passing_central_repository_v1
+# frontend_backend_message_passing_central_repository_v1 ☀️
 
 The goal of this repository is to practice writing BackEnd yaml workflows that process FrontEnd user input. User input is obtained from any repository, called RepoA. RepoA is a GitHub Page that only has access to REST API calls using JavaScript and HTML, thus there needs to be some other numerical infrastructure that collects information that user inputs such that their information can be processed at an endpoint or on a virtual machine via a model and/or script.
 
