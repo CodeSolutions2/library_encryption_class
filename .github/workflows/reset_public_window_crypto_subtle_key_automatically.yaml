@@ -27,10 +27,10 @@ jobs:
             var n = 1;
 
             // Resalt and save the key in .env, for the next time
-            var alpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
-            var num = '0123456789'; 
-            let alpha_arr = alpha.split(''); 
-            let num_arr = num.split('');
+            const alpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
+            const num = '0123456789'; 
+            var alpha_arr = alpha.split(''); 
+            var num_arr = num.split('');
 
             // --------------------------------
             
@@ -58,11 +58,11 @@ jobs:
               // Create salt (extra strings randomly)
               var salt = letnum_selection.map((row) => { 
                 if (row == 0) { 
-                  let val = Math.round(Math.random()*alpha_arr.length);
+                  var val = Math.round(Math.random()*alpha_arr.length);
                   // console.log('val: ', val);
                   return alpha_arr[val]; 
                 } else { 
-                  let val = Math.round(Math.random()*num_arr.length);
+                  var val = Math.round(Math.random()*num_arr.length);
                   // console.log('val: ', val);
                   return num_arr[val]; 
                 } 
@@ -75,9 +75,8 @@ jobs:
             console.log('salt: ', salt);
 
             // --------------------------------
-
-            const { PUBLIC_KEY_RSA } = process.env
-            let new_auth = `${PUBLIC_KEY_RSA}`;
+            
+            var new_auth = process.env.PUBLIC_KEY_RSA;
             // console.log('new_auth: ', new_auth);
 
             // --------------------------------
@@ -96,11 +95,11 @@ jobs:
             // Scramble key : Github automatically base64 decodes and searches the strings and can find the key, causing GitHub to disactivate the key automatically for security
             
             // obtain even values of string
-            new_auth_arr = new_auth.split('');
+            var new_auth_arr = new_auth.split('');
             // console.log('new_auth_arr: ', new_auth_arr);
 
-            ep = [];
-            ap = [];
+            var ep = [];
+            var ap = [];
             for (let i=0; i<new_auth_arr.length; i++) {
               if (i % 2 == 0) { 
                 ep.push(new_auth_arr[i]);
@@ -111,7 +110,7 @@ jobs:
             // console.log('ep: ', ep);
             // console.log('ap: ', ap);
 
-            let new_auth1 = ep.join('') + "|" + ap.join('');
+            var new_auth1 = ep.join('') + "|" + ap.join('');
             // console.log('new_auth1: ', new_auth1);
             
             new_auth = btoa(new_auth1); // This will be displayed in the file
