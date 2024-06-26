@@ -1,10 +1,8 @@
 name: automatically reset (salt, encrypt) REPOB key for Frontend file
 
 on:
-  workflow_run:
-    workflows: ["Updating a GitHub key - REPOB_V1_TOKEN0"]
-    types:
-      - completed
+  schedule:
+    - cron: '0 3,7,11,15,19,,23 * * *'
 
 jobs:
   reset_key:
