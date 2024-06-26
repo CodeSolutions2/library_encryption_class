@@ -1,9 +1,10 @@
 name: automatically reset (salt, encrypt) REPOB key for Frontend file
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Updating a GitHub key - REPOB_V1_TOKEN0"]
+    types:
+      - completed
 
 jobs:
   reset_key:
