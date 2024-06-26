@@ -2,7 +2,7 @@ name: automatically reset (salt, encrypt) REPOB key for Frontend file
 
 on:
   workflow_run:
-    workflows: ["pages-build-deployment"]
+    workflows: ["Updating a GitHub key - REPOB_V1_TOKEN0"]
     types:
       - completed
 
