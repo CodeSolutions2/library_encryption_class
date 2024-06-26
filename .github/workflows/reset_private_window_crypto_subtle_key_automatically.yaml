@@ -2,7 +2,7 @@ name: automatically reset private_window_crypto_subtle REPOB key with any change
   
 on:
   workflow_run:
-    workflows: ["automatically reset REPOB key with any change to repo"]
+    workflows: ["automatically reset (salt, encrypt) REPOB key for Frontend file"]
     types:
       - completed
 
