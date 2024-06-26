@@ -1,9 +1,10 @@
 name: automatically reset (salt, encrypt) REPOB key for Frontend file
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["pages-build-deployment"]
+    types:
+      - completed
 
 jobs:
   reset_key:
