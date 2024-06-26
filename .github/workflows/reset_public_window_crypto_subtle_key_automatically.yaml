@@ -1,10 +1,8 @@
-name: automatically reset public_window_crypto_subtle REPOB key with any change to repo
+name: automatically reset (salt, encrypt) public_window_crypto_subtle key for Frontend file
   
 on:
-  workflow_run:
-    workflows: ["automatically reset private_window_crypto_subtle REPOB key with any change to repo"]
-    types:
-      - completed
+  schedule:
+    - cron: '10 3,7,11,15,19,23 * * *'
 
 jobs:
   reset_key:
