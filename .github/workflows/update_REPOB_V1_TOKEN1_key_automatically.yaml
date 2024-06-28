@@ -1,9 +1,8 @@
 name: Updating a GitHub key - REPOB_V1_TOKEN1
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: '0 6,18 * * *'
       
 jobs:
   update_token:
@@ -17,8 +16,9 @@ jobs:
           GH_TOKEN: ${{ secrets.REPOB_V1_TOKEN1 || github.token }}
           # The `github.token` is not equivalent to a GitHub Actions secret token. The `github.token` is a special token provided by GitHub that allows actions to authenticate and interact with the GitHub API on behalf of the workflow run. It is automatically generated and available for use within GitHub Actions workflows.
           # However, if GH_TOKEN: ${{ secrets.REPOB_V1_TOKEN1 }} OR GH_TOKEN: ${{ github.token }}, it will throw an error.
+          # ${{ github.repository }} = $repoOwner/$repoName
         run: |
-          repoOwner="CodeSolutions2";
+          repoOwner=$(echo "${{ github.repository }}" | cut -d '/' -f 1);
           repoOwnerEmail="j622amilah@gmail.com";
           repoName=$(echo "${{ github.repository }}" | cut -d '/' -f 2);
           main_directory=$(echo "/home/runner/work/$repoName");
