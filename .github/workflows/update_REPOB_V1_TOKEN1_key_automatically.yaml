@@ -1,11 +1,12 @@
 name: Updating a GitHub key - REPOB_V1_TOKEN1
 
 on:
-  schedule:
-    - cron: '0 6,18 * * *'
+  push:
+    branches:
+      - main
       
 jobs:
-  job0_update_REPOB_V1_TOKEN1:
+  update_token:
     runs-on: ubuntu-latest
 
     permissions: write-all
@@ -19,7 +20,7 @@ jobs:
         run: |
           repoOwner="CodeSolutions2";
           repoOwnerEmail="j622amilah@gmail.com";
-          repoName="frontend_backend_message_passing_central_repository_v1";
+          repoName=$(echo "${{ github.repository }}");
           main_directory=$(echo "/home/runner/work/$repoName");
           cd $main_directory;
           URL=$(echo "https://${{ env.GH_TOKEN }}@github.com/$repoOwner/$repoName.git");
