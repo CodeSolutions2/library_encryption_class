@@ -58,8 +58,11 @@ async function Generate_keys_crypto() {
 	const classObj0 = new encrypted_CRUD_file_storage(RepoAobj);
    
 	// Encrypt the publicKey_jwk_str
-	RepoAobj.input_text = await classObj0.encrypt_text_string();
-	console.log("encrypted publicKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+	RepoAobj.input_text = await classObj0.encrypt_text_string()
+		.then(async function(encrypted_publicKey_jwk_str) {
+			console.log("encrypted_publicKey_jwk_str: ", encrypted_publicKey_jwk_str.slice(0,5));
+			return encrypted_publicKey_jwk_str;
+		});
 	
 	// Save the encrypted string to the .public_window_crypto_subtle
 	RepoAobj.filename = '.public_window_crypto_subtle'; // filename to create in RepoB, in foldername
