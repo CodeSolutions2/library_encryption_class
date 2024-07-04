@@ -53,36 +53,36 @@ async function Generate_keys_crypto() {
 	// Generate a new publicKey_jwk_str
    	var publicKey_jwk = await window.crypto.subtle.exportKey("jwk", keyPair_obj.publicKey);
 	RepoAobj.input_text = JSON.stringify(publicKey_jwk);
-	console.log("non-encrypted publicKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+	// console.log("non-encrypted publicKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
 
 	// Assign the class where input_text is the generated publicKey_jwk_str
 	const classObj0 = new encrypted_CRUD_file_storage(RepoAobj);
    
 	// Encrypt the publicKey_jwk_str
 	RepoAobj.input_text = await classObj0.encrypt_text_string()
-	console.log("encrypted_publicKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+	// console.log("encrypted_publicKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
 	
 	// Save the encrypted string to the .public_window_crypto_subtle
 	RepoAobj.filename = '.public_window_crypto_subtle'; // filename to create in RepoB, in foldername
-	// await run_backend_process(RepoAobj);
+	await run_backend_process(RepoAobj);
    
 	// -----------------------------
 
 	// Generate a new privateKey_jwk
 	var privateKey_jwk = await window.crypto.subtle.exportKey("jwk", keyPair_obj.privateKey);
 	RepoAobj.input_text = JSON.stringify(privateKey_jwk);
-	console.log("non-encrypted privateKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+	// console.log("non-encrypted privateKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
 
 	// Assign the class where input_text is the generated privateKey_jwk
 	const classObj1 = new encrypted_CRUD_file_storage(RepoAobj);
 
 	// Encrypt the privateKey_jwk_str
 	RepoAobj.input_text = await classObj1.encrypt_text_string();
-	console.log("encrypted_privateKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+	// console.log("encrypted_privateKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
 
 	// Save the encrypted string to the .private_window_crypto_subtle
 	RepoAobj.filename = '.private_window_crypto_subtle'; // filename to create in RepoB, in foldername
-	// await run_backend_process(RepoAobj);
+	await run_backend_process(RepoAobj);
 	
 	// -----------------------------
 	
