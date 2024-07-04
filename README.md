@@ -9,10 +9,11 @@ The purpose of the frontend library script is to trigger the intermediate reposi
 - The current version of the frontend library script ***(to be published on jsdelivr.com)***: [library_to_run_GitHub_Actions.js](https://github.com/CodeSolutions2/library_to_run_GitHub_Actions)
 
 
-## First version of RepoB
+## Version 0 of RepoB
 The [frontend_backend_message_passing_central_repository_v0](https://github.com/CodeSolutions2/frontend_backend_message_passing_central_repository_v0) repository is the first version of RepoB, it is an intermediate repository that is triggered by RepoA (ie: a button push on a GitHub Page deployed application called my_chatbot). The frontend library script is called by a user pushing a button on the deployed my_chatbot application. The frontend library saves the user input_text in a file in RepoB, RepoB listens for changes/creation of the input_text file whereupon it triggers backend processes for RepoA using a repository dispatch event. Thus, RepoA does not have to expose their resources to cyber-attack while processing the user input_text.
 
-  - Disadvantages of this workflow architecture: RepoB needs RepoA's key on the backend via GitHub Secrets, to create the repository dispatch event. If the backend of RepoB is compromised, it could expose RepoA. Thus, a second version of RepoB, this repository (frontend_backend_message_passing_central_repository_v1), was created.
+  - Disadvantages of RepoB_V0 workflow architecture: RepoB needs RepoA's key on the backend via GitHub Secrets, to create the repository dispatch event. If the backend of RepoB is compromised, it could expose RepoA. Thus, a second version of RepoB, this repository (frontend_backend_message_passing_central_repository_v1), was created.
 
-## Second version of RepoB
+## Version 1 of RepoB
+  - [Update keys on Frontend] https://CodeSolutions2.github.io/frontend_backend_message_passing_central_repository_v1/index_reset.html
   - Disadvantages of this workflow architecture: RepoB file contents need to be backed-up in another protected repository to avoid complete loss of data. ***(an automated solution is in development)***
