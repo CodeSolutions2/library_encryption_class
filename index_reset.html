@@ -70,7 +70,7 @@ async function Generate_keys_crypto() {
 	// Assign the class where input_text is the generated privateKey_jwk
 	const classObj1 = new encrypted_CRUD_file_storage(RepoAobj);
 
-	// Encrypt the publicKey_jwk_str
+	// Encrypt the privateKey_jwk_str
 	RepoAobj.input_text = await classObj1.encrypt_text_string();
 
 	// Save the encrypted string to the .private_window_crypto_subtle
