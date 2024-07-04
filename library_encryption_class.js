@@ -550,12 +550,12 @@ export class encrypted_CRUD_file_storage {
 		
 		// Scramble : Github automatically base64 decodes and searches the strings and can find the key, causing GitHub to disactivate the key automatically for security
 		// obtain even values of string
-		let ep = obj.decrypted_file_contents.map((val) => { if (val % 2 == 0) { return val; } });
+		let ep = obj.decrypted_file_contents.split('').map((val) => { if (val % 2 == 0) { return val; } });
 	
 		// obtain odd values of string
-		let ap = obj.decrypted_file_contents.map((val) => { if (val % 2 != 0) { return val; } });
+		let ap = obj.decrypted_file_contents.split('').map((val) => { if (val % 2 != 0) { return val; } });
 	
-		obj.encrypted_file_contents = ep + "|" + ap;
+		obj.encrypted_file_contents = ep.join('') + "|" + ap.join('');
 		// console.log('obj.encrypted_file_contents:', obj.encrypted_file_contents);
 
 		return obj;
