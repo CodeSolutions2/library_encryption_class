@@ -17,20 +17,6 @@ window.addEventListener('beforeunload', function() {
     window.location.href = window.location.href + '?nocache=' + new Date().getTime();
 });
 
-// OR
-
-// let target = "https://codesolutions2.github.io/frontend_backend_message_passing_central_repository_v1/index_reset.html";
-// function clearCachedPage(responseDetails) {
-// 
-// }
-// browser.webRequest.onBeforeRedirect.addListener(clearCachedPage, {
-//   urls: [target],
-// });
-
-// OR
-
-// The Github build fails if the page does not update.
-
 // -----------------------------------------------
 
 
