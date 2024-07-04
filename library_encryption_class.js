@@ -471,7 +471,7 @@ export class encrypted_CRUD_file_storage {
 	// ------------------------------------------------
 	// Encryption method 0: version 0 WITHOUT libsodium-wrappers
 	// ------------------------------------------------
-	async function create_salt(obj) {
+	async create_salt(obj) {
 	
 		// Resalt and save the key in .env, for the next time
 		var alpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
