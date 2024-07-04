@@ -270,12 +270,8 @@ export class encrypted_CRUD_file_storage {
 		var obj = await this.initialize_github();
 		
 		// ------------------------------------------------
-		
-		console.log('obj.type_of_encryption: ', obj.type_of_encryption);
 
 		obj.decrypted_file_contents = obj.input_text;
-		console.log('obj.decrypted_file_contents: ', obj.decrypted_file_contents);
-		console.log('obj.input_text: ', obj.input_text);
 
 		if (obj.type_of_encryption == "window_crypto_subtle") {
 			// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
@@ -296,7 +292,7 @@ export class encrypted_CRUD_file_storage {
 			obj = await this.encrypt_text_salt_scramble(obj);
 		}
 
-		console.log('obj.encrypted_file_contents: ', obj.encrypted_file_contents);
+		// console.log('obj.encrypted_file_contents: ', obj.encrypted_file_contents);
 		
 		return obj.encrypted_file_contents;
 	}
