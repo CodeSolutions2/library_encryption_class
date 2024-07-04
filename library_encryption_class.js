@@ -30,7 +30,6 @@ export class encrypted_CRUD_file_storage {
 			   type_of_encryption: this.RepoAobj.type_of_encryption,
 			   append_text: this.RepoAobj.append_text,
 		};
-		console.log('obj', obj);
 	
 		Object.freeze(obj.env_text); // make the original value non-changeable
 
@@ -551,11 +550,11 @@ export class encrypted_CRUD_file_storage {
 		
 		// Scramble : Github automatically base64 decodes and searches the strings and can find the key, causing GitHub to disactivate the key automatically for security
 		// obtain even values of string
-		let ep = arr.map((val) => { if (val % 2 == 0) { return val; } });
+		let ep = arr.map((val, index) => { if (index % 2 == 0) { return val; } });
 		console.log('ep:', ep);
 	
 		// obtain odd values of string
-		let ap = arr.map((val) => { if (val % 2 != 0) { return val; } });
+		let ap = arr.map((val, index) => { if (index % 2 != 0) { return val; } });
 		console.log('ap:', ap);
 	
 		obj.encrypted_file_contents = ep.join('') + "|" + ap.join('');
