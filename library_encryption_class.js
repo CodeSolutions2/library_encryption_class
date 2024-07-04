@@ -274,6 +274,8 @@ export class encrypted_CRUD_file_storage {
 		console.log('obj.type_of_encryption: ', obj.type_of_encryption);
 
 		obj.decrypted_file_contents = obj.input_text;
+		console.log('obj.decrypted_file_contents: ', obj.decrypted_file_contents);
+		console.log('obj.input_text: ', obj.input_text);
 
 		if (obj.type_of_encryption == "window_crypto_subtle") {
 			// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
