@@ -273,6 +273,8 @@ export class encrypted_CRUD_file_storage {
 		
 		console.log('obj.type_of_encryption: ', obj.type_of_encryption);
 
+		obj.decrypted_file_contents = obj.input_text;
+
 		if (obj.type_of_encryption == "window_crypto_subtle") {
 			// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
 			obj = await this.initialize_window_crypto_subtle(obj);
@@ -545,18 +547,8 @@ export class encrypted_CRUD_file_storage {
 	
 		// --------------------------------
 		
-		var arr = obj.decrypted_file_contents.split('');
-		console.log('arr.splice(0,5):', arr.splice(0,5));
-		
 		// Scramble : Github automatically base64 decodes and searches the strings and can find the key, causing GitHub to disactivate the key automatically for security
 		// obtain even values of string
-		let ep = obj.decrypted_file_contents.split('').map((val, index) => { if (index % 2 == 0) { return val; } });
-		console.log('ep:', ep);
-	
-		// obtain odd values of string
-		let ap = obj.decrypted_file_contents.split('').map((val, index) => { if (index % 2 != 0) { return val; } });
-		console.log('ap:', ap);
-	
 		obj.encrypted_file_contents = obj.decrypted_file_contents.split('').map((val, index) => { if (index % 2 == 0) { return val; } }).join('') + "|" + obj.decrypted_file_contents.split('').map((val, index) => { if (index % 2 != 0) { return val; } }).join('');
 		console.log('obj.encrypted_file_contents:', obj.encrypted_file_contents);
 		
