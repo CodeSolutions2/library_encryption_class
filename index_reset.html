@@ -44,14 +44,12 @@ async function Generate_keys_crypto() {
    // publicKey_obj = keyPair_obj.publicKey; // One can directly encrypt string data with this
    
    // 0. Encode NEW_publicKey_jwk_str with the "salt_scramble" method - this is why I added encrypt_text_salt_scramble(obj) to the library_encryption_class.js library.
-   const classObj = new encrypted_CRUD_file_database(RepoAobj);
+   const classObj0 = new encrypted_CRUD_file_database(RepoAobj);
    
    // 1. Put encoded key string in to file
-   RepoAobj.input_text = classObj.encrypt_text_string();
+   RepoAobj.input_text = classObj0.encrypt_text_string();
    // await module.run_backend_process(RepoAobj); // Way 1
    await run_backend_process(RepoAobj);
-   
-   delete classObj;
    
    // -----------------------------
    
@@ -59,13 +57,11 @@ async function Generate_keys_crypto() {
    
    RepoAobj.input_text = JSON.stringify(privateKey_jwk);
 
-   const classObj = new encrypted_CRUD_file_database(RepoAobj);
+   const classObj1 = new encrypted_CRUD_file_database(RepoAobj);
 
-   RepoAobj.input_text = classObj.encrypt_text_string();
+   RepoAobj.input_text = classObj1.encrypt_text_string();
 
    await run_backend_process(RepoAobj);
-
-   delete classObj;
    
    // -----------------------------
 	
