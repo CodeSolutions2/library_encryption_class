@@ -492,7 +492,7 @@ export class encrypted_CRUD_file_storage {
 		// var new_salt_length = Math.round(Math.random())*(n-1) + 1;
 		// OR
 		// Configuration 1: [no_salt to n]
-		var new_salt_length = Math.round(Math.random())*n;
+		var new_salt_length = Math.round(Math.random())*obj.n;
 		// console.log('new_salt_length: ', new_salt_length);
 	
 		// --------------------------------
