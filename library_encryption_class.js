@@ -533,8 +533,6 @@ export class encrypted_CRUD_file_storage {
 	async encrypt_text_salt_scramble(obj) {
 
 		obj = await this.create_salt(obj);
-
-		console.log('Inside encrypt_text_salt_scramble');
 		
 		// Add salt
 		if (Math.round(Math.random()) == 0) {
@@ -548,16 +546,21 @@ export class encrypted_CRUD_file_storage {
 	
 		// --------------------------------
 		
+		var arr = obj.decrypted_file_contents.split('');
+		console.log('arr.splice(0,5):', arr.splice(0,5));
+		
 		// Scramble : Github automatically base64 decodes and searches the strings and can find the key, causing GitHub to disactivate the key automatically for security
 		// obtain even values of string
-		let ep = obj.decrypted_file_contents.split('').map((val) => { if (val % 2 == 0) { return val; } });
+		let ep = arr.map((val) => { if (val % 2 == 0) { return val; } });
+		console.log('ep:', ep);
 	
 		// obtain odd values of string
-		let ap = obj.decrypted_file_contents.split('').map((val) => { if (val % 2 != 0) { return val; } });
+		let ap = arr.map((val) => { if (val % 2 != 0) { return val; } });
+		console.log('ap:', ap);
 	
 		obj.encrypted_file_contents = ep.join('') + "|" + ap.join('');
-		// console.log('obj.encrypted_file_contents:', obj.encrypted_file_contents);
-
+		console.log('obj.encrypted_file_contents:', obj.encrypted_file_contents);
+		
 		return obj;
 	}
 
