@@ -30,6 +30,7 @@ export class encrypted_CRUD_file_storage {
 			   type_of_encryption: this.RepoAobj.type_of_encryption,
 			   append_text: this.RepoAobj.append_text,
 		};
+		console.log('obj', obj);
 	
 		Object.freeze(obj.env_text); // make the original value non-changeable
 
@@ -270,6 +271,8 @@ export class encrypted_CRUD_file_storage {
 		var obj = await this.initialize_github();
 		
 		// ------------------------------------------------
+		
+		console.log('obj.type_of_encryption: ', obj.type_of_encryption);
 
 		if (obj.type_of_encryption == "window_crypto_subtle") {
 			// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
@@ -290,6 +293,8 @@ export class encrypted_CRUD_file_storage {
 			obj = await this.encrypt_text_salt_scramble(obj);
 		}
 
+		console.log('obj.encrypted_file_contents: ', obj.encrypted_file_contents);
+		
 		return obj.encrypted_file_contents;
 	}
 
@@ -528,6 +533,8 @@ export class encrypted_CRUD_file_storage {
 	async encrypt_text_salt_scramble(obj) {
 
 		obj = await this.create_salt(obj);
+
+		console.log('Inside encrypt_text_salt_scramble');
 		
 		// Add salt
 		if (Math.round(Math.random()) == 0) {
