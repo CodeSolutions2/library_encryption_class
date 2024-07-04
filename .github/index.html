@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+
+
+<script>
+
+// -----------------------------------------------
+	
+window.addEventListener('beforeunload', function() {
+    window.location.href = window.location.href + '?nocache=' + new Date().getTime();
+});
+
+// -----------------------------------------------
+
+
+await Generate_keys_crypto();
+  
+	
+// ----------------------------------------------------
+
+async function Generate_keys_crypto() {
+  
+  // STEP 0: Generate public and private keys (public key=for encrypting, private key=for decrypting)
+  var keyPair_obj = await window.crypto.subtle.generateKey({name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"}}, true, ["encrypt", "decrypt"]);
+	   // STEP 1: Obtain RSA key pair as individual objects - https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/generateKey
+	   // STEP 2: Convert public key and private key into a JSON string (JsonWebKey)
+	  
+  var publicKey_jwk = await window.crypto.subtle.exportKey("jwk", keyPair_obj.publicKey);
+
+   // -----------------------------
+   
+   var RepoAobj = {};
+   RepoAobj.repoOwner = 'CodeSolutions2';
+   RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
+   RepoAobj.foldername = '.github'; // foldername in RepoB
+   RepoAobj.filename = '.public_window_crypto_subtle'; // filename to create in RepoB, in foldername
+   RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
+
+   // -----------------------------
+   
+   RepoAobj.input_text = JSON.stringify(publicKey_jwk);
+   // publicKey_obj = keyPair_obj.publicKey; // One can directly encrypt string data with this
+   
+   // 0. Encode NEW_publicKey_jwk_str with the "salt_scramble" method - this is why I added encrypt_text_salt_scramble(obj) to the library_encryption_class.js library.
+   const classObj = new encrypted_CRUD_file_database(RepoAobj);
+   
+   // 1. Put encoded key string in to file
+   RepoAobj.input_text = classObj.encrypt_text_string();
+   // await module.run_backend_process(RepoAobj); // Way 1
+   await run_backend_process(RepoAobj);
+   
+   delete classObj;
+   
+   // -----------------------------
+   
+   var privateKey_jwk = await window.crypto.subtle.exportKey("jwk", keyPair_obj.privateKey);
+   
+   RepoAobj.input_text = JSON.stringify(privateKey_jwk);
+
+   const classObj = new encrypted_CRUD_file_database(RepoAobj);
+
+   RepoAobj.input_text = classObj.encrypt_text_string();
+
+   await run_backend_process(RepoAobj);
+
+   delete classObj;
+   
+   // -----------------------------
+	
+}
+
+// ----------------------------------------------------
+	
+</script>
+  </body>
+</html>
