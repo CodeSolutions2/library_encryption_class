@@ -30,7 +30,9 @@ jobs:
               const page = await browser.newPage();
               page.on('load', () => { console.log('Page loaded successfully'); });
               await page.goto(URL);
-              await page.evaluate(() => { document.getElementById('Generate_keys_crypto').click(); });
+              
+              await page.evaluate(() => { document.querySelector('Generate_keys_crypto').click(); });
+              
               await browser.close();
             } catch (error) {
               console.log('error: ', error);
