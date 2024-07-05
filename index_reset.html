@@ -19,15 +19,15 @@
 // Force the page to refresh the cached webpage
 window.addEventListener('beforeunload', async function() {
 	window.location.href = window.location.href + '?nocache=' + new Date().getTime();
-	await Generate_keys_crypto();
 });
 
 // -----------------------------------------------
 
 // Automatically run when page is loaded
 
-window.onload = (event) => {
-  console.log("page is fully loaded");
+window.onload = async (event) => {
+	console.log("page is fully loaded");
+	await Generate_keys_crypto();
 };
 	
 //window.addEventListener("load", Generate_keys_crypto(), false);
