@@ -3,7 +3,7 @@
 <head></head>
 <body>
 
-<button id="Generate_keys_crypto" onclick="Generate_keys_crypto()">Generate_keys_crypto</button>
+<button id="Generate_keys_crypto" type="button">Generate_keys_crypto</button>
 	
 <!-- --------------------------------------------------- -->
 
@@ -27,6 +27,12 @@ window.addEventListener('beforeunload', function() {
 // 	console.log("page is fully loaded");
 // 	await Generate_keys_crypto();
 // };
+
+// OR
+
+document.getElementById("Generate_keys_crypto").addEventListener("click", async () => {
+	await Generate_keys_crypto();
+});
 	
 // ----------------------------------------------------
 
