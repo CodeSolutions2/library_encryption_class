@@ -2,9 +2,6 @@
 <html>
 <head></head>
 <body>
-
-
-<button id="run" onclick="Generate_keys_crypto()">run</button>
 	
 <!-- --------------------------------------------------- -->
 
@@ -17,25 +14,17 @@
 // -----------------------------------------------
 
 // Force the page to refresh the cached webpage
-window.addEventListener('beforeunload', async function() {
+window.addEventListener('beforeunload', function() {
 	window.location.href = window.location.href + '?nocache=' + new Date().getTime();
 });
 
 // -----------------------------------------------
 
 // Automatically run when page is loaded
-
 window.onload = async (event) => {
 	console.log("page is fully loaded");
 	await Generate_keys_crypto();
 };
-	
-//window.addEventListener("load", Generate_keys_crypto(), false);
-
-// OR
-
-// const out = async () => { await Generate_keys_crypto(); };
-  
 	
 // ----------------------------------------------------
 
