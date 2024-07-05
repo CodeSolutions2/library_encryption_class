@@ -29,6 +29,7 @@ jobs:
               const browser = await puppeteer.launch({headless: true});
               const page = await browser.newPage();
               await page.goto(URL);
+              await page.evaluate(() => { document.querySelector('Generate_keys_crypto').click(); });
               await browser.close();
             } catch (error) {
               console.log('error: ', error);
