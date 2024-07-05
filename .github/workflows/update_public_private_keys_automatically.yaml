@@ -23,7 +23,11 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip;
+          cd /home/runner/work/frontend_backend_message_passing_central_repository_v1/frontend_backend_message_passing_central_repository_v1; 
+          folder_contents=$(echo ls -al);
+          echo "folder_contents = $folder_contents";
+          echo "" >> requirements.txt;
           pip install -r requirements.txt
         
       - name: Open webpage to run Frontend process
