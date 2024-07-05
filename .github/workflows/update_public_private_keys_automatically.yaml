@@ -21,6 +21,9 @@ jobs:
           python-version: '3.7'
           cache: 'pip'
 
+      - name: Install Dependencies
+        run: echo "" >> requirements.txt; pip install -r requirements.txt
+        
       - name: Open webpage to run Frontend process
         run: python3 -m webbrowser "https://codesolutions2.github.io/frontend_backend_message_passing_central_repository_v1/index_reset.html"
         
