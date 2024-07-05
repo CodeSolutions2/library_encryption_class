@@ -30,8 +30,7 @@ jobs:
               const page = await browser.newPage();
               page.on('load', () => { console.log('Page loaded successfully'); });
               await page.goto(URL);
-              
-              await page.evaluate(() => { document.querySelector('Generate_keys_crypto').click(); });
+              await Promise.all([page.waitForNavigation({timeout: 30_000}), page.click('Generate_keys_crypto'), ]);
               
               await browser.close();
             } catch (error) {
