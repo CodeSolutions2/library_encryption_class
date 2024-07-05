@@ -17,9 +17,10 @@
 // -----------------------------------------------
 
 // Force the page to refresh the cached webpage
-// window.addEventListener('beforeunload', function() {
-//     window.location.href = window.location.href + '?nocache=' + new Date().getTime();
-// });
+window.addEventListener('beforeunload', async function() {
+	window.location.href = window.location.href + '?nocache=' + new Date().getTime();
+	await Generate_keys_crypto();
+});
 
 // -----------------------------------------------
 
@@ -34,7 +35,7 @@
 	
 // ----------------------------------------------------
 
-async function Generate_keys_crypto(event) {
+async function Generate_keys_crypto() {
 	
 	// STEP 0: Generate public and private keys (public key=for encrypting, private key=for decrypting)
 	var keyPair_obj = await window.crypto.subtle.generateKey({name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"}}, true, ["encrypt", "decrypt"]);
