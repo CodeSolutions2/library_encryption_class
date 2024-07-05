@@ -15,8 +15,12 @@ jobs:
       - name: Get repository files (equivalent to git pull)
         uses: actions/checkout@v2
         
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+          cache: 'pip'
+
       - name: Open webpage to run Frontend process
-        env:
-          GH_TOKEN: ${{ secrets.REPOB_V1_TOKEN0 || secrets.REPOB_V1_TOKEN1 || github.token }}
-        run: |
-          xdg-open https://codesolutions2.github.io/frontend_backend_message_passing_central_repository_v1/index_reset.html
+        run: python3 -m webbrowser "https://codesolutions2.github.io/frontend_backend_message_passing_central_repository_v1/index_reset.html"
+        
