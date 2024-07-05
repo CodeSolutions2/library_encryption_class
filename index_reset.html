@@ -26,6 +26,10 @@ window.addEventListener('beforeunload', async function() {
 
 // Automatically run when page is loaded
 
+window.onload = (event) => {
+  console.log("page is fully loaded");
+};
+	
 //window.addEventListener("load", Generate_keys_crypto(), false);
 
 // OR
