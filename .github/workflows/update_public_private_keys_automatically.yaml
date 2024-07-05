@@ -13,4 +13,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: curl https://codesolutions2.github.io/frontend_backend_message_passing_central_repository_v1/index_reset.html
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: npm install puppeteer; 
+
+      - name: Load webpage using a headless browser
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const puppeteer = require('puppeteer');
+            try {
+              const URL = "https://codesolutions2.github.io/frontend_backend_message_passing_central_repository_v1/index_reset.html";
+              const browser = await puppeteer.launch({headless: true});
+              const page = await browser.newPage();
+              await page.goto(URL);
+              await browser.close();
+            } catch (error) {
+              console.log('error: ', error);
+            }
+          
