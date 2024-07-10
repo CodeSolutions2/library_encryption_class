@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'launch_yaml.txt' 
+      - '**.txt' 
 
 concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
