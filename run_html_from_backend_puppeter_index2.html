@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+
+<button class="buttonClass" id="Generate_keys_crypto" type="button">Generate_keys_crypto</button>
+	
+<!-- --------------------------------------------------- -->
+
+<script type="module" src="./index.js"></script>
+
+<!-- --------------------------------------------------- -->
+
+<!-- <script type="module" src="https://cdn.jsdelivr.net/npm/library_to_run_github_actions@1.0.1/index.min.js" crossorigin></script> -->
+
+<!-- --------------------------------------------------- -->
+	
+<script>
+
+// -----------------------------------------------
+
+// Force the page to refresh the cached webpage
+window.addEventListener('beforeunload', function() {
+	window.location.href = window.location.href + '?nocache=' + new Date().getTime();
+});
+
+// -----------------------------------------------
+
+// Automatically run when page is loaded
+// window.onload = async (event) => {
+// 	console.log("page is fully loaded");
+// 	await Generate_keys_crypto();
+// };
+
+// OR
+
+document.getElementById("Generate_keys_crypto").addEventListener("click", async () => {
+	await Generate_keys_crypto();
+});
+	
+// ----------------------------------------------------
+
+async function Generate_keys_crypto() {
+	
+	// STEP 0: Generate public and private keys (public key=for encrypting, private key=for decrypting)
+	var keyPair_obj = await window.crypto.subtle.generateKey({name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"}}, true, ["encrypt", "decrypt"]);
+	
+	// STEP 1: Obtain RSA key pair as individual objects - https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/generateKey
+	// STEP 2: Convert public key and private key into a JSON string (JsonWebKey)
+	
+	
+
+	// -----------------------------
+   
+	var RepoAobj = {};
+	RepoAobj.repoOwner = 'CodeSolutions2';
+	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
+	RepoAobj.foldername = '.github'; // foldername in RepoB
+	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
+	RepoAobj.type_of_encryption = "salt_scramble";
+
+	// -----------------------------
+	
+	// Generate a new publicKey_jwk_str
+   	var publicKey_jwk = await window.crypto.subtle.exportKey("jwk", keyPair_obj.publicKey);
+	RepoAobj.input_text = JSON.stringify(publicKey_jwk);
+	// console.log("non-encrypted publicKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+
+	// Assign the class where input_text is the generated publicKey_jwk_str
+	const classObj0 = new encrypted_CRUD_file_storage(RepoAobj);
+   
+	// Encrypt the publicKey_jwk_str
+	RepoAobj.input_text = await classObj0.encrypt_text_string()
+	// console.log("encrypted_publicKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+	
+	// Save the encrypted string to the .public_window_crypto_subtle
+	RepoAobj.filename = '.public_window_crypto_subtle'; // filename to create in RepoB, in foldername
+	await run_backend_process(RepoAobj);
+   
+	// -----------------------------
+
+	// Generate a new privateKey_jwk
+	var privateKey_jwk = await window.crypto.subtle.exportKey("jwk", keyPair_obj.privateKey);
+	RepoAobj.input_text = JSON.stringify(privateKey_jwk);
+	// console.log("non-encrypted privateKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+
+	// Assign the class where input_text is the generated privateKey_jwk
+	const classObj1 = new encrypted_CRUD_file_storage(RepoAobj);
+
+	// Encrypt the privateKey_jwk_str
+	RepoAobj.input_text = await classObj1.encrypt_text_string();
+	// console.log("encrypted_privateKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+
+	// Save the encrypted string to the .private_window_crypto_subtle
+	RepoAobj.filename = '.private_window_crypto_subtle'; // filename to create in RepoB, in foldername
+	await run_backend_process(RepoAobj);
+	
+	// -----------------------------
+	
+}
+
+// ----------------------------------------------------
+	
+</script>
+</body>
+</html>
