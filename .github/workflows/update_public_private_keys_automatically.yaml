@@ -1,9 +1,6 @@
 name: Updating window.crypto.subtle keys on a schedule
 
-on:
-  push:
-    branches:
-      - main
+
       
 jobs:
   update_token:
