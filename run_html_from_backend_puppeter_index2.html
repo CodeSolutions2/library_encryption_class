@@ -10,10 +10,6 @@
 <script type="module" src="./index.js"></script>
 
 <!-- --------------------------------------------------- -->
-
-<!-- <script type="module" src="https://cdn.jsdelivr.net/npm/library_to_run_github_actions@1.0.1/index.min.js" crossorigin></script> -->
-
-<!-- --------------------------------------------------- -->
 	
 <script>
 
@@ -26,23 +22,12 @@ window.addEventListener('beforeunload', function() {
 
 // -----------------------------------------------
 
-// Automatically run when page is loaded
-// window.onload = async (event) => {
-// 	console.log("page is fully loaded");
-// 	await Generate_keys_crypto();
-// };
-
-// OR
-
 document.getElementById("Generate_keys_crypto").addEventListener("click", async () => {
 	await Generate_keys_crypto();
 
 	// Change the page so that it is known that the function is finished
-	// 
-	document.dispatchEvent(new Event('DOMContentLoaded'));
-	// OR
 	// Works if await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.buttonClass'), ]);
-	// window.location.href = window.location.href + '?nocache=' + new Date().getTime();
+	window.location.href = window.location.href + '?nocache=' + new Date().getTime();
 });
 	
 // ----------------------------------------------------
