@@ -1,6 +1,15 @@
 name: Updating window.crypto.subtle keys on a schedule
 
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'launch_yaml.txt' 
 
+concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
       
 jobs:
   update_token:
