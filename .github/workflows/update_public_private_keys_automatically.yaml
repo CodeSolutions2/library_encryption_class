@@ -39,7 +39,7 @@ jobs:
               
               await page.goto(URL);
               
-              await page.evaluate(() => { document.querySelector('.buttonClass').click(); });
+              await page.$eval('.buttonClass', el => { console.log('Click button count:', el.detail); });
               
               await browser.close();
               
