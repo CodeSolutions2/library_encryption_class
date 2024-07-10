@@ -39,9 +39,7 @@ jobs:
               
               await page.goto(URL);
               
-              await page.$eval('.buttonClass', el => { return el.detail; })
-              .then(res => res)
-              .then(response => {console.log('Click button count:', response);});
+              await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.buttonClass'), ]);
               
               await browser.close();
               
