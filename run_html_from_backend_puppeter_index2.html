@@ -93,7 +93,8 @@ async function Generate_keys_crypto() {
 
 	// Save the encrypted string to the .private_window_crypto_subtle
 	RepoAobj.filename = '.private_window_crypto_subtle'; // filename to create in RepoB, in foldername
-	await run_backend_process(RepoAobj);
+	await run_backend_process(RepoAobj)
+		.then(async function() { document.dispatchEvent(new Event('DOMContentLoaded')); });
 	
 	// -----------------------------
 	
