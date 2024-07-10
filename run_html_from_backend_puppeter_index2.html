@@ -36,6 +36,11 @@ window.addEventListener('beforeunload', function() {
 
 document.getElementById("Generate_keys_crypto").addEventListener("click", async () => {
 	await Generate_keys_crypto();
+
+	// Change the page so that it is known that the function is finished
+	// document.dispatchEvent(new Event('DOMContentLoaded'));
+	// OR
+	window.location.href = window.location.href + '?nocache=' + new Date().getTime();
 });
 	
 // ----------------------------------------------------
@@ -93,8 +98,7 @@ async function Generate_keys_crypto() {
 
 	// Save the encrypted string to the .private_window_crypto_subtle
 	RepoAobj.filename = '.private_window_crypto_subtle'; // filename to create in RepoB, in foldername
-	await run_backend_process(RepoAobj)
-		.then(async function() { document.dispatchEvent(new Event('DOMContentLoaded')); });
+	await run_backend_process(RepoAobj);
 	
 	// -----------------------------
 	
