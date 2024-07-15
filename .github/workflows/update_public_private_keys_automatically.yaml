@@ -5,8 +5,8 @@ on:
     - cron: '0 3,15 * * *'
 
 concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: false
+      group: unique_name-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
       
 jobs:
   update_token:
