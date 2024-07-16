@@ -9,11 +9,6 @@ on:
         default: 'default'
   schedule:
     - cron: '0 3,15 * * *'
-  push:
-    branches:
-      - main
-    paths:
-      - '**.txt' 
       
 concurrency: 
       group: ${{ github.ref }}
