@@ -1,9 +1,10 @@
 name: Updating window.crypto.subtle keys on a schedule
 
-on: workflow_run:
-  workflows: ["pages-build-deployment"]
-  types:
-    - completed
+on: 
+  workflow_run:
+    workflows: ["pages-build-deployment"]
+    types:
+      - completed
       
 concurrency: 
       group: update-public-private-keys
