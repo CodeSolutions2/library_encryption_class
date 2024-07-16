@@ -2,6 +2,11 @@ name: Updating window.crypto.subtle keys on a schedule
 
 on:
   workflow_dispatch:
+    inputs:
+      priority:
+        description: 'Job Priority'
+        required: true
+        default: 'default'
   push:
     branches:
       - main
@@ -14,7 +19,6 @@ concurrency:
       
 jobs:
   update_token:
-    if: github.event_name == 'workflow_run' && github.event.workflow == 'pages-build-deployment'
     runs-on: ubuntu-latest
 
     permissions: write-all
