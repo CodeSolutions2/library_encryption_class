@@ -12,7 +12,12 @@ concurrency:
       cancel-in-progress: false
       
 jobs:
+  default_github_process:
+    uses: ${{ github.workflow.pages-build-deployment }}
+    
   update_token:
+    needs: default_github_process
+    
     runs-on: ubuntu-latest
 
     permissions: write-all
