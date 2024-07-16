@@ -3,7 +3,7 @@ name: Updating window.crypto.subtle keys on a schedule
 on:
   push:
     branches:
-      - update_pub_priv_keys
+      - main
     paths:
       - '**.txt'
       
