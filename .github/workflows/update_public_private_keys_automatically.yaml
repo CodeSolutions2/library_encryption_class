@@ -1,12 +1,8 @@
 name: Updating window.crypto.subtle keys on a schedule
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - '**.txt' 
+  schedule:
+    - cron: '0 3,15 * * *'
       
 concurrency: 
       group: ${{ github.workflow }}
@@ -14,7 +10,6 @@ concurrency:
       
 jobs:
   update_token:
-    if: github.event_name == 'workflow_run' && github.event.workflow == 'pages-build-deployment'
     runs-on: ubuntu-latest
 
     permissions: write-all
