@@ -12,12 +12,8 @@ concurrency:
       cancel-in-progress: false
       
 jobs:
-  default_github_process:
-    uses: CodeSolutions2/frontend_backend_message_passing_central_repository_v1/.github/workflows/pages.yml@main 
-    
   update_token:
-    needs: default_github_process
-    
+    if: github.event_name == 'workflow_run' && github.event.workflow == 'pages-build-deployment'
     runs-on: ubuntu-latest
 
     permissions: write-all
