@@ -19,7 +19,7 @@ jobs:
     permissions: write-all
 
     steps:
-      - uses: actions/checkout@v4can 
+      - uses: actions/checkout@v4
       
       - uses: actions/setup-node@v3
         with:
