@@ -5,7 +5,7 @@ on:
     branches:
       - update_pub_priv_keys
     paths:
-      - '**.yaml'
+      - '**.txt'
       
 concurrency: 
       group: update-public-private-keys
