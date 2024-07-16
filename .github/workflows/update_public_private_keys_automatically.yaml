@@ -2,6 +2,11 @@ name: Updating window.crypto.subtle keys on a schedule
 
 on:
   workflow_dispatch:
+    inputs:
+      priority:
+        description: 'Job Priority'
+        required: true
+        default: 'default'
   schedule:
     - cron: '0 3,15 * * *'
   push:
