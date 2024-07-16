@@ -11,7 +11,7 @@ jobs:
   update_token:
     concurrency: 
       group: update-public-private-keys
-      cancel-in-progress: true
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     environment: 
       name: github-pages
