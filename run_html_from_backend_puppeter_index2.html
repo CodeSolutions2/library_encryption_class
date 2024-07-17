@@ -49,7 +49,8 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	RepoAobj.input_text = "TEST if a function can run"+"|"+RepoAobj.repoA_name;
 	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
 	RepoAobj.type_of_encryption = "salt_scramble";
-	await run_backend_process(RepoAobj);
+	await run_backend_process(RepoAobj)
+		.then(function() { document.getElementById("test_button").style.display = 'block'; })
 
 	
 	// Way 0: WORKS! Does file manipulations and returns!
@@ -104,7 +105,7 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	// 	document.getElementById("test_button").style.display = 'block';
 	// }, 300);
 	// OR
-	document.getElementById("test_button").style.display = 'block';
+	
 	
 	// Step 4: Frontend = continue to ensure that the button non-visible (style="display:none;")
 	// document.getElementById("test_button").style.display = 'none';
