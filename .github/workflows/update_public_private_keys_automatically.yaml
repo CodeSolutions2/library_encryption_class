@@ -42,8 +42,7 @@ jobs:
               
               await page.goto(URL);
 
-              await page.click('.buttonClass');
-              await page.waitForSelector('#result', {visible: true});
+              await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.buttonClass'), ]);
               
               await browser.close();
               
