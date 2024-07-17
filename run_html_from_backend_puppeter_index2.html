@@ -5,7 +5,7 @@
 
 <button class="buttonClass" id="Generate_keys_crypto" type="button" style="display:block; width:2px; height: 2px;"></button>
 
-<button class="testbuttonClass" id="test_button" type="button" style="display:block; width:2px; height: 2px;">test_button</button>
+<button class="testbuttonClass" id="test_button" type="button" style="display:none; width:2px; height: 2px;">test_button</button>
 	
 <!-- --------------------------------------------------- -->
 
@@ -77,10 +77,10 @@ document.getElementById("test_button").addEventListener("click", async () => {
 
 	// Way 2: 
 	// Usage with await page.click('.testbuttonClass'); await page.waitForSelector('#headertest', {visible: true});
-	var DOM_Element = document.createElement('p');
-	DOM_Element.setAttribute("id", "result");
-	DOM_Element.innerHTML = 'Webapp keys updated';
-	document.getElementsByTagName('body')[0].appendChild(DOM_Element);
+	// var DOM_Element = document.createElement('p');
+	// DOM_Element.setAttribute("id", "result");
+	// DOM_Element.innerHTML = 'Webapp keys updated';
+	// document.getElementsByTagName('body')[0].appendChild(DOM_Element);
 
 	// Way 3: did not perform file manipulations, but returns
 	// Usage with await page.waitForSelector('button.test_button', {hidden: true});
