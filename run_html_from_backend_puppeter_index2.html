@@ -4,6 +4,8 @@
 <body>
 
 <button class="buttonClass" id="Generate_keys_crypto" type="button" style="display:block; width:2px; height: 2px;"></button>
+
+<button class="testbuttonClass" id="test_button" type="button" style="display:block; width:2px; height: 2px;"></button>
 	
 <!-- --------------------------------------------------- -->
 
@@ -31,6 +33,17 @@ document.getElementById("Generate_keys_crypto").addEventListener("click", async 
 
 	// Works if await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'domcontentloaded'}), page.click('.buttonClass'), ]);
 	// document.dispatchEvent(new Event('DOMContentLoaded'));
+});
+
+// ----------------------------------------------------
+
+document.getElementById("test_button").addEventListener("click", async () => {
+
+	var h1Element = document.createElement('h1');
+	h1Element.setAttribute("id", "headertest");
+	document.getElementsByTagName('body')[0].appendChild(h1Element);
+	
+	console.log('test_button was pushed!')
 });
 	
 // ----------------------------------------------------
