@@ -64,13 +64,14 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	// document.dispatchEvent(new Event('DOMContentLoaded'));
 
 	// Way 2: WORKS! Does file manipulations and returns!
-	// await page.click('.testbuttonClass'); 
+	// await page.click('.testbuttonClass'); // if button has style.display=block
+	// await page.evaluate(() => { document.querySelector('#test_button').click(); }); // if button has style.display=none
 	// await page.waitForSelector('#result', {visible: true});
 	// On HTML
-	var DOM_Element = document.createElement('p');
-	DOM_Element.setAttribute("id", "result");
-	DOM_Element.innerHTML = 'Webapp keys updated';
-	document.getElementsByTagName('body')[0].appendChild(DOM_Element);
+	// var DOM_Element = document.createElement('p');
+	// DOM_Element.setAttribute("id", "result");
+	// DOM_Element.innerHTML = 'Webapp keys updated';
+	// document.getElementsByTagName('body')[0].appendChild(DOM_Element);
 
 	// Way 3: did not perform file manipulations, but returns
 	// Usage with await page.waitForSelector('button.test_button', {hidden: true});
@@ -78,17 +79,13 @@ document.getElementById("test_button").addEventListener("click", async () => {
 
 	// Way 4:  did not perform file manipulations, and does not return
 	// Usage with await Promise.all([page.waitForSelector('button.test_button', {visible: true}),]);
-	
 
-	// Way 4:
-	// await Promise.all([page.waitForSelector('button.test_button', {hidden: true}), page.click('.testbuttonClass'), ]);
-
-
-	// Way 5: did not perform file manipulations, but returns
-	// await page.click('.testbuttonClass'); await page.waitForSelector('button.test_button', {hidden: true});
-	// On html: button is visible
-	// document.getElementById("test_button").style.display = 'none';
-	
+	// Way 5: 
+	// await page.waitForSelector('button.test_button', {visible: true});  // wait for the button to become visible, to stop
+	// On HTML
+	// button is initially hidden
+	await setTimeout(function() { document.getElementById("test_button").style.display = 'block'; }, 100); // make button visible for 0.1 ms
+	document.getElementById("test_button").style.display = 'none'; // make button hidden
 });
 	
 // ----------------------------------------------------
