@@ -5,7 +5,7 @@
 
 <button class="buttonClass" id="Generate_keys_crypto" type="button" style="display:block; width:2px; height: 2px;"></button>
 
-<button class="testbuttonClass" id="test_button" type="button" style="display:none;">test_button</button>
+<button class="testbuttonClass" id="test_button" type="button" style="display:block; width:2px; height: 2px;">test_button</button>
 	
 <!-- --------------------------------------------------- -->
 
@@ -25,8 +25,15 @@ window.addEventListener('beforeunload', function() {
 // -----------------------------------------------
 
 document.getElementById("Generate_keys_crypto").addEventListener("click", async () => {
-	await Generate_keys_crypto()
-		.then(async function() {
+
+	await Generate_keys_crypto();
+
+	// Change the page so that it is known that the function is finished
+	// Works if await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.buttonClass'), ]);
+	window.location.href = window.location.href + '?nocache=' + new Date().getTime();
+	
+	// await Generate_keys_crypto()
+		// .then(async function() {
 			// Change the page so that it is known that the function is finished
 			// Works if await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.buttonClass'), ]);
 			// window.location.href = window.location.href + '?nocache=' + new Date().getTime();
@@ -34,11 +41,11 @@ document.getElementById("Generate_keys_crypto").addEventListener("click", async 
 			// Try with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'domcontentloaded'}), page.click('.buttonClass'), ]);
 			// document.dispatchEvent(new Event('DOMContentLoaded'));
 		
-			var DOM_Element = document.createElement('p');
-			DOM_Element.setAttribute("id", "result");
-			DOM_Element.innerHTML = 'Webapp keys updated';
-			document.getElementsByTagName('body')[0].appendChild(DOM_Element);
-		});
+			// var DOM_Element = document.createElement('p');
+			// DOM_Element.setAttribute("id", "result");
+			// DOM_Element.innerHTML = 'Webapp keys updated';
+			// document.getElementsByTagName('body')[0].appendChild(DOM_Element);
+		// });
 	
 });
 
@@ -46,26 +53,8 @@ document.getElementById("Generate_keys_crypto").addEventListener("click", async 
 
 document.getElementById("test_button").addEventListener("click", async () => {
 
-	// Way 0: works!
-	// Change the page so that it is known that the function is finished
-	// Usage with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.buttonClass'), ]);
-	// window.location.href = window.location.href + '?nocache=' + new Date().getTime();
-
-	// Way 1: did not work
-	// Usage with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'domcontentloaded'}), page.click('.buttonClass'), ]);
-	// document.dispatchEvent(new Event('DOMContentLoaded'));
-
-	// Way 2: works!
-	// Usage with await page.click('.testbuttonClass'); await page.waitForSelector('#headertest', {visible: true});
-	// var DOM_Element = document.createElement('p');
-	// DOM_Element.setAttribute("id", "result");
-	// DOM_Element.innerHTML = 'Webapp keys updated';
-	// document.getElementsByTagName('body')[0].appendChild(DOM_Element);
-
-	// Way 3:
-	// Usage with await page.waitForSelector('button.test_button', {hidden: true});
+	// Do file manipulations
 	var RepoAobj = {};
-  
   	RepoAobj.repoOwner = 'CodeSolutions2';
 	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
   	RepoAobj.foldername = 'test'; // foldername in RepoB
@@ -75,6 +64,28 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
 	RepoAobj.type_of_encryption = "salt_scramble";
 	await run_backend_process(RepoAobj);
+
+	
+	// Way 0: does file manipulations and returns
+	// Change the page so that it is known that the function is finished
+	// Usage with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.buttonClass'), ]);
+	// window.location.href = window.location.href + '?nocache=' + new Date().getTime();
+
+	// Way 1: does file manipulations, but does not return
+	// Usage with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'domcontentloaded'}), page.click('.buttonClass'), ]);
+	// document.dispatchEvent(new Event('DOMContentLoaded'));
+
+	// Way 2: 
+	// Usage with await page.click('.testbuttonClass'); await page.waitForSelector('#headertest', {visible: true});
+	var DOM_Element = document.createElement('p');
+	DOM_Element.setAttribute("id", "result");
+	DOM_Element.innerHTML = 'Webapp keys updated';
+	document.getElementsByTagName('body')[0].appendChild(DOM_Element);
+
+	// Way 3: did not perform file manipulations, but returns
+	// Usage with await page.waitForSelector('button.test_button', {hidden: true});
+	
+	
 });
 	
 // ----------------------------------------------------
