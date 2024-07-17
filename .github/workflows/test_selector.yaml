@@ -44,8 +44,10 @@ jobs:
               page.on('load', () => { console.log('Page loaded successfully'); });
               
               await page.goto(URL);
+
+              await page.evaluate(() => { document.querySelector('#test_button').click(); });
               
-              await page.waitForSelector('.testbuttonClass', {visible: true});
+              await page.waitForSelector('button.test_button', {visible: true});
               
               await browser.close();
               
