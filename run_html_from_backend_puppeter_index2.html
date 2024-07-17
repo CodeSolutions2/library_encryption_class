@@ -5,7 +5,7 @@
 
 <button class="buttonClass" id="Generate_keys_crypto" type="button" style="display:block; width:2px; height: 2px;"></button>
 
-<button class="testbuttonClass" id="test_button" type="button" style="display:block;">test_button</button>
+<button class="testbuttonClass" id="test_button" type="button" style="display:none;">test_button</button>
 	
 <!-- --------------------------------------------------- -->
 
@@ -28,24 +28,12 @@ document.getElementById("Generate_keys_crypto").addEventListener("click", async 
 
 	await Generate_keys_crypto();
 
-	// Change the page so that it is known that the function is finished
-	// Works if await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.buttonClass'), ]);
-	window.location.href = window.location.href + '?nocache=' + new Date().getTime();
-	
-	// await Generate_keys_crypto()
-		// .then(async function() {
-			// Change the page so that it is known that the function is finished
-			// Works if await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.buttonClass'), ]);
-			// window.location.href = window.location.href + '?nocache=' + new Date().getTime();
-		
-			// Try with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'domcontentloaded'}), page.click('.buttonClass'), ]);
-			// document.dispatchEvent(new Event('DOMContentLoaded'));
-		
-			// var DOM_Element = document.createElement('p');
-			// DOM_Element.setAttribute("id", "result");
-			// DOM_Element.innerHTML = 'Webapp keys updated';
-			// document.getElementsByTagName('body')[0].appendChild(DOM_Element);
-		// });
+	// Way 2: WORKS! Does file manipulations and returns!
+	// Usage with await page.click('.buttonClass'); await page.waitForSelector('#result', {visible: true});
+	var DOM_Element = document.createElement('p');
+	DOM_Element.setAttribute("id", "result");
+	DOM_Element.innerHTML = 'Webapp keys updated';
+	document.getElementsByTagName('body')[0].appendChild(DOM_Element);
 	
 });
 
@@ -66,27 +54,30 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	await run_backend_process(RepoAobj);
 
 	
-	// Way 0: does file manipulations and returns
+	// Way 0: WORKS! Does file manipulations and returns!
 	// Change the page so that it is known that the function is finished
-	// Usage with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.buttonClass'), ]);
+	// Usage with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.testbuttonClass'), ]);
 	// window.location.href = window.location.href + '?nocache=' + new Date().getTime();
 
 	// Way 1: does file manipulations, but does not return
-	// Usage with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'domcontentloaded'}), page.click('.buttonClass'), ]);
+	// Usage with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'domcontentloaded'}), page.click('.testbuttonClass'), ]);
 	// document.dispatchEvent(new Event('DOMContentLoaded'));
 
-	// Way 2: 
-	// Usage with await page.click('.testbuttonClass'); await page.waitForSelector('#headertest', {visible: true});
-	var DOM_Element = document.createElement('p');
-	DOM_Element.setAttribute("id", "result");
-	DOM_Element.innerHTML = 'Webapp keys updated';
-	document.getElementsByTagName('body')[0].appendChild(DOM_Element);
+	// Way 2: WORKS! Does file manipulations and returns!
+	// Usage with await page.click('.testbuttonClass'); await page.waitForSelector('#result', {visible: true});
+	// var DOM_Element = document.createElement('p');
+	// DOM_Element.setAttribute("id", "result");
+	// DOM_Element.innerHTML = 'Webapp keys updated';
+	// document.getElementsByTagName('body')[0].appendChild(DOM_Element);
 
 	// Way 3: did not perform file manipulations, but returns
 	// Usage with await page.waitForSelector('button.test_button', {hidden: true});
 
 	// Way 4:  did not perform file manipulations, and does not return
 	// Usage with await Promise.all([page.waitForSelector('button.test_button', {visible: true}),]);
+
+	// Way 4:
+	// await Promise.all([page.waitForSelector('button.test_button', {hidden: true}), page.click('.testbuttonClass'), ]);
 	
 });
 	
