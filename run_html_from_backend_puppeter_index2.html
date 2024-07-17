@@ -81,10 +81,11 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	// Usage with await Promise.all([page.waitForSelector('button.test_button', {visible: true}),]);
 
 	// Way 5: 
+	// await page.evaluate(() => { document.querySelector('#test_button').click(); }); // allow this eventlistenr function to run
 	// await page.waitForSelector('button.test_button', {visible: true});  // wait for the button to become visible, to stop
-	// TimeoutError: Waiting for selector `button.test_button` failed: Waiting failed: 30000ms exceeded
+	// OR
 	// await page.waitForSelector('#test_button', {visible: true});  // wait for the button to become visible, to stop
-	// TimeoutError: Waiting for selector `#test_button` failed: Waiting failed: 30000ms exceeded
+	// OR
 	// await page.waitForSelector('.testbuttonClass', {visible: true});
 	// On HTML
 	// button is initially hidden
