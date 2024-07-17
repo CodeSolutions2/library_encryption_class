@@ -45,7 +45,7 @@ jobs:
               
               await page.goto(URL);
               
-              await page.waitForSelector('#test_button', {visible: true});
+              await page.waitForSelector('.testbuttonClass', {visible: true});
               
               await browser.close();
               
