@@ -15,5 +15,5 @@ The [frontend_backend_message_passing_central_repository_v0](https://github.com/
   - Disadvantages of RepoB_V0 workflow architecture: RepoB needs RepoA's key on the backend via GitHub Secrets, to create the repository dispatch event. If the backend of RepoB is compromised, it could expose RepoA. Thus, a second version of RepoB, this repository (frontend_backend_message_passing_central_repository_v1), was created.
 
 ## Version 1 of RepoB
-  - [Update keys on Frontend] https://CodeSolutions2.github.io/frontend_backend_message_passing_central_repository_v1/index_reset.html
+  - [Update keys on Frontend] https://CodeSolutions2.github.io/frontend_backend_message_passing_central_repository_v1/run_html_from_backend_puppeter_index2.html
   - Disadvantages of this workflow architecture: RepoB file contents need to be backed-up in another protected repository to avoid complete loss of data. ***(an automated solution is in development)***
