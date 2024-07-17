@@ -45,7 +45,7 @@ jobs:
               
               await page.goto(URL);
 
-              await page.evaluate(() => { document.querySelector('#test_button').click(); });
+              await page.click('.testbuttonClass');
               
               await page.waitForSelector('button.test_button', {visible: true});
               
