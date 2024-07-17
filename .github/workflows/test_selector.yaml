@@ -47,7 +47,7 @@ jobs:
 
               await page.evaluate(() => { document.querySelector('#test_button').click(); });
               
-              await page.waitForSelector('button.test_button', {hidden: true});
+              await page.waitForSelector('button.test_button', {hidden: false});
               
               await browser.close();
               
