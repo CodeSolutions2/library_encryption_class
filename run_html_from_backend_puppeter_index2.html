@@ -30,7 +30,7 @@ document.getElementById("Generate_keys_crypto").addEventListener("click", async 
 
 	// Way 0: WORKS! Does file manipulations and returns!
 	// Change the page so that it is known that the function is finished
-	// Usage with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.testbuttonClass'), ]);
+	// await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.buttonClass'), ]);
 	window.location.href = window.location.href + '?nocache=' + new Date().getTime();
 	
 });
