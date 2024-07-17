@@ -90,22 +90,24 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	// Step 1: Frontend = frontend process runs using eventlistener
 	
 	// Step 2: Backend = need a function to detect when the Frontend process is done
-	// The detection process [hidden=true] selected is waiting for the [button] to [not be found in the DOM or to be hidden] 
+	// The detection process [hidden=false] selected is waiting for the [button] to [be found in the DOM or to be NOT hidden] 
 	
-	// await page.waitForSelector('button.test_button', {hidden: true});
+	// await page.waitForSelector('button.test_button', {hidden: false});
 	// OR
-	// await page.waitForSelector('#test_button', {hidden: true});
+	// await page.waitForSelector('#test_button', {hidden: false});
 	// OR
-	// await page.waitForSelector('.testbuttonClass', {hidden: true});
+	// await page.waitForSelector('.testbuttonClass', {hidden: false});
 
-	// Step 3: Frontend = make the button [not be found in the DOM or to be hidden] to make the Backend detect that the Frontend is finished
-	await setTimeout(function() { 
+	// Step 3: Frontend = make the button [be found in the DOM or to be NOT hidden] to make the Backend detect that the Frontend is finished
+	// await setTimeout(function() { 
 		// document.getElementById("test_button").style = ''; 
-		document.getElementById("test_button").style.display = 'block';
-	}, 300);
-
+	// 	document.getElementById("test_button").style.display = 'block';
+	// }, 300);
+	// OR
+	document.getElementById("test_button").style.display = 'block';
+	
 	// Step 4: Frontend = continue to ensure that the button non-visible (style="display:none;")
-	document.getElementById("test_button").style.display = 'none';
+	// document.getElementById("test_button").style.display = 'none';
 
 	// RESULT: it did not perform file manipulations, but returns
 
