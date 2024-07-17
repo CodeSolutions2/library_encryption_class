@@ -80,29 +80,33 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	// Way 4:  did not perform file manipulations, and does not return
 	// Usage with await Promise.all([page.waitForSelector('button.test_button', {visible: true}),]);
 
-	// Way 5: did not perform file manipulations, and does not return
-
-	// Step 0: Backend = push button (style="") to run Frontend process
+	// ---------------------------------------------------------------
+	
+	// People want the button to be non-visible (style="display:none;")
+	
+	// In order for puppeteer to detect the button with (style="display:none;"), one needs to use await page.evaluate(() => { document.querySelector('#test_button').click(); }); on the Backend 
+	
+	// Step 0: Backend = push button (style="display:none;") to run Frontend process
 	// await page.evaluate(() => { document.querySelector('#test_button').click(); });
 	
 	// Step 1: Frontend = frontend process runs using eventlistener
+	
 	// Step 2: Backend = need a function to detect when the Frontend process is done
-	// the detection process selected is waiting for the button to change (style.display = 'block')
-	// await page.waitForSelector('button.test_button', {visible: true});  // wait for the button to become visible, to stop
+	// The detection process [hidden=true] selected is waiting for the [button] to [not be found in the DOM or to be hidden] 
+	
+	// await page.waitForSelector('button.test_button', {hidden: true});
 	// OR
-	// await page.waitForSelector('#test_button', {visible: true});  // wait for the button to become visible, to stop
+	// await page.waitForSelector('#test_button', {hidden: true});
 	// OR
-	// await page.waitForSelector('.testbuttonClass', {visible: true});
-	// On HTML
-	// button is initially (style.display = 'none')
-	// await setTimeout(function() { document.getElementById("test_button").style.display = 'block'; }, 100); // make button visible for 0.1 ms
-	// document.getElementById("test_button").style.display = 'none'; // make button hidden
+	// await page.waitForSelector('.testbuttonClass', {hidden: true});
 
+	// Step 3: Frontend = make the button [not be found in the DOM or to be hidden] to make the Backend detect that the Frontend is finished
+	await setTimeout(function() { document.getElementById("test_button").style = ''; }, 300);
 
-	// Way 5: 
-	// On HTML
-	// button is initially visible
-	document.getElementById("test_button").style.display = 'none'; // make button hidden
+	// Step 4: Frontend = continue to ensure that the button non-visible (style="display:none;")
+	document.getElementById("test_button").style.display = 'none';
+
+	// ---------------------------------------------------------------
 	
 });
 	
