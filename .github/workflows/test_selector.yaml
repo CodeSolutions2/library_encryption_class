@@ -1,0 +1,55 @@
+name: Test using selector
+
+on:
+  workflow_dispatch:
+    inputs:
+      priority:
+        description: 'Job Priority'
+        required: true
+        default: 'default'
+  push:
+    branches:
+      - main
+    paths:
+      - '**.txt'
+      
+concurrency: 
+      group: ${{ github.ref }}
+      cancel-in-progress: false
+      
+jobs:
+  update_token:
+    runs-on: ubuntu-latest
+
+    permissions: write-all
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: npm install puppeteer; 
+
+      - name: Load webpage using a non-graphical browser
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const puppeteer = require('puppeteer');
+            try {
+              const URL = "https://codesolutions2.github.io/frontend_backend_message_passing_central_repository_v1/run_html_from_backend_puppeter_index2.html";
+              const browser = await puppeteer.launch({headless: true});
+              const page = await browser.newPage();
+              
+              page.on('load', () => { console.log('Page loaded successfully'); });
+              
+              await page.goto(URL);
+              
+              await page.click('.testbuttonClass')
+              await page.waitForSelector('#headertest', {visible: true});
+              
+              await browser.close();
+              
+            } catch (error) {
+              console.log('error: ', error);
+            }
