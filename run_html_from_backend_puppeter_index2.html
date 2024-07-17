@@ -75,6 +75,7 @@ document.getElementById("test_button").addEventListener("click", async () => {
 
 	// Way 4:  did not perform file manipulations, and does not return
 	// Usage with await Promise.all([page.waitForSelector('button.test_button', {visible: true}),]);
+	document.getElementById("test_button").style.display = 'none';
 
 	// Way 4:
 	// await Promise.all([page.waitForSelector('button.test_button', {hidden: true}), page.click('.testbuttonClass'), ]);
