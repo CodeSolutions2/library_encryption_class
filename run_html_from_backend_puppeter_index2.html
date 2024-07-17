@@ -101,10 +101,12 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	// await page.waitForSelector('.testbuttonClass', {hidden: true});
 
 	// Step 3: Frontend = make the button [not be found in the DOM or to be hidden] to make the Backend detect that the Frontend is finished
-	await setTimeout(function() { document.getElementById("test_button").style = ''; }, 300);
+	// await setTimeout(function() { document.getElementById("test_button").style = ''; }, 300);
 
 	// Step 4: Frontend = continue to ensure that the button non-visible (style="display:none;")
 	document.getElementById("test_button").style.display = 'none';
+
+	// RESULT: it did not perform file manipulations, but returns
 
 	// ---------------------------------------------------------------
 	
