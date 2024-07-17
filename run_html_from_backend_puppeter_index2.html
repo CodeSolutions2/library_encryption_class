@@ -64,7 +64,17 @@ document.getElementById("test_button").addEventListener("click", async () => {
 
 	// Way 3:
 	// Usage with await page.waitForSelector('button.test_button', {hidden: true});
+	var RepoAobj = {};
+  
+  	RepoAobj.repoOwner = 'CodeSolutions2';
+	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
+  	RepoAobj.foldername = 'test'; // foldername in RepoB
 	
+	RepoAobj.filename = 'cb.txt'; // filename to create in RepoB, in foldername
+	RepoAobj.input_text = "TEST if a function can run"+"|"+RepoAobj.repoA_name;
+	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
+	RepoAobj.type_of_encryption = "salt_scramble";
+	await run_backend_process(RepoAobj);
 });
 	
 // ----------------------------------------------------
