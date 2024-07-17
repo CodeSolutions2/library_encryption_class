@@ -45,7 +45,7 @@ jobs:
               
               await page.goto(URL);
               
-              await Promise.all([page.waitForSelector('button.test_button', {hidden: true}),]);
+              await Promise.all([page.waitForSelector('button.test_button', {visible: true}),]);
               
               await browser.close();
               
