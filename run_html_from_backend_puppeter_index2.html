@@ -81,7 +81,7 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	// Usage with await Promise.all([page.waitForSelector('button.test_button', {visible: true}),]);
 
 	// Way 5: 
-	// await page.waitForSelector('button.test_button', {visible: true});  // wait for the button to become visible, to stop
+	// await page.waitForSelector('#test_button', {visible: true});  // wait for the button to become visible, to stop
 	// On HTML
 	// button is initially hidden
 	await setTimeout(function() { document.getElementById("test_button").style.display = 'block'; }, 100); // make button visible for 0.1 ms
