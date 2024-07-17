@@ -5,7 +5,7 @@
 
 <button class="buttonClass" id="Generate_keys_crypto" type="button" style="display:block; width:2px; height: 2px;"></button>
 
-<button class="testbuttonClass" id="test_button" type="button" style="display:block;">test_button</button>
+<button class="testbuttonClass" id="test_button" type="button" style="display:none;">test_button</button>
 	
 <!-- --------------------------------------------------- -->
 
@@ -64,21 +64,30 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	// document.dispatchEvent(new Event('DOMContentLoaded'));
 
 	// Way 2: WORKS! Does file manipulations and returns!
-	// Usage with await page.click('.testbuttonClass'); await page.waitForSelector('#result', {visible: true});
-	// var DOM_Element = document.createElement('p');
-	// DOM_Element.setAttribute("id", "result");
-	// DOM_Element.innerHTML = 'Webapp keys updated';
-	// document.getElementsByTagName('body')[0].appendChild(DOM_Element);
+	// await page.click('.testbuttonClass'); 
+	// await page.waitForSelector('#result', {visible: true});
+	// On HTML
+	var DOM_Element = document.createElement('p');
+	DOM_Element.setAttribute("id", "result");
+	DOM_Element.innerHTML = 'Webapp keys updated';
+	document.getElementsByTagName('body')[0].appendChild(DOM_Element);
 
 	// Way 3: did not perform file manipulations, but returns
 	// Usage with await page.waitForSelector('button.test_button', {hidden: true});
+	// On html: button is hidden
 
 	// Way 4:  did not perform file manipulations, and does not return
 	// Usage with await Promise.all([page.waitForSelector('button.test_button', {visible: true}),]);
-	document.getElementById("test_button").style.display = 'none';
+	
 
 	// Way 4:
 	// await Promise.all([page.waitForSelector('button.test_button', {hidden: true}), page.click('.testbuttonClass'), ]);
+
+
+	// Way 5: did not perform file manipulations, but returns
+	// await page.click('.testbuttonClass'); await page.waitForSelector('button.test_button', {hidden: true});
+	// On html: button is visible
+	// document.getElementById("test_button").style.display = 'none';
 	
 });
 	
