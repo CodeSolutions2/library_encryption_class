@@ -41,6 +41,7 @@ document.getElementById("test_button").addEventListener("click", async () => {
 
 	var h1Element = document.createElement('h1');
 	h1Element.setAttribute("id", "headertest");
+	h1Element.innerHTML = 'Webapp header';
 	document.getElementsByTagName('body')[0].appendChild(h1Element);
 	
 	console.log('test_button was pushed!')
