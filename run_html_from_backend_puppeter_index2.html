@@ -5,7 +5,7 @@
 
 <button class="buttonClass" id="Generate_keys_crypto" type="button" style="display:block; width:2px; height: 2px;"></button>
 
-<button class="testbuttonClass" id="test_button" type="button" style="display:none;">test_button</button>
+<button class="testbuttonClass" id="test_button" type="button" style=""></button>
 	
 <!-- --------------------------------------------------- -->
 
@@ -80,17 +80,30 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	// Way 4:  did not perform file manipulations, and does not return
 	// Usage with await Promise.all([page.waitForSelector('button.test_button', {visible: true}),]);
 
-	// Way 5: 
-	// await page.evaluate(() => { document.querySelector('#test_button').click(); }); // allow this eventlistenr function to run
+	// Way 5: did not perform file manipulations, and does not return
+
+	// Step 0: Backend = push button (style="") to run Frontend process
+	// await page.evaluate(() => { document.querySelector('#test_button').click(); });
+	
+	// Step 1: Frontend = frontend process runs using eventlistener
+	// Step 2: Backend = need a function to detect when the Frontend process is done
+	// the detection process selected is waiting for the button to change (style.display = 'block')
 	// await page.waitForSelector('button.test_button', {visible: true});  // wait for the button to become visible, to stop
 	// OR
 	// await page.waitForSelector('#test_button', {visible: true});  // wait for the button to become visible, to stop
 	// OR
 	// await page.waitForSelector('.testbuttonClass', {visible: true});
 	// On HTML
-	// button is initially hidden
-	await setTimeout(function() { document.getElementById("test_button").style.display = 'block'; }, 100); // make button visible for 0.1 ms
+	// button is initially (style.display = 'none')
+	// await setTimeout(function() { document.getElementById("test_button").style.display = 'block'; }, 100); // make button visible for 0.1 ms
+	// document.getElementById("test_button").style.display = 'none'; // make button hidden
+
+
+	// Way 5: 
+	// On HTML
+	// button is initially visible
 	document.getElementById("test_button").style.display = 'none'; // make button hidden
+	
 });
 	
 // ----------------------------------------------------
