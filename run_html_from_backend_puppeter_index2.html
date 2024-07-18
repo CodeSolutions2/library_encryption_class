@@ -50,7 +50,14 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
 	RepoAobj.type_of_encryption = "salt_scramble";
 	await run_backend_process(RepoAobj)
-		.then(function() { document.getElementById("test_button").style.display = 'block'; })
+		.then(async function() {
+			// Step 3: Frontend = make the button [be found in the DOM or to be NOT hidden] to make the Backend detect that the Frontend is finished
+			 await setTimeout(function() { document.getElementById("test_button").style.display = 'block'; }, 300);
+		})
+		.then(function() {
+			// Step 4: Frontend = continue to ensure that the button non-visible (style="display:none;")
+			document.getElementById("test_button").style.display = 'none';
+		})
 
 	
 	// Way 0: WORKS! Does file manipulations and returns!
@@ -93,11 +100,11 @@ document.getElementById("test_button").addEventListener("click", async () => {
 	// Step 2: Backend = need a function to detect when the Frontend process is done
 	// The detection process [hidden=false] selected is waiting for the [button] to [be found in the DOM or to be NOT hidden] 
 	
-	// await page.waitForSelector('button.test_button', {hidden: false});
+	// await page.waitForSelector('button.test_button', {visible: true});
 	// OR
-	// await page.waitForSelector('#test_button', {hidden: false});
+	// await page.waitForSelector('#test_button', {visible: true});
 	// OR
-	// await page.waitForSelector('.testbuttonClass', {hidden: false});
+	// await page.waitForSelector('.testbuttonClass', {visible: true});
 
 	// Step 3: Frontend = make the button [be found in the DOM or to be NOT hidden] to make the Backend detect that the Frontend is finished
 	// await setTimeout(function() { 
