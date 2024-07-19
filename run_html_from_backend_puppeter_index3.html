@@ -181,8 +181,10 @@ async function Generate_keys_crypto() {
 	
 }
 
+	
 // ----------------------------------------------------
-
+// Key Generation with respect to encrypted_CRUD_files
+// ----------------------------------------------------
 async function Generate_keys_crypto2() {
 	
 	// STEP 0: Generate public and private keys (public key=for encrypting, private key=for decrypting)
@@ -199,17 +201,54 @@ async function Generate_keys_crypto2() {
 	
 	// -----------------------------
 
+	// GET the list of files that are encrypted, to re-encrypt them with the new key
+	var filepaths_to_encrypt = await GET_repo_file_info_RESTAPI_fast();
+	var filepaths_to_encrypt_arr = filepaths_to_encrypt.split('\n');
+	
+	// -----------------------------
 
+	var RepoAobj = {};
+	RepoAobj.repoOwner = 'CodeSolutions2';
+	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
+	RepoAobj.NEW_publicKey_jwk = publicKey_jwk;
+	RepoAobj.NEW_privateKey_jwk = privateKey_jwk;
+	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
+	RepoAobj.type_of_encryption = "window_crypto_subtle";
+	
+	var done = filepaths_to_encrypt_arr.map((filepath_to_encrypt, index) => {
+
+		var filepath_arr = filepath_to_encrypt.split("/");
+		RepoAobj.filename = filepath_arr.pop(); // filename to create in RepoB, in foldername
+		RepoAobj.foldername = filepath_arr.join(''); // foldername in RepoB
+		
+		// Assign the class where input_text is the generated privateKey_jwk
+		const classObj2 = new encrypted_CRUD_file_storage(RepoAobj);
+		
+		// GET encrypted file data w/[key from file], decrypt file data w/[key from file], use the new
+		await classObj2.update_file_encryption();
+
+		return 'ok';
+	});
 
 	// -----------------------------
-	
 
-	
+	// Save keys to file
+	await Save_to_file_keys_crypto();
+
 	// -----------------------------
 }
 
 // ----------------------------------------------------
 
+async function GET_repo_file_info_RESTAPI_fast() {
+	return await fetch(`https://raw.githubusercontent.com/CodeSolutions2/frontend_backend_message_passing_central_repository_v1/main/.github/encrypt_list`)
+		.then(res => res.text())
+		.then(async function (text_out) { return  text_out; })
+		.catch(error => { console.log(error); });
+}
+
+// ----------------------------------------------------
+	
 async function Save_to_file_keys_crypto() {
 
 	var RepoAobj = {};
