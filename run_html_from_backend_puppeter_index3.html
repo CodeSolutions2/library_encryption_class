@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+
+<button class="buttonClass" id="Generate_keys_crypto" type="button" style="display:none;"></button>
+
+<!-- <button class="testbuttonClass" id="test_button" type="button" style="display:none;"></button> -->
+	
+<!-- --------------------------------------------------- -->
+
+<script type="module" src="./index.js"></script>
+
+<!-- --------------------------------------------------- -->
+	
+<script>
+
+// -----------------------------------------------
+
+// Force the page to refresh the cached webpage
+window.addEventListener('beforeunload', function() {
+ 	window.location.href = window.location.href + '?nocache=' + new Date().getTime();
+});
+
+// -----------------------------------------------
+
+document.getElementById("Generate_keys_crypto").addEventListener("click", async () => {
+
+	await Generate_keys_crypto()
+		.then(async function() {
+			// Step 3: Frontend = make the button [be found in the DOM or to be NOT hidden] to make the Backend detect that the Frontend is finished
+			 await setTimeout(function() { document.getElementById("Generate_keys_crypto").style.display = 'block'; }, 300);
+		})
+		.then(function() {
+			// Step 4: Frontend = continue to ensure that the button non-visible (style="display:none;")
+			document.getElementById("Generate_keys_crypto").style.display = 'none';
+		})
+	
+});
+
+// ----------------------------------------------------
+
+// document.getElementById("test_button").addEventListener("click", async () => {
+// 	// Do file manipulations
+// 	var RepoAobj = {};
+//   	RepoAobj.repoOwner = 'CodeSolutions2';
+// 	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
+//   	RepoAobj.foldername = 'test'; // foldername in RepoB	
+// 	RepoAobj.filename = 'cb'; // filename to create in RepoB, in foldername
+// 	RepoAobj.input_text = "TEST if a function can run"+"|"+RepoAobj.repoA_name;
+// 	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
+// 	RepoAobj.type_of_encryption = "salt_scramble";
+// 	await run_backend_process(RepoAobj)
+// 		.then(async function() {
+// 			// Step 3: Frontend = make the button [be found in the DOM or to be NOT hidden] to make the Backend detect that the Frontend is finished
+// 			 await setTimeout(function() { document.getElementById("test_button").style.display = 'block'; }, 300);
+// 		})
+// 		.then(function() {
+// 			// Step 4: Frontend = continue to ensure that the button non-visible (style="display:none;")
+// 			document.getElementById("test_button").style.display = 'none';
+// 		})
+	// Way 0: WORKS! Does file manipulations and returns!
+	// Change the page so that it is known that the function is finished
+	// Usage with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'load'}), page.click('.testbuttonClass'), ]);
+	// window.location.href = window.location.href + '?nocache=' + new Date().getTime();
+
+	// Way 1: does file manipulations, but does not return
+	// Usage with await Promise.all([page.waitForNavigation({timeout: 30000, waitUntil: 'domcontentloaded'}), page.click('.testbuttonClass'), ]);
+	// document.dispatchEvent(new Event('DOMContentLoaded'));
+
+	// Way 2: WORKS! Does file manipulations and returns!
+	// await page.click('.testbuttonClass'); // if button has style.display=block
+	// await page.evaluate(() => { document.querySelector('#test_button').click(); }); // if button has style.display=none
+	// await page.waitForSelector('#result', {visible: true});
+	// On HTML
+	// var DOM_Element = document.createElement('p');
+	// DOM_Element.setAttribute("id", "result");
+	// DOM_Element.innerHTML = 'Webapp keys updated';
+	// document.getElementsByTagName('body')[0].appendChild(DOM_Element);
+
+	// Way 3: did not perform file manipulations, but returns
+	// Usage with await page.waitForSelector('button.test_button', {hidden: true});
+	// On html: button is hidden
+
+	// Way 4:  did not perform file manipulations, and does not return
+	// Usage with await Promise.all([page.waitForSelector('button.test_button', {visible: true}),]);
+
+	// ---------------------------------------------------------------
+	
+	// People want the button to be non-visible (style="display:none;")
+	
+	// In order for puppeteer to detect the button with (style="display:none;"), one needs to use await page.evaluate(() => { document.querySelector('#test_button').click(); }); on the Backend 
+	
+	// Step 0: Backend = push button (style="display:none;") to run Frontend process
+	// await page.evaluate(() => { document.querySelector('#test_button').click(); });
+	
+	// Step 1: Frontend = frontend process runs using eventlistener
+	
+	// Step 2: Backend = need a function to detect when the Frontend process is done
+	// The detection process [hidden=false] selected is waiting for the [button] to [be found in the DOM or to be NOT hidden] 
+	
+	// await page.waitForSelector('button.test_button', {visible: true});
+	// OR
+	// await page.waitForSelector('#test_button', {visible: true});
+	// OR
+	// await page.waitForSelector('.testbuttonClass', {visible: true});
+
+	// Step 3: Frontend = make the button [be found in the DOM or to be NOT hidden] to make the Backend detect that the Frontend is finished
+	// await setTimeout(function() { 
+		// document.getElementById("test_button").style = ''; 
+	// 	document.getElementById("test_button").style.display = 'block';
+	// }, 300);
+	// OR
+	// Step 4: Frontend = continue to ensure that the button non-visible (style="display:none;")
+	// document.getElementById("test_button").style.display = 'none';
+
+	// RESULT: it did not perform file manipulations, but returns
+
+	// ---------------------------------------------------------------
+	
+// });
+	
+// ----------------------------------------------------
+
+async function Generate_keys_crypto() {
+	
+	// STEP 0: Generate public and private keys (public key=for encrypting, private key=for decrypting)
+	var keyPair_obj = await window.crypto.subtle.generateKey({name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"}}, true, ["encrypt", "decrypt"]);
+	
+	// STEP 1: Obtain RSA key pair as individual objects - https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/generateKey
+	// STEP 2: Convert public key and private key into a JSON string (JsonWebKey)
+	
+	
+
+	// -----------------------------
+   
+	var RepoAobj = {};
+	RepoAobj.repoOwner = 'CodeSolutions2';
+	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
+	RepoAobj.foldername = '.github'; // foldername in RepoB
+	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
+	RepoAobj.type_of_encryption = "salt_scramble";
+
+	// -----------------------------
+	
+	// Generate a new publicKey_jwk_str
+   	var publicKey_jwk = await window.crypto.subtle.exportKey("jwk", keyPair_obj.publicKey);
+	RepoAobj.input_text = JSON.stringify(publicKey_jwk);
+	// console.log("non-encrypted publicKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+
+	// Assign the class where input_text is the generated publicKey_jwk_str
+	const classObj0 = new encrypted_CRUD_file_storage(RepoAobj);
+   
+	// Encrypt the publicKey_jwk_str
+	RepoAobj.input_text = await classObj0.encrypt_text_string()
+	// console.log("encrypted_publicKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+	
+	// Save the encrypted string to the .public_window_crypto_subtle
+	RepoAobj.filename = '.public_window_crypto_subtle'; // filename to create in RepoB, in foldername
+	await run_backend_process(RepoAobj);
+   
+	// -----------------------------
+
+	// Generate a new privateKey_jwk
+	var privateKey_jwk = await window.crypto.subtle.exportKey("jwk", keyPair_obj.privateKey);
+	RepoAobj.input_text = JSON.stringify(privateKey_jwk);
+	// console.log("non-encrypted privateKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+
+	// Assign the class where input_text is the generated privateKey_jwk
+	const classObj1 = new encrypted_CRUD_file_storage(RepoAobj);
+
+	// Encrypt the privateKey_jwk_str
+	RepoAobj.input_text = await classObj1.encrypt_text_string();
+	// console.log("encrypted_privateKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+
+	// Save the encrypted string to the .private_window_crypto_subtle
+	RepoAobj.filename = '.private_window_crypto_subtle'; // filename to create in RepoB, in foldername
+	await run_backend_process(RepoAobj);
+	
+	// -----------------------------
+	
+}
+
+// ----------------------------------------------------
+
+async function Generate_keys_crypto2() {
+	
+	// STEP 0: Generate public and private keys (public key=for encrypting, private key=for decrypting)
+	var keyPair_obj = await window.crypto.subtle.generateKey({name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"}}, true, ["encrypt", "decrypt"]);
+	
+	// STEP 1: Obtain RSA key pair as individual objects - https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/generateKey
+	// STEP 2: Convert public key and private key into a JSON string (JsonWebKey)
+	
+	// Generate a new publicKey_jwk_str
+   	var publicKey_jwk = await window.crypto.subtle.exportKey("jwk", keyPair_obj.publicKey);
+	
+	// Generate a new privateKey_jwk
+	var privateKey_jwk = await window.crypto.subtle.exportKey("jwk", keyPair_obj.privateKey);
+	
+	// -----------------------------
+
+
+
+	// -----------------------------
+	
+
+	
+	// -----------------------------
+}
+
+// ----------------------------------------------------
+
+async function Save_to_file_keys_crypto() {
+
+	var RepoAobj = {};
+	RepoAobj.repoOwner = 'CodeSolutions2';
+	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
+	RepoAobj.foldername = '.github'; // foldername in RepoB
+	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
+	RepoAobj.type_of_encryption = "salt_scramble";
+
+	// -----------------------------
+	
+	RepoAobj.input_text = JSON.stringify(publicKey_jwk);
+	
+	// Assign the class where input_text is the generated publicKey_jwk_str
+	const classObj0 = new encrypted_CRUD_file_storage(RepoAobj);
+   
+	// Encrypt the publicKey_jwk_str
+	RepoAobj.input_text = await classObj0.encrypt_text_string()
+	// console.log("encrypted_publicKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+	
+	// Save the encrypted string to the .public_window_crypto_subtle
+	RepoAobj.filename = '.public_window_crypto_subtle'; // filename to create in RepoB, in foldername
+	await run_backend_process(RepoAobj);
+   
+	// -----------------------------
+
+	RepoAobj.input_text = JSON.stringify(privateKey_jwk);
+	
+	// Assign the class where input_text is the generated privateKey_jwk
+	const classObj1 = new encrypted_CRUD_file_storage(RepoAobj);
+
+	// Encrypt the privateKey_jwk_str
+	RepoAobj.input_text = await classObj1.encrypt_text_string();
+	// console.log("encrypted_privateKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+
+	// Save the encrypted string to the .private_window_crypto_subtle
+	RepoAobj.filename = '.private_window_crypto_subtle'; // filename to create in RepoB, in foldername
+	await run_backend_process(RepoAobj);
+	
+	// -----------------------------
+}
+
+// ----------------------------------------------------
+
+
+// ----------------------------------------------------
+
+
+// ----------------------------------------------------
+
+	
+</script>
+</body>
+</html>
