@@ -29,8 +29,8 @@ export class encrypted_CRUD_file_storage {
 			   repoB_name: this.RepoAobj.repoB_name,
 			   type_of_encryption: this.RepoAobj.type_of_encryption,
 			   append_text: this.RepoAobj.append_text,
-			   NEW_publicKey_jwk: this.RepoAobj.NEW_publicKey_jwk,
-			   NEW_privateKey_jwk: this.RepoAobj.NEW_privateKey_jwk
+			//   NEW_publicKey_jwk: this.RepoAobj.NEW_publicKey_jwk,
+			  //  NEW_privateKey_jwk: this.RepoAobj.NEW_privateKey_jwk
 		};
 	
 		Object.freeze(obj.env_text); // make the original value non-changeable
@@ -301,11 +301,11 @@ export class encrypted_CRUD_file_storage {
 
 	// ------------------------------------------------
 
-	async update_file_encryption() {
+	// async update_file_encryption() {
 
 		// GET the encrypted contents of each file
-		var obj = await get_decrypted_file_data();
-		obj.decrypted_file_contents
+		// var obj = await get_decrypted_file_data();
+		// obj.decrypted_file_contents
 		// decrypt contents
 
 		// re-encrypt with new key
@@ -314,7 +314,7 @@ export class encrypted_CRUD_file_storage {
 
 		// (redundant - but need to code for class) Check to see if file is in the [encrypt_list], if not put in [encrypt_list]
 
-	}
+	// }
 
 	// ------------------------------------------------
 
