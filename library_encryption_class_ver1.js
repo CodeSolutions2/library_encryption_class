@@ -33,7 +33,6 @@ export class encrypted_CRUD_file_storage {
 			   type_of_encryption: this.RepoAobj.type_of_encryption,
 			   append_text: this.RepoAobj.append_text,
 			   NEW_publicKey_obj: await window.crypto.subtle.importKey("jwk", JSON.parse(this.RepoAobj.NEW_publicKey_jwk), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["encrypt"]),
-			   NEW_privateKey_obj: await window.crypto.subtle.importKey("jwk", JSON.parse(this.RepoAobj.NEW_privateKey_jwk), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["decrypt"]),
 			   pubpriv_keys_for_encryption: this.RepoAobj.pubpriv_keys_for_encryption
 		};
 	
@@ -91,6 +90,7 @@ export class encrypted_CRUD_file_storage {
 		// ------------------------------------------------
 	
 		// Step 1: decrypt the file
+		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
 		obj = await this.decrypt_file(obj);
 		
 	       	// --------------------------------
@@ -125,6 +125,7 @@ export class encrypted_CRUD_file_storage {
 		// ------------------------------------------------
 
 		// Decrypt the file_contents
+		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
 		obj = await this.decrypt_file(obj);
 		// Decrypt the file text using an decryption method specified by obj.type_of_encryption
 		// OUTPUT: obj.decrypted_file_contents (decrypted text)
@@ -140,7 +141,8 @@ export class encrypted_CRUD_file_storage {
 		// Ways to add data to a file: 
 		// 0. append unique data to exsiting data ("append_unique").
 		// 1. append non-unique data to existing data ("append_non_unique"), 
-		// 2. do not append data ("do_not_append")
+		// 2. do not append data ("do_not_append_save_input_textOnly") - save new text to a file
+		// 3. do not append data ("do_not_append_save_existing_textOnly") - save same text to a file
 		
 		if (obj.append_text == "append_unique") {
 			// --------------------------------
@@ -181,11 +183,10 @@ export class encrypted_CRUD_file_storage {
 			obj = await this.insert_data(obj);
 			obj.query_insert_result = "Non-unique data added.";
 
-		} else if (obj.append_text == "do_not_append") {
+		} else if (obj.append_text == "do_not_append_save_input_textOnly") {
 			// --------------------------------
 			// Purpose: for inserting text into a new or existing file
 			// --------------------------------
-			
 			obj.decrypted_file_contents = obj.input_text_only;
 
 			// INPUT: obj.decrypted_file_contents, obj.type_of_encryption, obj.pubpriv_keys_for_encryption
@@ -193,9 +194,26 @@ export class encrypted_CRUD_file_storage {
 			// OUTPUT: no variable, the desired text to put in a file (obj.decrypted_file_contents) is encrypted using the obj.type_of_encryption method specified, PUT the encrypted text in the specified file path (obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner)
 			
 			obj.query_insert_result = "New data added.";
+
+		} else if (obj.append_text == "do_not_append_save_existing_textOnly") {
+			// --------------------------------
+			// Purpose: for inserting the same file text into a new or existing file
+			// --------------------------------
+			obj.decrypted_file_contents = obj.decrypted_file_contents;
+
+			// INPUT: obj.decrypted_file_contents, obj.type_of_encryption, obj.pubpriv_keys_for_encryption
+			obj = await this.insert_data(obj);
+			// OUTPUT: no variable, the desired text to put in a file (obj.decrypted_file_contents) is encrypted using the obj.type_of_encryption method specified, PUT the encrypted text in the specified file path (obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner)
+			
+			obj.query_insert_result = "Same data added.";
 		}
+
+		// --------------------------------
+		
 		delete obj.decrypted_file_contents;
 
+		// --------------------------------
+		
 		// OUTPUT: obj.query_insert_result
 		return obj;
 	}
@@ -203,7 +221,8 @@ export class encrypted_CRUD_file_storage {
 	// ------------------------------------------------
 	
 	async get_decrypted_file_contents() {
-		// view, return, get data
+		
+		// ------------------------------------------------
 
 		// INPUT: class initialization variables
 		
@@ -222,6 +241,7 @@ export class encrypted_CRUD_file_storage {
 		// ------------------------------------------------
 	
 		// Step 1: decrypt the file
+		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
 		obj = await this.decrypt_file(obj);
 		// Decrypt the file text using an decryption method specified by obj.type_of_encryption
 		// OUTPUT: obj.decrypted_file_contents (decrypted text)
@@ -254,6 +274,7 @@ export class encrypted_CRUD_file_storage {
 		// ------------------------------------------------
 	
 		// Step 1: decrypt the file_contents
+		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
 		obj = await this.decrypt_file(obj);
 		// Decrypt the file text using an decryption method specified by obj.type_of_encryption
 		// OUTPUT: obj.decrypted_file_contents (decrypted text)
@@ -524,6 +545,7 @@ export class encrypted_CRUD_file_storage {
 		// ----------------------------------------------------
 
 		// OUTPUT: no variable, the desired text to put in a file (obj.decrypted_file_contents) is encrypted using the obj.type_of_encryption method specified, PUT the encrypted text in the specified file path (obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner)
+		
 		return obj;
 	}
 	
