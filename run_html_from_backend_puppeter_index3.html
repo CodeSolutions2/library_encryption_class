@@ -38,6 +38,31 @@ document.getElementById("Generate_keys_crypto").addEventListener("click", async 
 
 // ----------------------------------------------------
 
+
+
+async function add_data_to_file() {
+	
+	var RepoAobj = {};
+	RepoAobj.repoOwner = 'CodeSolutions2';
+	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
+	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
+	RepoAobj.type_of_encryption = "window_crypto_subtle";
+	RepoAobj.append_text == "do_not_append_save_existing_textOnly"
+	RepoAobj.NEW_publicKey_jwk = publicKey_jwk;
+	RepoAobj.pubpriv_keys_for_encryption = 'new';
+
+	RepoAobj.filename = filepath_arr.pop(); // filename to create in RepoB, in foldername
+	RepoAobj.foldername = filepath_arr.join(''); // foldername in RepoB
+	
+	// Assign the class where input_text is the generated privateKey_jwk
+	const classObj2 = new encrypted_CRUD_file_storage(RepoAobj);
+	
+	// GET encrypted file data w/[key from file], decrypt file data w/[key from file], use the new
+	await classObj2.add_data_to_file();
+
+}
+
+
 	
 // ----------------------------------------------------
 // Key Generation with respect to encrypted_CRUD_files
@@ -70,10 +95,11 @@ async function Generate_keys_crypto() {
 	var RepoAobj = {};
 	RepoAobj.repoOwner = 'CodeSolutions2';
 	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
-	RepoAobj.NEW_publicKey_jwk = publicKey_jwk;
-	RepoAobj.NEW_privateKey_jwk = privateKey_jwk;
 	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
 	RepoAobj.type_of_encryption = "window_crypto_subtle";
+	RepoAobj.append_text == "do_not_append_save_existing_textOnly"
+	RepoAobj.NEW_publicKey_jwk = publicKey_jwk;
+	RepoAobj.pubpriv_keys_for_encryption = 'new';
 	
 	var done = filepaths_to_encrypt_arr.map((filepath_to_encrypt, index) => {
 
@@ -85,7 +111,7 @@ async function Generate_keys_crypto() {
 		const classObj2 = new encrypted_CRUD_file_storage(RepoAobj);
 		
 		// GET encrypted file data w/[key from file], decrypt file data w/[key from file], use the new
-		await classObj2.update_file_encryption();
+		await classObj2.add_data_to_file();
 
 		return 'ok';
 	});
