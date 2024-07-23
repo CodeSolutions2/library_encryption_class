@@ -19,7 +19,7 @@ export class encrypted_CRUD_file_storage {
 
 		// Find the .env file in the repository: output file text and meta data
 		var obj_env = await GET_text_from_file_wo_auth_GitHub_RESTAPI(".env", ".github", this.RepoAobj.repoB_name, this.RepoAobj.repoOwner);
-
+		
 		// Store important input variables in the main object obj
 		var obj = {env_text: obj_env.text.replace(/[\n\s]/g, ""), 
 			   env_file_download_url: obj_env.file_download_url, 
@@ -32,8 +32,9 @@ export class encrypted_CRUD_file_storage {
 			   repoB_name: this.RepoAobj.repoB_name,
 			   type_of_encryption: this.RepoAobj.type_of_encryption,
 			   append_text: this.RepoAobj.append_text,
-			   NEW_publicKey_jwk: this.RepoAobj.NEW_publicKey_jwk,
-			   NEW_privateKey_jwk: this.RepoAobj.NEW_privateKey_jwk
+			   NEW_publicKey_obj: await window.crypto.subtle.importKey("jwk", JSON.parse(this.RepoAobj.NEW_publicKey_jwk), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["encrypt"]),
+			   NEW_privateKey_obj: await window.crypto.subtle.importKey("jwk", JSON.parse(this.RepoAobj.NEW_privateKey_jwk), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["decrypt"]),
+			   pubpriv_keys_for_encryption: this.RepoAobj.pubpriv_keys_for_encryption
 		};
 	
 		Object.freeze(obj.env_text); // make the original value non-changeable
@@ -122,24 +123,29 @@ export class encrypted_CRUD_file_storage {
 		}
 		
 		// ------------------------------------------------
+
+		// Decrypt the file_contents
+		obj = await this.decrypt_file(obj);
+		// Decrypt the file text using an decryption method specified by obj.type_of_encryption
+		// OUTPUT: obj.decrypted_file_contents (decrypted text)
+
+		// ------------------------------------------------
 	
-		// Obtain input_text
+		// Obtain new input_text
 		obj.input_text_only = obj.input_text.split('|').shift();
 		// console.log("obj.input_text_only:", obj.input_text_only);
 
 		// ------------------------------------------------
 
-		// Ways to add data to a file: 0. append unique data to exsiting data ("append_unique"), 1. append non-unique data to existing data ("append_non_unique"), 2. do not append data ("do_not_append")
+		// Ways to add data to a file: 
+		// 0. append unique data to exsiting data ("append_unique").
+		// 1. append non-unique data to existing data ("append_non_unique"), 
+		// 2. do not append data ("do_not_append")
+		
 		if (obj.append_text == "append_unique") {
 			// --------------------------------
 			// Purpose: for inserting text data into an existing file, find obj.file_file_download_url and obj.file_sha.
 			// --------------------------------
-
-			// Step 1: decrypt the file_contents
-			obj = await this.decrypt_file(obj);
-			// OUTPUT: obj.encrypted_file_contents, obj.file_file_download_url, obj.file_sha (obj.filename text and meta data)
-			
-		       	// --------------------------------
 			
 			// Step 2: Perform query 0 - Determine if the text_input is in the file_contents
 			console.log('****** Step 2: Perform query 0 - Determine if the text_input is in the file_contents ******');
@@ -169,12 +175,6 @@ export class encrypted_CRUD_file_storage {
 			// Purpose: for inserting text data into an existing file, find obj.file_file_download_url and obj.file_sha.
 			// --------------------------------
 			
-			// Step 1: decrypt the file_contents
-			obj = await this.decrypt_file(obj);
-			// OUTPUT: obj.encrypted_file_contents, obj.file_file_download_url, obj.file_sha (obj.filename text and meta data)
-			
-		       	// --------------------------------
-			
 			obj.decrypted_file_contents = obj.decrypted_file_contents + "\n" + obj.input_text_only;
 
 			// INPUT: obj.decrypted_file_contents: text string, obj.type_of_encryption: 'window_crypto_subtle', 'hexadecimal'
@@ -185,13 +185,18 @@ export class encrypted_CRUD_file_storage {
 			// --------------------------------
 			// Purpose: for inserting text into a new or existing file
 			// --------------------------------
+			
 			obj.decrypted_file_contents = obj.input_text_only;
 
-			// INPUT: obj.decrypted_file_contents: text string, obj.type_of_encryption: 'window_crypto_subtle', 'hexadecimal'
+			// INPUT: obj.decrypted_file_contents, obj.type_of_encryption, obj.pubpriv_keys_for_encryption
 			obj = await this.insert_data(obj);
+			// OUTPUT: no variable, the desired text to put in a file (obj.decrypted_file_contents) is encrypted using the obj.type_of_encryption method specified, PUT the encrypted text in the specified file path (obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner)
+			
 			obj.query_insert_result = "New data added.";
 		}
 		delete obj.decrypted_file_contents;
+
+		// OUTPUT: obj.query_insert_result
 		return obj;
 	}
 
@@ -218,6 +223,8 @@ export class encrypted_CRUD_file_storage {
 	
 		// Step 1: decrypt the file
 		obj = await this.decrypt_file(obj);
+		// Decrypt the file text using an decryption method specified by obj.type_of_encryption
+		// OUTPUT: obj.decrypted_file_contents (decrypted text)
 	
 		// ------------------------------------------------
 	
@@ -225,6 +232,8 @@ export class encrypted_CRUD_file_storage {
 		console.log('****** Step 2: Return the decrypted contents of the file ******');
 		
 		obj.query_view_result = "Finished: obj.decrypted_file_contents outputted";
+
+		// OUTPUT: obj.decrypted_file_contents
 		return obj;
 	}
 
@@ -246,7 +255,8 @@ export class encrypted_CRUD_file_storage {
 	
 		// Step 1: decrypt the file_contents
 		obj = await this.decrypt_file(obj);
-		// OUTPUT: obj.encrypted_file_contents, obj.file_file_download_url, obj.file_sha (obj.filename text and meta data)
+		// Decrypt the file text using an decryption method specified by obj.type_of_encryption
+		// OUTPUT: obj.decrypted_file_contents (decrypted text)
 		
 	       	// --------------------------------
 	
@@ -342,39 +352,6 @@ export class encrypted_CRUD_file_storage {
 		// console.log('obj.encrypted_file_contents: ', obj.encrypted_file_contents);
 		
 		return obj.encrypted_file_contents;
-	}
-
-	// ------------------------------------------------
-
-	async update_file_encryption() {
-
-		// ----------------------------------------------------
-		
-		// Purpose:
-
-		// INPUT: obj.type_of_encryption
-
-		// ----------------------------------------------------
-		
-		// INPUT: class initialization variables
-		var obj = await get_decrypted_file_contents(); 
-		// OUTPUT: decrypted file data = obj.decrypted_file_contents
-		
-		// Assign the new key variables to the old key variables
-		obj.publicKey_obj = await window.crypto.subtle.importKey("jwk", JSON.parse(obj.NEW_publicKey_jwk), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["encrypt"]);
-		
-		obj.privateKey_obj = await window.crypto.subtle.importKey("jwk", JSON.parse(obj.NEW_privateKey_jwk), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["decrypt"]);
-		
-		// Re-encrypt with new key
-		// Inputs:
-		// obj.decrypted_file_contents: text string
-		// obj.type_of_encryption: 'window_crypto_subtle', 'hexadecimal'
-		obj = await this.insert_data(obj);
-		// OUTPUT: no variable, the desired text to put in a file (obj.decrypted_file_contents) is encrypted using the obj.type_of_encryption method specified, PUT the encrypted text in the specified file path (obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner)
-
-
-		// (redundant - but need to code for class) Check to see if file is in the [encrypt_list], if not put in [encrypt_list]
-
 	}
 
 	// ------------------------------------------------
@@ -476,12 +453,18 @@ export class encrypted_CRUD_file_storage {
 	}
 
 	// ------------------------------------------------
+
+
+	
 	
 	async insert_data(obj) {
 		
 		// ----------------------------------------------------
 		
-		// INPUT: obj.decrypted_file_contents: text string, obj.type_of_encryption: 'window_crypto_subtle', 'hexadecimal'
+		// INPUT: obj.decrypted_file_contents, obj.type_of_encryption, obj.pubpriv_keys_for_encryption 
+		// obj.decrypted_file_contents: text string, 
+		// obj.type_of_encryption: 'window_crypto_subtle', 'hexadecimal'
+		// obj.pubpriv_keys_for_encryption: 'new', 'current_file'
 		
 		// ----------------------------------------------------
 
@@ -491,11 +474,12 @@ export class encrypted_CRUD_file_storage {
 		obj = await this.decrypted_file_contents_arr_to_str(obj, '\n');
 		// OUTPUT: obj.decrypted_file_contents (file contents as a text string where each line is separated by \n)
 
-		// Encrypt the file text using an encryption method
-		// INPUT: obj.decrypted_file_contents (decrypted text)
+		// Encrypt the file text using an encryption method and/or specific key
 		if (obj.type_of_encryption == "window_crypto_subtle") {
+			// INPUT: obj.decrypted_file_contents (decrypted text), obj.pubpriv_keys_for_encryption, obj.NEW_publicKey_obj, obj.publicKey_obj
 			await this.encrypt_text_window_crypto_subtle(obj);
 		} else if (obj.type_of_encryption == "hexadecimal") {
+			// INPUT: obj.decrypted_file_contents (decrypted text)
 			await this.encrypt_text_hexadecimal(obj);
 		}
 		// OUTPUT: obj.encrypted_file_contents (encrypted text)
@@ -522,7 +506,7 @@ export class encrypted_CRUD_file_storage {
 		// Specify the filepath information to save the input_text
 		
 		var obj_file = await GET_text_from_file_wo_auth_GitHub_RESTAPI(obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner);
-		obj.encrypted_file_contents = atob(obj_file.text);
+		// obj.encrypted_file_contents = atob(obj_file.text);
 		obj.file_file_download_url = obj_file.file_download_url;
 		obj.file_sha = obj_file.sha;
 
@@ -581,7 +565,7 @@ export class encrypted_CRUD_file_storage {
 
 		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
 		var obj_file = await GET_text_from_file_wo_auth_GitHub_RESTAPI(obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner);
-		obj.encrypted_file_contents = obj_file.text.replace(/[\n\s]/g, "");
+		obj.encrypted_file_contents = atob(obj_file.text);
 		obj.file_file_download_url = obj_file.file_download_url;
 		obj.file_sha = obj_file.sha;
 		// OUTPUT: obj.encrypted_file_contents, obj.file_file_download_url, obj.file_sha (obj.filename text and meta data)
@@ -801,13 +785,20 @@ export class encrypted_CRUD_file_storage {
 		// Convert UTF-8 array [non-fixed length array] to a binary arrayBuffer [fixed-length array]
 		const arrayBuffer = uint8Array.buffer;
 		// console.log("arrayBuffer:", arrayBuffer);
-	                
+
+		// Specify which key to use
+		if (obj.pubpriv_keys_for_encryption == 'new') {
+			obj.Key_obj  = obj.NEW_publicKey_obj;
+		} else {
+			obj.Key_obj  = obj.publicKey_obj;
+		}
+		
 		// Encode with respect to publicKey encryption method : transform arrayBuffer [fixed-length array] via the algorithm
-		let data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, obj.publicKey_obj, arrayBuffer);
+		let data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, obj.Key_obj, arrayBuffer);
 		// console.log('data_encoded_arrayBuffer:', data_encoded_arrayBuffer);
 
-		// Delete obj.publicKey_obj
-		delete obj.publicKey_obj;
+		// Delete obj.Key_obj
+		delete obj.Key_obj;
 		
 		// Convert arrayBuffer [fixed-length array] to UTF-8 array [non-fixed length array]
 		const uint8Array_out = new Uint8Array(data_encoded_arrayBuffer);
