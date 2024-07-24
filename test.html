@@ -3,10 +3,11 @@
 <head></head>
 <body>
 
-<h1>Text encryption class library</h1>
+<h1>Text encryption CRUD class library</h1>
+There are five main functions of this text encryption class: add data to file, search file contents, get de
 <ol type="A">
-	<li>Select Automatic REST API fetch with data url only or Manual REST API fetch.</li>
-	<li>View fetched data.</li>
+	<li></li>
+	<li></li>
 </ol>
 
 	
@@ -79,6 +80,7 @@ async function test0_add_data_to_file() {
 
 	RepoAobj.filename = "cb_test.txt"; // filename to create in RepoB, in foldername
 	RepoAobj.foldername = ''; // foldername in RepoB
+	// if foldername='' it will try to save in https://api.github.com/repos/CodeSolutions2/frontend_backend_message_passing_central_repository_v1/contents//cb_test.txt
 	
   	RepoAobj.input_text = document.getElementById("text_input").value+'|'+RepoAobj.repoA_name;
   
