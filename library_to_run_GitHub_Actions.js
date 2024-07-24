@@ -108,10 +108,11 @@ export async function decode_desalt(obj, x_i) {
 	
 	// 0. Decode the Base64-encoded string --> obtain the salted data in binary string format
 	const bool = await isbase64(obj.auth);
+	var var0_str;
 	if (bool == true) {
-		const var0_str = atob(obj.auth);
+		var0_str = atob(obj.auth);
 	} else {
-		const var0_str = obj.auth;
+		var0_str = obj.auth;
 	}
 	
 	// 1. 'de-salt' the authorization key read from the file
