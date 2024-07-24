@@ -4,10 +4,13 @@
 <body>
 
 <h1>Text encryption CRUD class library</h1>
-There are five main functions of this text encryption class: add data to file, search file contents, get de
+There are five main functions of this text encryption class:
 <ol type="A">
-	<li></li>
-	<li></li>
+	<li>add data to file</li>
+	<li>search file contents</li>
+	<li>get decrypted file contents</li>
+	<li>delete file contents</li>
+	<li>encrypt text string</li>
 </ol>
 
 	
@@ -51,29 +54,23 @@ div#error { position: relative; color: #bd1f17; }
   
 <script>
 
+// ----------------------------------------------------
+	
 const module = {};
 
-// -----------------------------------------------
+// ----------------------------------------------------
 
 // Force the page to refresh the cached webpage
 window.addEventListener('beforeunload', function() {
  	window.location.href = window.location.href + '?nocache=' + new Date().getTime();
 });
 
-// -----------------------------------------------
-
 
 // ----------------------------------------------------
 
+async function initialize_variables() {
 
-// ----------------------------------------------------
-
-
-// ----------------------------------------------------
-
-async function test0_add_data_to_file() {
-
-  var RepoAobj = {};
+	var RepoAobj = {};
 	RepoAobj.repoOwner = 'CodeSolutions2';
 	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
 	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
@@ -92,51 +89,58 @@ async function test0_add_data_to_file() {
 	RepoAobj.pubpriv_keys_for_encryption = 'current'; // 'new', 'current'
 	
 	// Assign the class where input_text is the generated privateKey_jwk
-	const classObj = new module.encrypted_CRUD_file_storage(RepoAobj);
-	
-	// GET encrypted file data w/[key from file], decrypt file data w/[key from file], use the new
-	var obj = await classObj.add_data_to_file();
-
-  document.getElementById('notification').innerHTML = obj.query_insert_result;
+	return new module.encrypted_CRUD_file_storage(RepoAobj);
 }
 
+// ----------------------------------------------------
+
+async function test0_add_data_to_file() {
+	
+	const classObj = await initialize_variables();
+	var obj = await classObj.add_data_to_file();
+
+	document.getElementById('notification').innerHTML = obj.query_insert_result;
+}
 
 // ----------------------------------------------------
 
 async function test1_search_file_contents() {
 
-  var RepoAobj = {};
-	RepoAobj.repoOwner = 'CodeSolutions2';
-	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
-	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
+	const classObj = await initialize_variables();
+	var obj = await classObj.search_file_contents();
 
-  RepoAobj.input_text = document.getElementById("text_input").value+'|'+RepoAobj.repoA_name;
-  
-	RepoAobj.type_of_encryption = "window_crypto_subtle"; // "hexadecimal", "salt_scramble"
-	
-  RepoAobj.append_text == "do_not_append_save_input_textOnly" // "append_unique", "append_non_unique", "do_not_append_save_input_textOnly", "do_not_append_save_existing_textOnly"
-  
-	// RepoAobj.NEW_publicKey_jwk = publicKey_jwk;
-	RepoAobj.pubpriv_keys_for_encryption = 'current'; // 'new', 'current'
-
-	RepoAobj.filename = "test"; // filename to create in RepoB, in foldername
-	RepoAobj.foldername = ''; // foldername in RepoB
-	
-	// Assign the class where input_text is the generated privateKey_jwk
-	const classObj = new module.encrypted_CRUD_file_storage(RepoAobj);
-	
-	// GET encrypted file data w/[key from file], decrypt file data w/[key from file], use the new
-	var obj = await classObj.add_data_to_file();
-
-  document.getElementById('notification').innerHTML = obj.query_insert_result;
+	document.getElementById('notification').innerHTML = obj.query_search_result;
 }
+	
 // ----------------------------------------------------
 
+async function test2_get_decrypted_file_contents() {
 
+	const classObj = await initialize_variables();
+	var obj = await classObj.get_decrypted_file_contents();
 
-  
-  
+	document.getElementById('notification').innerHTML = obj.query_view_result + '. ' + obj.decrypted_file_contents;
+}
 
+// ----------------------------------------------------
+
+async function test3_delete_file_contents() {
+
+	const classObj = await initialize_variables();
+	var obj = await classObj.delete_file_contents();
+
+	document.getElementById('notification').innerHTML = obj.query_delete_result;
+}
+
+// ----------------------------------------------------
+
+async function test4_encrypt_text_string() {
+
+	const classObj = await initialize_variables();
+	var obj = await classObj.encrypt_text_string();
+
+	document.getElementById('notification').innerHTML = obj.encrypted_file_contents;
+}
 
 // ----------------------------------------------------
 
