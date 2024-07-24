@@ -844,7 +844,7 @@ export class encrypted_CRUD_file_storage {
 	
 		// Convert string to UTF-8 array [non-fixed length array]
 		// So that the text can be stored as a common character/number (that many different systems can understand/decode)
-		const uint8Array = new TextEncoder().encode(obj.decrypted_file_contents);
+		const uint8Array = new TextEncoder('utf-8').encode(obj.decrypted_file_contents);
 		// console.log('uint8Array:', uint8Array);
 	
 		// Convert UTF-8 array [non-fixed length array] to a binary arrayBuffer [fixed-length array]
@@ -902,7 +902,7 @@ export class encrypted_CRUD_file_storage {
 		// console.log('uint8Array_out:', uint8Array_out);
 	
 		// Convert UTF-8 array [non-fixed length array] to text
-		obj.decrypted_file_contents = new TextDecoder().decode(uint8Array_out);
+		obj.decrypted_file_contents = new TextDecoder('utf-8').decode(uint8Array_out);
 
 		// OUTPUT: obj.decrypted_file_contents (decrypted text)
 		return obj;
