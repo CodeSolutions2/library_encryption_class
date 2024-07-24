@@ -630,13 +630,17 @@ export class encrypted_CRUD_file_storage {
 			// Assign the encrypted file contents to object
 			obj.encrypted_file_contents = obj_file.text;
 
-			// Decrypt the file text using an decryption method specified by obj.type_of_encryption
-			if (obj.type_of_encryption == "window_crypto_subtle") {
-				obj = await this.decrypt_text_window_crypto_subtle(obj);
-				// OUTPUT: obj.decrypted_file_contents (decrypted text)
-			} else {
-				obj = await this.decrypt_text_hexadecimal(obj);
-				// OUTPUT: obj.decrypted_file_contents (decrypted text)
+			try {
+				// Decrypt the file text using an decryption method specified by obj.type_of_encryption
+				if (obj.type_of_encryption == "window_crypto_subtle") {
+					obj = await this.decrypt_text_window_crypto_subtle(obj);
+					// OUTPUT: obj.decrypted_file_contents (decrypted text)
+				} else {
+					obj = await this.decrypt_text_hexadecimal(obj);
+					// OUTPUT: obj.decrypted_file_contents (decrypted text)
+				}
+			} catch(error) {
+				console.log('The wrong filename was used, the file contents is not encrypted in the type_of_encryption method that was specified.' + error);
 			}
 		} else {
 			// File does not exist
