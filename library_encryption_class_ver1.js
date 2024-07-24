@@ -800,7 +800,7 @@ export class encrypted_CRUD_file_storage {
 							  		obj.status = await PUT_create_a_file_RESTAPI(obj.auth, obj.put_message, obj.input_text, obj.foldername+"/"+obj.filename, obj.repoB_name, obj.repoOwner)
 							 		.then(async function(out) { return out.status; })
 				 			 		.catch(error => { console.log("error: ", error); });
-								else {
+								} else {
 									obj.status = await PUT_create_a_file_RESTAPI(obj.auth, obj.put_message, obj.input_text, obj.filename, obj.repoB_name, obj.repoOwner)
 							 		.then(async function(out) { return out.status; })
 				 			 		.catch(error => { console.log("error: ", error); });
