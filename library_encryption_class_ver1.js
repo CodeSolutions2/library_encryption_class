@@ -32,9 +32,13 @@ export class encrypted_CRUD_file_storage {
 			   repoB_name: this.RepoAobj.repoB_name,
 			   type_of_encryption: this.RepoAobj.type_of_encryption,
 			   append_text: this.RepoAobj.append_text,
-			   NEW_publicKey_obj: await window.crypto.subtle.importKey("jwk", JSON.parse(this.RepoAobj.NEW_publicKey_jwk), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["encrypt"]),
+			   NEW_publicKey_obj: this.RepoAobj.NEW_publicKey_jwk,
 			   pubpriv_keys_for_encryption: this.RepoAobj.pubpriv_keys_for_encryption
 		};
+
+		if (obj.NEW_publicKey_obj != null) {
+			obj.NEW_publicKey_obj = await window.crypto.subtle.importKey("jwk", JSON.parse(obj.NEW_publicKey_obj), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["encrypt"]);
+		}
 	
 		Object.freeze(obj.env_text); // make the original value non-changeable
 
