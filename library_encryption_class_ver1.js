@@ -73,56 +73,16 @@ export class encrypted_CRUD_file_storage {
 
 	// ------------------------------------------------
 
-	async search_file_contents() {
-
-		// ------------------------------------------------
-		
-		// Find the .env file in the repository: output file text and meta data
-		// Store important input variables in the main object obj
-		var obj = await this.initialize_github();
-		
-		// ------------------------------------------------
-
-		// Obtain the obj.publicKey_obj and obj.privateKey_obj keys in the object obj
-		if (obj.type_of_encryption == "window_crypto_subtle") {
-
-			// Find the .public_window_crypto_subtle file in the repository: output file text and meta data
-			// Find the .private_window_crypto_subtle file in the repository: output file text and meta data
-			obj = await this.initialize_window_crypto_subtle(obj);
-
-			// Convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
-			obj = await this.GET_public_private_keys(obj);
-		}
-		
-		// ------------------------------------------------
-	
-		// Step 1: decrypt the file
-		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
-		obj = await this.decrypt_file(obj);
-		
-	       	// --------------------------------
-	
-		// Step 2: Perform query 0 - Determine if the text_input is in the file_contents
-		console.log('****** Step 2: Perform query 0 - Determine if the text_input is in the file_contents ******');
-		
-		// Obtain username
-		obj.username = obj.input_text.split('|').shift();
-		// console.log("obj.username:", obj.username);
-	
-		// [Query 0] Determine if username is in the database
-		obj.query_search_result = await this.comparator_search_for_a_username(obj.decrypted_file_contents, obj.username);
-		delete obj.decrypted_file_contents;
-		return obj;
-	}
-
-	// ------------------------------------------------
-
 	async add_data_to_file() {
-	
+
+		// ------------------------------------------------
+		
 		var obj = await this.initialize_github();
 		
 		// ------------------------------------------------
 
+		console.log("obj.type_of_encryption: ", obj.type_of_encryption);
+		
 		if (obj.type_of_encryption == "window_crypto_subtle") {
 			// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
 			obj = await this.initialize_window_crypto_subtle(obj);
@@ -222,6 +182,50 @@ export class encrypted_CRUD_file_storage {
 		// --------------------------------
 		
 		// OUTPUT: obj.query_insert_result
+		return obj;
+	}
+
+	// ------------------------------------------------
+	
+	async search_file_contents() {
+
+		// ------------------------------------------------
+		
+		// Find the .env file in the repository: output file text and meta data
+		// Store important input variables in the main object obj
+		var obj = await this.initialize_github();
+		
+		// ------------------------------------------------
+
+		// Obtain the obj.publicKey_obj and obj.privateKey_obj keys in the object obj
+		if (obj.type_of_encryption == "window_crypto_subtle") {
+
+			// Find the .public_window_crypto_subtle file in the repository: output file text and meta data
+			// Find the .private_window_crypto_subtle file in the repository: output file text and meta data
+			obj = await this.initialize_window_crypto_subtle(obj);
+
+			// Convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
+			obj = await this.GET_public_private_keys(obj);
+		}
+		
+		// ------------------------------------------------
+	
+		// Step 1: decrypt the file
+		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
+		obj = await this.decrypt_file(obj);
+		
+	       	// --------------------------------
+	
+		// Step 2: Perform query 0 - Determine if the text_input is in the file_contents
+		console.log('****** Step 2: Perform query 0 - Determine if the text_input is in the file_contents ******');
+		
+		// Obtain username
+		obj.username = obj.input_text.split('|').shift();
+		// console.log("obj.username:", obj.username);
+	
+		// [Query 0] Determine if username is in the database
+		obj.query_search_result = await this.comparator_search_for_a_username(obj.decrypted_file_contents, obj.username);
+		delete obj.decrypted_file_contents;
 		return obj;
 	}
 
@@ -724,17 +728,17 @@ export class encrypted_CRUD_file_storage {
 			obj = await decode_desalt(obj,  x_rand[i])
 				.then(async function(obj) {
 					
-					// console.log('obj.auth: ', obj.auth.slice(0,5));
+					console.log('obj.auth: ', obj.auth.slice(0,5));
 					try {
 						// A process to determine if it is the correct key: it will throw an error if the key is incorrect
 						// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
 						if ((/encrypt/g).test(obj.auth) == true) {
-							// console.log('JWT public key');
+							console.log('JWT public key');
 							obj.Key_obj = await window.crypto.subtle.importKey("jwk", JSON.parse(obj.auth), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["encrypt"]);
 							obj.status = 200;
 							
 						} else if ((/decrypt/g).test(obj.auth) == true) {
-							// console.log('JWT private key');
+							console.log('JWT private key');
 							obj.Key_obj = await window.crypto.subtle.importKey("jwk", JSON.parse(obj.auth), {name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), hash: {name: "SHA-256"} }, true, ["decrypt"]);
 							obj.status = 200;
 							
