@@ -6,15 +6,15 @@
 <input id="text_input" type="text" value="" placeholder="text_input" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
 
 <div id="btns" class="buttonContainer"> 
-  <button class="buttonClass" id="test0_add_data_to_file" type="button" style="display:block;" onclick="test0_add_data_to_file()"></button>
+  <button class="buttonClass" id="test0_add_data_to_file" type="button" style="display:block;" onclick="test0_add_data_to_file()">test0_add_data_to_file</button>
   
-  <button class="buttonClass" id="test1_search_file_contents" type="button" style="display:block;" onclick="test1_search_file_contents()"></button>
+  <button class="buttonClass" id="test1_search_file_contents" type="button" style="display:block;" onclick="test1_search_file_contents()">test1_search_file_contents</button>
   
-  <button class="buttonClass" id="test2_get_decrypted_file_contents" type="button" style="display:block;" onclick="test2_get_decrypted_file_contents()"></button>
+  <button class="buttonClass" id="test2_get_decrypted_file_contents" type="button" style="display:block;" onclick="test2_get_decrypted_file_contents()">test2_get_decrypted_file_contents</button>
   
-  <button class="buttonClass" id="test3_delete_file_contents" type="button" style="display:block;" onclick="test3_delete_file_contents()"></button>
+  <button class="buttonClass" id="test3_delete_file_contents" type="button" style="display:block;" onclick="test3_delete_file_contents()">test3_delete_file_contents</button>
   
-  <button class="buttonClass" id="test4_encrypt_text_string" type="button" style="display:block;" onclick="test4_encrypt_text_string()"></button>
+  <button class="buttonClass" id="test4_encrypt_text_string" type="button" style="display:block;" onclick="test4_encrypt_text_string()">test4_encrypt_text_string</button>
 </div> 
   
 <div id="notification"></div>
@@ -39,7 +39,12 @@ div { padding: 10px; display:block; font-family:courier; font-size:15px; height:
 div#notification { position: relative; color: #3236a8; }
 div#error { position: relative; color: #bd1f17; }
 
-.buttonContainer { display: flex; flex-direction: row; justify-content: flex-start; }
+.buttonContainer { width: 75%; display: flex; flex-direction: row; justify-content: flex-start; }
+	.buttonContainer > .buttonClass {
+                width: 30%;
+                height: 48px;
+                font-size: 24px;
+            }
 </style>
 	
 <!-- --------------------------------------------------- -->
