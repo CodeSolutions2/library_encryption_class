@@ -13,15 +13,15 @@
 <input id="text_input" type="text" value="" placeholder="text_input" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
 
 <div id="btns" class="buttonContainer"> 
-  <button class="buttonClass" id="test0_add_data_to_file" type="button" style="display:block;" onclick="test0_add_data_to_file()">test0_add_data_to_file</button>
+  <button class="buttonClass" id="test0_add_data_to_file" type="button" style="display:block;" onclick="test0_add_data_to_file()">test0 add data to file</button>
   
-  <button class="buttonClass" id="test1_search_file_contents" type="button" style="display:block;" onclick="test1_search_file_contents()">test1_search_file_contents</button>
+  <button class="buttonClass" id="test1_search_file_contents" type="button" style="display:block;" onclick="test1_search_file_contents()">test1 search file contents</button>
   
   <button class="buttonClass" id="test2_get_decrypted_file_contents" type="button" style="display:block;" onclick="test2_get_decrypted_file_contents()">test2 get decrypted file contents</button>
   
-  <button class="buttonClass" id="test3_delete_file_contents" type="button" style="display:block;" onclick="test3_delete_file_contents()">test3_delete_file_contents</button>
+  <button class="buttonClass" id="test3_delete_file_contents" type="button" style="display:block;" onclick="test3_delete_file_contents()">test3 delete file contents</button>
   
-  <button class="buttonClass" id="test4_encrypt_text_string" type="button" style="display:block;" onclick="test4_encrypt_text_string()">test4_encrypt_text_string</button>
+  <button class="buttonClass" id="test4_encrypt_text_string" type="button" style="display:block;" onclick="test4_encrypt_text_string()">test4 encrypt text string</button>
 </div> 
   
 <div id="notification"></div>
@@ -43,7 +43,7 @@ div#notification { position: relative; color: #3236a8; }
 div#error { position: relative; color: #bd1f17; }
 
 .buttonContainer { width: 75%; display: flex; flex-direction: row; justify-content: flex-start; flex-wrap: wrap; }
-.buttonContainer > .buttonClass { width: 100px; height: 48px; font-size: 12px; text-wrap: wrap; }
+.buttonContainer > .buttonClass { width: 100px; height: 48px; font-size: 15px; text-wrap: wrap; }
 </style>
 	
 <!-- --------------------------------------------------- -->
@@ -77,17 +77,19 @@ async function test0_add_data_to_file() {
 	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
 	RepoAobj.repoB_name = 'frontend_backend_message_passing_central_repository_v1';
 
-  RepoAobj.input_text = document.getElementById("text_input").value+'|'+RepoAobj.repoA_name;
+	RepoAobj.filename = "test"; // filename to create in RepoB, in foldername
+	RepoAobj.foldername = ''; // foldername in RepoB
+	
+  	RepoAobj.input_text = document.getElementById("text_input").value+'|'+RepoAobj.repoA_name;
   
 	RepoAobj.type_of_encryption = "window_crypto_subtle"; // "hexadecimal", "salt_scramble"
 	
-  RepoAobj.append_text == "do_not_append_save_input_textOnly" // "append_unique", "append_non_unique", "do_not_append_save_input_textOnly", "do_not_append_save_existing_textOnly"
+  	RepoAobj.append_text == "do_not_append_save_input_textOnly" // "append_unique", "append_non_unique", "do_not_append_save_input_textOnly", "do_not_append_save_existing_textOnly"
   
-	// RepoAobj.NEW_publicKey_jwk = publicKey_jwk;
+	RepoAobj.NEW_publicKey_jwk = '';
 	RepoAobj.pubpriv_keys_for_encryption = 'current'; // 'new', 'current'
 
-	RepoAobj.filename = "test"; // filename to create in RepoB, in foldername
-	RepoAobj.foldername = ''; // foldername in RepoB
+	
 	
 	// Assign the class where input_text is the generated privateKey_jwk
 	const classObj = new module.encrypted_CRUD_file_storage(RepoAobj);
