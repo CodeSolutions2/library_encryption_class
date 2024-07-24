@@ -85,6 +85,8 @@ export class encrypted_CRUD_file_storage {
 		
 		// ------------------------------------------------
 
+		console.log('obj.type_of_encryption: ', obj.type_of_encryption);
+		
 		// Obtain the obj.publicKey_obj and obj.privateKey_obj keys in the object obj
 		if (obj.type_of_encryption == "window_crypto_subtle") {
 
@@ -251,10 +253,6 @@ export class encrypted_CRUD_file_storage {
 	}
 
 	// ------------------------------------------------
-	
-	
-
-	// ------------------------------------------------
 
 	async delete_file_contents() {
 	
@@ -336,12 +334,20 @@ export class encrypted_CRUD_file_storage {
 	// ------------------------------------------------
 
 	async encrypt_text_string() {
+
+		// INPUT: class initialization variables
+		
+		// ------------------------------------------------
 	
 		var obj = await this.initialize_github();
 		
 		// ------------------------------------------------
 
-		obj.decrypted_file_contents = obj.input_text;
+		obj.decrypted_file_contents = obj.input_text.split('|').shift();
+
+		// ------------------------------------------------
+
+		console.log('obj.type_of_encryption: ', obj.type_of_encryption);
 
 		if (obj.type_of_encryption == "window_crypto_subtle") {
 			// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
@@ -364,6 +370,8 @@ export class encrypted_CRUD_file_storage {
 		}
 
 		// console.log('obj.encrypted_file_contents: ', obj.encrypted_file_contents);
+		
+		// ------------------------------------------------
 		
 		return obj.encrypted_file_contents;
 	}
