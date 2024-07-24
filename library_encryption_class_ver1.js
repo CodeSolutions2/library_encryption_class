@@ -796,9 +796,15 @@ export class encrypted_CRUD_file_storage {
 							console.log('Github key');
 							if (obj.file_download_url == "No_file_found") {
 								// Option 0: create a new file
-							  	obj.status = await PUT_create_a_file_RESTAPI(obj.auth, obj.put_message, obj.input_text, obj.foldername+"/"+obj.filename, obj.repoB_name, obj.repoOwner)
+								if (obj.foldername.length > 0) {
+							  		obj.status = await PUT_create_a_file_RESTAPI(obj.auth, obj.put_message, obj.input_text, obj.foldername+"/"+obj.filename, obj.repoB_name, obj.repoOwner)
 							 		.then(async function(out) { return out.status; })
 				 			 		.catch(error => { console.log("error: ", error); });
+								else {
+									obj.status = await PUT_create_a_file_RESTAPI(obj.auth, obj.put_message, obj.input_text, obj.filename, obj.repoB_name, obj.repoOwner)
+							 		.then(async function(out) { return out.status; })
+				 			 		.catch(error => { console.log("error: ", error); });
+								}
 					 		} else {
 								// Option 1: modify an existing file
 						 	 	obj.status = await PUT_add_to_a_file_RESTAPI(obj.auth, obj.put_message, obj.input_text, obj.desired_path, obj.sha, obj.repoB_name, obj.repoOwner)
