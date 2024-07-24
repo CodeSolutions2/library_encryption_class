@@ -859,7 +859,7 @@ export class encrypted_CRUD_file_storage {
 		}
 		
 		// Encode with respect to publicKey encryption method : transform arrayBuffer [fixed-length array] via the algorithm
-		let data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, obj.Key_obj, arrayBuffer);
+		const data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, obj.Key_obj, arrayBuffer);
 		// console.log('data_encoded_arrayBuffer:', data_encoded_arrayBuffer);
 
 		// Delete obj.Key_obj
@@ -884,22 +884,22 @@ export class encrypted_CRUD_file_storage {
 		// INPUT: obj.encrypted_file_contents (encrypted text)
 		// Convert hexadecimal string to a UTF-8 array [non-fixed length array] where the length is 256
 		const uint8Array = await this.convert_hexstr_to_uint8Array(obj.encrypted_file_contents);
-		// console.log('uint8Array:', uint8Array);
+		console.log('uint8Array:', uint8Array);
 		
 		// Convert UTF-8 array [non-fixed length array] to a binary arrayBuffer [fixed-length array]
 		const arrayBuffer = uint8Array.buffer;
-		// console.log('arrayBuffer:', arrayBuffer);
+		console.log('arrayBuffer:', arrayBuffer);
 		
 		// Decode with respect to privateKey encryption method : transform arrayBuffer [fixed-length array] via the algorithm
-		let data_decoded_arrayBuffer = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, obj.privateKey_obj, arrayBuffer);
-		// console.log("data_decoded_arrayBuffer:", data_decoded_arrayBuffer);
+		const data_decoded_arrayBuffer = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, obj.privateKey_obj, arrayBuffer);
+		console.log("data_decoded_arrayBuffer:", data_decoded_arrayBuffer);
 
 		// Delete obj.privateKey_obj
 		delete obj.privateKey_obj;
 		
 		// Convert arrayBuffer [fixed-length array] to UTF-8 array [non-fixed length array]
 		const uint8Array_out = new Uint8Array(data_decoded_arrayBuffer);
-		// console.log('uint8Array_out:', uint8Array_out);
+		console.log('uint8Array_out:', uint8Array_out);
 	
 		// Convert UTF-8 array [non-fixed length array] to text
 		obj.decrypted_file_contents = new TextDecoder('utf-8').decode(uint8Array_out);
