@@ -104,14 +104,6 @@ async function run_backend(obj) {
 
 // ----------------------------------------------------
 
-async function isbase64(text) {
-	try {
-		return btoa(atob(text)) === text;
-	} catch (error) {
-		return false;
-	}
-}
-
 export async function decode_desalt(obj, x_i) {
 	
 	// 0. Decode the Base64-encoded string --> obtain the salted data in binary string format
@@ -137,6 +129,16 @@ export async function decode_desalt(obj, x_i) {
 	}
 	// console.log('result: ', obj.auth.slice(0,5));
   return obj;
+}
+
+// ----------------------------------------------------
+
+async function isbase64(text) {
+	try {
+		return btoa(atob(text)) === text;
+	} catch (error) {
+		return false;
+	}
 }
 
 // ----------------------------------------------------
