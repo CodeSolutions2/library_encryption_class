@@ -101,7 +101,7 @@ export class encrypted_CRUD_file_storage {
 	
 		// Obtain new input_text
 		obj.input_text_only = obj.input_text.split('|').shift();
-		// console.log("obj.input_text_only:", obj.input_text_only);
+		console.log("obj.input_text_only:", obj.input_text_only);
 
 		// ------------------------------------------------
 
@@ -110,6 +110,8 @@ export class encrypted_CRUD_file_storage {
 		// 1. append non-unique data to existing data ("append_non_unique"), 
 		// 2. do not append data ("do_not_append_save_input_textOnly") - save new text to a file
 		// 3. do not append data ("do_not_append_save_existing_textOnly") - save same text to a file
+		
+		console.log("obj.append_text:", obj.append_text);
 		
 		if (obj.append_text == "append_unique") {
 			// --------------------------------
@@ -131,6 +133,7 @@ export class encrypted_CRUD_file_storage {
 			// [Query 1] Add a unique input_text to the file
 			if (obj.query_search_result == 'Not Present') {
 				obj.decrypted_file_contents = obj.decrypted_file_contents + "\n" + obj.input_text_only;
+				console.log("obj.decrypted_file_contents:", obj.decrypted_file_contents);
 
 				// INPUT: obj.decrypted_file_contents: text string, obj.type_of_encryption: 'window_crypto_subtle', 'hexadecimal'
 				obj = await this.insert_data(obj);
@@ -145,6 +148,7 @@ export class encrypted_CRUD_file_storage {
 			// --------------------------------
 			
 			obj.decrypted_file_contents = obj.decrypted_file_contents + "\n" + obj.input_text_only;
+			console.log("obj.decrypted_file_contents:", obj.decrypted_file_contents);
 
 			// INPUT: obj.decrypted_file_contents: text string, obj.type_of_encryption: 'window_crypto_subtle', 'hexadecimal'
 			obj = await this.insert_data(obj);
@@ -155,6 +159,7 @@ export class encrypted_CRUD_file_storage {
 			// Purpose: for inserting text into a new or existing file
 			// --------------------------------
 			obj.decrypted_file_contents = obj.input_text_only;
+			console.log("obj.decrypted_file_contents:", obj.decrypted_file_contents);
 
 			// INPUT: obj.decrypted_file_contents, obj.type_of_encryption, obj.pubpriv_keys_for_encryption
 			obj = await this.insert_data(obj);
@@ -167,6 +172,7 @@ export class encrypted_CRUD_file_storage {
 			// Purpose: for inserting the same file text into a new or existing file
 			// --------------------------------
 			obj.decrypted_file_contents = obj.decrypted_file_contents;
+			console.log("obj.decrypted_file_contents:", obj.decrypted_file_contents);
 
 			// INPUT: obj.decrypted_file_contents, obj.type_of_encryption, obj.pubpriv_keys_for_encryption
 			obj = await this.insert_data(obj);
@@ -512,6 +518,7 @@ export class encrypted_CRUD_file_storage {
 		// INPUT: obj.decrypted_file_contents (decrypted file contents text with newline characters)
 		obj = await this.decrypted_file_contents_arr_to_str(obj, '\n');
 		// OUTPUT: obj.decrypted_file_contents (file contents as a text string where each line is separated by \n)
+		console.log('obj.decrypted_file_contents: ', obj.decrypted_file_contents);
 
 		// Encrypt the file text using an encryption method and/or specific key
 		if (obj.type_of_encryption == "window_crypto_subtle") {
@@ -613,10 +620,12 @@ export class encrypted_CRUD_file_storage {
 
 		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
 		const obj_file = await GET_text_from_file_wo_auth_GitHub_RESTAPI(obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner);
-		console.log('obj_file: ', obj_file);
+		// console.log('obj_file: ', obj_file);
 
 		// ----------------------------------------------------
 
+		console.log('obj_file.file_download_url: ', obj_file.file_download_url);
+		
 		// Ensure that file exists
 		if (obj_file.file_download_url != "No_file_found") {
 			// Ensure that the input is text (not in base64 encoding)
