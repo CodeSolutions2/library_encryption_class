@@ -1,4 +1,4 @@
-import { GET_text_from_file_wo_auth_GitHub_RESTAPI, GET_fileDownloadUrl_and_sha, decode_desalt, PUT_create_a_file_RESTAPI, PUT_add_to_a_file_RESTAPI, rand_perm } from "./library_to_run_GitHub_Actions.js";
+import { GET_text_from_file_wo_auth_GitHub_RESTAPI, GET_fileDownloadUrl_and_sha, decode_desalt, PUT_create_a_file_RESTAPI, PUT_add_to_a_file_RESTAPI, rand_perm, isbase64 } from "./library_to_run_GitHub_Actions.js";
 
 // ------------------------------------------------
 
@@ -314,9 +314,16 @@ export class encrypted_CRUD_file_storage {
 			// ----------------------------------------------------
 			
 			// Encrypt the input_text information
-
 			obj.put_message = 'resave database';
-			obj.input_text = btoa(obj.encrypted_file_contents);
+			
+			// obj.input_text = btoa(obj.encrypted_file_contents);  // What I had before
+			
+			// Ensure that input_text is text (not in base64 encoding)
+			const bool = await isbase64(obj.encrypted_file_contents);
+			if (bool == true) {
+				obj.encrypted_file_contents = atob(obj.encrypted_file_contents);
+			}
+			obj.input_text = obj.encrypted_file_contents;
 			
 			// ----------------------------------------------------
 		
@@ -517,7 +524,15 @@ export class encrypted_CRUD_file_storage {
 		// OUTPUT: obj.encrypted_file_contents (encrypted text)
 		
 		obj.put_message = 'resave file';
-		obj.input_text = btoa(obj.encrypted_file_contents);
+
+		// obj.input_text = btoa(obj.encrypted_file_contents);  // What I had before
+		// OR
+		// Ensure that input_text is text (not in base64 encoding)
+		const bool = await isbase64(obj.encrypted_file_contents);
+		if (bool == true) {
+			obj.encrypted_file_contents = atob(obj.encrypted_file_contents);
+		}
+		obj.input_text = obj.encrypted_file_contents;
 
 		// ----------------------------------------------------
 		
@@ -598,7 +613,14 @@ export class encrypted_CRUD_file_storage {
 
 		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
 		var obj_file = await GET_text_from_file_wo_auth_GitHub_RESTAPI(obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner);
-		obj.encrypted_file_contents = atob(obj_file.text);
+
+		// Ensure that the input is text (not in base64 encoding)
+		const bool = await isbase64(obj_file.text);
+		if (bool == true) {
+			obj_file.text = atob(obj_file.text);
+		}
+		obj.encrypted_file_contents = obj_file.text;
+		
 		obj.file_file_download_url = obj_file.file_download_url;
 		obj.file_sha = obj_file.sha;
 		// OUTPUT: obj.encrypted_file_contents, obj.file_file_download_url, obj.file_sha (obj.filename text and meta data)
