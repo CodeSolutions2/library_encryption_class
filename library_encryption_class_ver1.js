@@ -73,29 +73,58 @@ export class encrypted_CRUD_file_storage {
 
 	// ------------------------------------------------
 
-	async add_data_to_file() {
-
+	async get_decrypted_file_contents() {
+		
+		// INPUT: class initialization variables
+		
 		// ------------------------------------------------
 		
+		// Find the .env file in the repository: output file text and meta data
+		// Store important input variables in the main object obj
 		var obj = await this.initialize_github();
 		
 		// ------------------------------------------------
 
-		console.log("obj.type_of_encryption: ", obj.type_of_encryption);
-		
+		// Obtain the obj.publicKey_obj and obj.privateKey_obj keys in the object obj
 		if (obj.type_of_encryption == "window_crypto_subtle") {
-			// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
+
+			// Find the .public_window_crypto_subtle file in the repository: output file text and meta data
+			// Find the .private_window_crypto_subtle file in the repository: output file text and meta data
 			obj = await this.initialize_window_crypto_subtle(obj);
+
+			// Convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
 			obj = await this.GET_public_private_keys(obj);
 		}
 		
 		// ------------------------------------------------
-
+	
 		// Decrypt the file_contents
 		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
 		obj = await this.decrypt_file(obj);
 		// Decrypt the file text using an decryption method specified by obj.type_of_encryption
 		// OUTPUT: obj.decrypted_file_contents (decrypted text)
+	
+		// ------------------------------------------------
+	
+		// Step 2: Return the decrypted contents of the file
+		console.log('****** Step 2: Return the decrypted contents of the file ******');
+		
+		obj.query_view_result = "Finished: obj.decrypted_file_contents outputted";
+
+		// OUTPUT: obj.decrypted_file_contents
+		return obj;
+	}
+	
+	// ------------------------------------------------
+	
+	async add_data_to_file() {
+
+		// INPUT: class initialization variables
+		
+		// ------------------------------------------------
+
+		var obj = await this.get_decrypted_file_contents();
+		// OUTPUT: obj.decrypted_file_contents
 
 		// ------------------------------------------------
 	
@@ -122,7 +151,7 @@ export class encrypted_CRUD_file_storage {
 			console.log('****** Step 2: Perform query 0 - Determine if the text_input is in the file_contents ******');
 			
 			// [Query 0] Determine if username is in the database
-			obj.query_search_result = await this.comparator_search_for_a_username(obj.decrypted_file_contents, obj.input_text_only);
+			obj.query_search_result = await this.comparator_search_for_text(obj.decrypted_file_contents, obj.input_text_only);
 			// console.log("obj.query_search_", obj.query_search_result);
 		
 			// --------------------------------
@@ -194,107 +223,47 @@ export class encrypted_CRUD_file_storage {
 	// ------------------------------------------------
 	
 	async search_file_contents() {
-
-		// ------------------------------------------------
 		
-		// Find the .env file in the repository: output file text and meta data
-		// Store important input variables in the main object obj
-		var obj = await this.initialize_github();
+		// INPUT: class initialization variables
 		
 		// ------------------------------------------------
-
-		// Obtain the obj.publicKey_obj and obj.privateKey_obj keys in the object obj
-		if (obj.type_of_encryption == "window_crypto_subtle") {
-
-			// Find the .public_window_crypto_subtle file in the repository: output file text and meta data
-			// Find the .private_window_crypto_subtle file in the repository: output file text and meta data
-			obj = await this.initialize_window_crypto_subtle(obj);
-
-			// Convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
-			obj = await this.GET_public_private_keys(obj);
-		}
 		
-		// ------------------------------------------------
-	
-		// Step 1: decrypt the file
-		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
-		obj = await this.decrypt_file(obj);
+		var obj = await this.get_decrypted_file_contents();
+		// OUTPUT: obj.decrypted_file_contents
 		
-	       	// --------------------------------
+	       	// ------------------------------------------------
 	
 		// Step 2: Perform query 0 - Determine if the text_input is in the file_contents
 		console.log('****** Step 2: Perform query 0 - Determine if the text_input is in the file_contents ******');
 		
-		// Obtain username
-		obj.username = obj.input_text.split('|').shift();
-		// console.log("obj.username:", obj.username);
+		// Obtain text to search for in the file
+		obj.line_to_search = obj.input_text.split('|').shift();
+		// console.log("obj.line_to_search:", obj.line_to_search);
 	
-		// [Query 0] Determine if username is in the database
-		obj.query_search_result = await this.comparator_search_for_a_username(obj.decrypted_file_contents, obj.username);
+		// [Query 0] Determine if line_to_search is in the database
+		obj.query_search_result = await this.comparator_search_for_text(obj.decrypted_file_contents, obj.line_to_search);
+
+		// --------------------------------
+		
 		delete obj.decrypted_file_contents;
+		
 		return obj;
 	}
 
 	// ------------------------------------------------
 	
-	async get_decrypted_file_contents() {
-		
-		// ------------------------------------------------
-
-		// INPUT: class initialization variables
-		
-		// ------------------------------------------------
-		
-		var obj = await this.initialize_github();
-		
-		// ------------------------------------------------
-
-		if (obj.type_of_encryption == "window_crypto_subtle") {
-			// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
-			obj = await this.initialize_window_crypto_subtle(obj);
-			obj = await this.GET_public_private_keys(obj);
-		}
 	
-		// ------------------------------------------------
-	
-		// Step 1: decrypt the file
-		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
-		obj = await this.decrypt_file(obj);
-		// Decrypt the file text using an decryption method specified by obj.type_of_encryption
-		// OUTPUT: obj.decrypted_file_contents (decrypted text)
-	
-		// ------------------------------------------------
-	
-		// Step 2: Return the decrypted contents of the file
-		console.log('****** Step 2: Return the decrypted contents of the file ******');
-		
-		obj.query_view_result = "Finished: obj.decrypted_file_contents outputted";
-
-		// OUTPUT: obj.decrypted_file_contents
-		return obj;
-	}
 
 	// ------------------------------------------------
 
 	async delete_file_contents() {
 	
-		var obj = await this.initialize_github();
+		// INPUT: class initialization variables
 		
 		// ------------------------------------------------
-
-		if (obj.type_of_encryption == "window_crypto_subtle") {
-			// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
-			obj = await this.initialize_window_crypto_subtle(obj);
-			obj = await this.GET_public_private_keys(obj);
-		}
 		
-		// ------------------------------------------------
-	
-		// Step 1: decrypt the file_contents
-		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
-		obj = await this.decrypt_file(obj);
-		// Decrypt the file text using an decryption method specified by obj.type_of_encryption
-		// OUTPUT: obj.decrypted_file_contents (decrypted text)
+		var obj = await this.get_decrypted_file_contents();
+		// OUTPUT: obj.decrypted_file_contents
 		
 	       	// --------------------------------
 	
@@ -306,7 +275,7 @@ export class encrypted_CRUD_file_storage {
 		// console.log("obj.username:", obj.username);
 	
 		// [Query 0] Determine if the text_input is in the file_contents
-		obj.query_search_result = await this.comparator_search_for_a_username(obj.decrypted_file_contents, obj.username);
+		obj.query_search_result = await this.comparator_search_for_text(obj.decrypted_file_contents, obj.username);
 		// console.log("obj.query_search_", obj.query_search_result);
 	
 		// --------------------------------
@@ -402,6 +371,8 @@ export class encrypted_CRUD_file_storage {
 	// ------------------------------------------------
 
 
+	
+
 	// ------------------------------------------------
 	// DETAILED/LOWER-LEVEL PROCESS FUNCTIONS : meaning that it has function inputs of class variables
 	// ------------------------------------------------
@@ -420,7 +391,7 @@ export class encrypted_CRUD_file_storage {
 	
 	// ------------------------------------------------
 	
-	async comparator_search_for_a_username(decrypted_file_contents, line_to_search) {
+	async comparator_search_for_text(decrypted_file_contents, line_to_search) {
 
 		// INPUT: decrypted_file_contents (text with newline characters) and line_to_search (text to search for per line)
 		let arr_db = decrypted_file_contents.split('\n');
@@ -630,10 +601,11 @@ export class encrypted_CRUD_file_storage {
 		if (obj_file.file_download_url != "No_file_found") {
 			// Ensure that the input is text (not in base64 encoding)
 			const bool = await isbase64(obj_file.text);
-			console.log('bool: ', bool);
-			
 			if (bool == true) {
+				console.log('Text from foldername/filename GET is in base64.');
 				obj_file.text = atob(obj_file.text);
+			} else {
+				console.log('Text from foldername/filename GET is not in base64.');
 			}
 
 			// Assign the encrypted file contents to object
@@ -656,6 +628,10 @@ export class encrypted_CRUD_file_storage {
 			obj.encrypted_file_contents = "";
 			obj.decrypted_file_contents = "";
 		}
+
+		console.log('obj.encrypted_file_contents: ', obj.encrypted_file_contents);
+		console.log('obj.decrypted_file_contents: ', obj.decrypted_file_contents);
+		
 		// ----------------------------------------------------
 
 		obj.file_file_download_url = obj_file.file_download_url;
