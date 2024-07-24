@@ -6,9 +6,9 @@
 <h1>Text encryption CRUD class library</h1>
 There are five main functions of this text encryption class:
 <ol type="A">
+	<li>get decrypted file contents</li>
 	<li>add data to file</li>
 	<li>search file contents</li>
-	<li>get decrypted file contents</li>
 	<li>delete file contents</li>
 	<li>encrypt text string</li>
 </ol>
@@ -16,12 +16,12 @@ There are five main functions of this text encryption class:
 	
 <input id="text_input" type="text" value="" placeholder="text_input" rows="10" cols="100" style="display:block; text-align: left; width: 150px;">
 
-<div id="btns" class="buttonContainer"> 
-  <button class="buttonClass" id="test0_add_data_to_file" type="button" style="display:block;" onclick="test0_add_data_to_file()">test0 add data to file</button>
+<div id="btns" class="buttonContainer">
+  <button class="buttonClass" id="test0_get_decrypted_file_contents" type="button" style="display:block;" onclick="test0_get_decrypted_file_contents()">test0 get decrypted file contents</button>
+	
+  <button class="buttonClass" id="test1_add_data_to_file" type="button" style="display:block;" onclick="test1_add_data_to_file()">test1 add data to file</button>
   
-  <button class="buttonClass" id="test1_search_file_contents" type="button" style="display:block;" onclick="test1_search_file_contents()">test1 search file contents</button>
-  
-  <button class="buttonClass" id="test2_get_decrypted_file_contents" type="button" style="display:block;" onclick="test2_get_decrypted_file_contents()">test2 get decrypted file contents</button>
+  <button class="buttonClass" id="test2_search_file_contents" type="button" style="display:block;" onclick="test2_search_file_contents()">test2 search file contents</button>
   
   <button class="buttonClass" id="test3_delete_file_contents" type="button" style="display:block;" onclick="test3_delete_file_contents()">test3 delete file contents</button>
   
@@ -70,6 +70,9 @@ window.addEventListener('beforeunload', function() {
 
 async function initialize_variables() {
 
+	document.getElementById('notification').innerHTML = '';
+	document.getElementById('error').innerHTML = '';
+		
 	var RepoAobj = {};
 	RepoAobj.repoOwner = 'CodeSolutions2';
 	RepoAobj.repoA_name = 'frontend_backend_message_passing_central_repository_v1';
@@ -94,7 +97,17 @@ async function initialize_variables() {
 
 // ----------------------------------------------------
 
-async function test0_add_data_to_file() {
+async function test0_get_decrypted_file_contents() {
+
+	const classObj = await initialize_variables();
+	var obj = await classObj.get_decrypted_file_contents();
+
+	document.getElementById('notification').innerHTML = obj.query_view_result + '. ' + obj.decrypted_file_contents;
+}
+
+// ----------------------------------------------------
+
+async function test1_add_data_to_file() {
 	
 	const classObj = await initialize_variables();
 	var obj = await classObj.add_data_to_file();
@@ -104,7 +117,7 @@ async function test0_add_data_to_file() {
 
 // ----------------------------------------------------
 
-async function test1_search_file_contents() {
+async function test2_search_file_contents() {
 
 	const classObj = await initialize_variables();
 	var obj = await classObj.search_file_contents();
@@ -112,16 +125,6 @@ async function test1_search_file_contents() {
 	document.getElementById('notification').innerHTML = obj.query_search_result;
 }
 	
-// ----------------------------------------------------
-
-async function test2_get_decrypted_file_contents() {
-
-	const classObj = await initialize_variables();
-	var obj = await classObj.get_decrypted_file_contents();
-
-	document.getElementById('notification').innerHTML = obj.query_view_result + '. ' + obj.decrypted_file_contents;
-}
-
 // ----------------------------------------------------
 
 async function test3_delete_file_contents() {
