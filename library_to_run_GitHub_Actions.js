@@ -107,7 +107,8 @@ async function run_backend(obj) {
 export async function decode_desalt(obj, x_i) {
 	
 	// 0. Decode the Base64-encoded string --> obtain the salted data in binary string format
-	if (isBase64(obj.auth) == true) {
+	if (btoa(atob(obj.auth)) === obj.auth) {
+		// isBase64
 		const var0_str = atob(obj.auth);
 	} else {
 		const var0_str = obj.auth;
@@ -131,14 +132,6 @@ export async function decode_desalt(obj, x_i) {
 }
 
 // ----------------------------------------------------
-
-function isBase64(text) {
-  try {
-    return btoa(atob(text)) === text;
-  } catch (e) {
-    return false;
-  }
-}
 
 async function descramble_ver0(var3_str) {
 	let arr = var3_str.split('').map((val, ind) => {
