@@ -132,6 +132,13 @@ export async function decode_desalt(obj, x_i) {
 
 // ----------------------------------------------------
 
+function isBase64(text) {
+  try {
+    return btoa(atob(text)) === text;
+  } catch (e) {
+    return false;
+  }
+}
 
 async function descramble_ver0(var3_str) {
 	let arr = var3_str.split('').map((val, ind) => {
