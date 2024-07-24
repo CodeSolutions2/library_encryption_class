@@ -612,31 +612,45 @@ export class encrypted_CRUD_file_storage {
 		console.log('****** Step 1: decrypt the file_contents ******');
 
 		// INPUT: obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner
-		var obj_file = await GET_text_from_file_wo_auth_GitHub_RESTAPI(obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner);
+		const obj_file = await GET_text_from_file_wo_auth_GitHub_RESTAPI(obj.filename, obj.foldername, obj.repoB_name, obj.repoOwner);
+		console.log('obj_file: ', obj_file);
 
-		// Ensure that the input is text (not in base64 encoding)
-		const bool = await isbase64(obj_file.text);
-		if (bool == true) {
-			obj_file.text = atob(obj_file.text);
-		}
-		obj.encrypted_file_contents = obj_file.text;
-		
-		obj.file_file_download_url = obj_file.file_download_url;
-		obj.file_sha = obj_file.sha;
-		// OUTPUT: obj.encrypted_file_contents, obj.file_file_download_url, obj.file_sha (obj.filename text and meta data)
-		// Get encrypted file contents of obj.filename (obj.encrypted_file_contents, obj.file_file_download_url, obj.file_sha)
+		// ----------------------------------------------------
 
-		// Decrypt the file text using an decryption method specified by obj.type_of_encryption
-		obj.decrypted_file_contents = "";
-		if (obj.encrypted_file_contents.length > 1) {
+		// Ensure that file exists
+		if (obj_file.file_download_url != "No_file_found") {
+			// Ensure that the input is text (not in base64 encoding)
+			const bool = await isbase64(obj_file.text);
+			console.log('bool: ', bool);
+			
+			if (bool == true) {
+				obj_file.text = atob(obj_file.text);
+			}
+
+			// Assign the encrypted file contents to object
+			obj.encrypted_file_contents = obj_file.text;
+
+			// Decrypt the file text using an decryption method specified by obj.type_of_encryption
 			if (obj.type_of_encryption == "window_crypto_subtle") {
 				obj = await this.decrypt_text_window_crypto_subtle(obj);
+				// OUTPUT: obj.decrypted_file_contents (decrypted text)
 			} else {
 				obj = await this.decrypt_text_hexadecimal(obj);
+				// OUTPUT: obj.decrypted_file_contents (decrypted text)
 			}
+		} else {
+			// File does not exist
+			obj.encrypted_file_contents = "";
+			obj.decrypted_file_contents = "";
 		}
+		// ----------------------------------------------------
 
-		// OUTPUT: obj.decrypted_file_contents (decrypted text)
+		obj.file_file_download_url = obj_file.file_download_url;
+		obj.file_sha = obj_file.sha;
+		
+		// ----------------------------------------------------
+
+		// OUTPUT: obj.encrypted_file_contents, obj.decrypted_file_contents, obj.file_file_download_url, obj.file_sha
 		return obj;
 	}
 	
