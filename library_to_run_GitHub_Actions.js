@@ -133,7 +133,7 @@ export async function decode_desalt(obj, x_i) {
 
 // ----------------------------------------------------
 
-async function isbase64(text) {
+export async function isbase64(text) {
 	try {
 		return btoa(atob(text)) === text;
 	} catch (error) {
