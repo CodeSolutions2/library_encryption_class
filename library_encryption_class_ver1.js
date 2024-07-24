@@ -720,15 +720,16 @@ export class encrypted_CRUD_file_storage {
 		var x = Array.from({ length: (obj.n*2)+1 }, (_, ind) => ind);
 		var x_rand = await rand_perm(x);
 		
-		// console.log('x: ', x);
-		// console.log('x_rand: ', x_rand);
+		console.log('x: ', x);
+		console.log('x_rand: ', x_rand);
 		
 		while ((/^20/g).test(obj.status) == false && obj.auth != null && i < (obj.n*2)+1) {
+			console.log('obj.auth encrypted: ', obj.auth);
 			
 			obj = await decode_desalt(obj,  x_rand[i])
 				.then(async function(obj) {
+					console.log('obj.auth decrypted: ', obj.auth.slice(0,5));
 					
-					console.log('obj.auth: ', obj.auth.slice(0,5));
 					try {
 						// A process to determine if it is the correct key: it will throw an error if the key is incorrect
 						// Step 0: convert the JSON Web key (Key_jwk_obj) to an object (Key_obj)
