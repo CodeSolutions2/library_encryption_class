@@ -629,7 +629,7 @@ export class encrypted_CRUD_file_storage {
 					// OUTPUT: obj.decrypted_file_contents (decrypted text)
 				}
 			} catch(error) {
-				console.log('The wrong filename was used, the file contents is not encrypted in the type_of_encryption method that was specified.' + error);
+				console.log('decrypt_file error: ', error);
 			}
 		} else {
 			// File does not exist
@@ -867,7 +867,8 @@ export class encrypted_CRUD_file_storage {
 		}
 		
 		// Encode with respect to publicKey encryption method : transform arrayBuffer [fixed-length array] via the algorithm
-		const data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, obj.Key_obj, arrayBuffer);
+		const data_encoded_arrayBuffer = await window.crypto.subtle.encrypt({name: "RSA-OAEP"}, obj.Key_obj, arrayBuffer)
+			.catch(error => { console.log('encrypt_text_window_crypto_subtle error: ', error); });
 		// console.log('data_encoded_arrayBuffer:', data_encoded_arrayBuffer);
 
 		// Delete obj.Key_obj
@@ -899,7 +900,8 @@ export class encrypted_CRUD_file_storage {
 		console.log('arrayBuffer:', arrayBuffer);
 		
 		// Decode with respect to privateKey encryption method : transform arrayBuffer [fixed-length array] via the algorithm
-		const data_decoded_arrayBuffer = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, obj.privateKey_obj, arrayBuffer);
+		const data_decoded_arrayBuffer = await window.crypto.subtle.decrypt({name: "RSA-OAEP"}, obj.privateKey_obj, arrayBuffer)
+			.catch(error => { console.log('decrypt_text_window_crypto_subtle error: ', error); });
 		console.log("data_decoded_arrayBuffer:", data_decoded_arrayBuffer);
 
 		// Delete obj.privateKey_obj
