@@ -1,24 +1,30 @@
 name: testing non-graphical nodejs packages
 
 on:
-  workflow_dispatch:
-    inputs:
-      priority:
-        description: 'Job Priority'
-        required: true
-        default: 'default'
+  workflow_run:
+    workflows: ["CI github pages"]
+    types:
+      - completed
   push:
     branches:
       - main
     paths:
       - '**.txt'
-      
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency: 
       group: ${{ github.ref }}
       cancel-in-progress: false
-      
+
+# Example: https://github.com/actions/configure-pages?tab=readme-ov-file
+# https://github.com/actions/starter-workflows/blob/main/pages/jekyll-gh-pages.yml
 jobs:
-  update_token:
+  run_index_html:
     runs-on: ubuntu-latest
 
     permissions: write-all
