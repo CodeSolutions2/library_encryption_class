@@ -39,7 +39,7 @@ jobs:
           script: |
             const puppeteer = require('puppeteer');
             try {
-              const URL = "https://codesolutions2.github.io/frontend_backend_message_passing_central_repository_v1/non_graphical_nodejs_package_test.html";
+              const URL = "https://codesolutions2.github.io/library_encryption_class/non_graphical_nodejs_package_test.html";
               const browser = await puppeteer.launch({headless: true});
               const page = await browser.newPage();
               
