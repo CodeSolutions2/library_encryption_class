@@ -1,4 +1,4 @@
-# frontend_backend_message_passing_central_repository_v1 ☀️
+# library_encryption_class ☀️
 
 The goal of this repository is to practice writing BackEnd yaml workflows that process FrontEnd user input. User input is obtained from any repository, called RepoA. RepoA is a GitHub Page that only has access to REST API calls using JavaScript and HTML, thus there needs to be some other numerical infrastructure that collects information that user inputs such that their information can be processed at an endpoint or on a virtual machine via a model and/or script.
 
@@ -6,7 +6,7 @@ RepoB, this repository, is an intermediate processing area where information fro
 
 ## Frontend library script (library_to_run_GitHub_Actions.js)
 The purpose of the frontend library script is to trigger the intermediate repository RepoB to start frontend and/or backend processes for RepoA.
-- The current version of the frontend library script ***(to be published on jsdelivr.com)***: [library_to_run_GitHub_Actions.js](https://github.com/CodeSolutions2/library_to_run_GitHub_Actions)
+- The current version of the frontend library script: [library_to_run_GitHub_Actions.js](https://github.com/CodeSolutions2/library_to_run_GitHub_Actions)
 
 
 ## Version 0 of RepoB
