@@ -1,1 +1,1 @@
-way 3 again|library_to_run_GitHub_Actions
+input|library_to_run_GitHub_Actions
