@@ -1,4 +1,4 @@
-# library_encryption_class ☀️
+# library_encryption_class
 
 The goal of this class is to encrypt text using the JavaScript web crypto library. It uses library_to_run_GitHub_Actions.js to automatically save encrypted text to files in GitHub repositories.
 
