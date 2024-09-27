@@ -32,7 +32,7 @@ jobs:
           script: |
             const puppeteer = require('puppeteer');
             try {
-              const URL = "https://codesolutions2.github.io/library_encryption_class/library_encryption_class_update_keys_index1.html";
+              const URL = "https://codesolutions2.github.io/library_encryption_class/update_keys_index1.html";
               const browser = await puppeteer.launch({headless: true});
               const page = await browser.newPage();
               
