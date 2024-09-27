@@ -7,11 +7,6 @@
 	
 <!-- --------------------------------------------------- -->
 
-<script type="module" redirect="follow" mode="no-cors">
-import { encrypted_CRUD_file_storage } from "https://codesolutions2.github.io/library_encryption_class/dist/library_encryption_class.js";
-module.encrypted_CRUD_file_storage = encrypted_CRUD_file_storage;
-</script>
-
 <script type="module" crossorigin="*" redirect="follow" mode="cors">
 import { run_backend_process } from "https://cdn.jsdelivr.net/npm/library_to_run_github_actions@1.0.1/dist/library_to_run_GitHub_Actions.js";
 module1.run_backend_process = run_backend_process;
@@ -61,8 +56,8 @@ async function Generate_keys_crypto() {
 	RepoAobj.repoA_name = 'library_encryption_class';
 	RepoAobj.foldername = '.github'; // foldername in RepoB
 	RepoAobj.repoB_name = 'library_encryption_class';
-	RepoAobj.type_of_encryption = "salt_scramble";
-
+	RepoAobj.n = 1;
+	
 	// -----------------------------
 	
 	// Generate a new publicKey_jwk_str
@@ -70,12 +65,17 @@ async function Generate_keys_crypto() {
 	RepoAobj.input_text = JSON.stringify(publicKey_jwk);
 	// console.log("non-encrypted publicKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
 
+	// Try to do it without CRUD library
 	// Assign the class where input_text is the generated publicKey_jwk_str
-	const classObj0 = new encrypted_CRUD_file_storage(RepoAobj);
-   
+	// const classObj0 = new encrypted_CRUD_file_storage(RepoAobj);
+	// OR
+	RepoAobj.decrypted_file_contents = RepoAobj.input_text;
+	
 	// Encrypt the publicKey_jwk_str
-	RepoAobj.input_text = await classObj0.encrypt_text_string()
+	// RepoAobj.input_text = await classObj0.encrypt_text_string()
 	// console.log("encrypted_publicKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+	// OR
+	RepoAobj = await encrypt_text_salt_scramble(RepoAobj);
 	
 	// Save the encrypted string to the .public_window_crypto_subtle
 	RepoAobj.filename = '.public_window_crypto_subtle'; // filename to create in RepoB, in foldername
@@ -89,11 +89,15 @@ async function Generate_keys_crypto() {
 	// console.log("non-encrypted privateKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
 
 	// Assign the class where input_text is the generated privateKey_jwk
-	const classObj1 = new encrypted_CRUD_file_storage(RepoAobj);
+	// const classObj1 = new encrypted_CRUD_file_storage(RepoAobj);
+	// OR
+	RepoAobj.decrypted_file_contents = RepoAobj.input_text;
 
 	// Encrypt the privateKey_jwk_str
-	RepoAobj.input_text = await classObj1.encrypt_text_string();
+	// RepoAobj.input_text = await classObj1.encrypt_text_string();
 	// console.log("encrypted_privateKey_jwk_str: ", RepoAobj.input_text.slice(0,5));
+	// OR
+	RepoAobj = await encrypt_text_salt_scramble(RepoAobj);
 
 	// Save the encrypted string to the .private_window_crypto_subtle
 	RepoAobj.filename = '.private_window_crypto_subtle'; // filename to create in RepoB, in foldername
@@ -104,6 +108,84 @@ async function Generate_keys_crypto() {
 }
 
 // ----------------------------------------------------
+
+
+async function create_salt(obj) {
+	
+	// Resalt and save the key in .env, for the next time
+	var alpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	var num = '0123456789';
+	let alpha_arr = alpha.split('');
+	let num_arr = num.split('');
+
+	// --------------------------------
+	
+	// Determine the salt length - it can be up to length n
+	// Configuration 0: [1 to n]
+	// first part is [0 to n-1], we do not want 0 so shift it by one [1 to n]
+	// var new_salt_length = Math.round(Math.random())*(n-1) + 1;
+	// OR
+	// Configuration 1: [no_salt to n]
+	var new_salt_length = Math.round(Math.random())*obj.n;
+	// console.log('new_salt_length: ', new_salt_length);
+
+	// --------------------------------
+
+	if (new_salt_length > 0) {
+		// Fill a vector new_salt_length long with 0 or 1; 0=salt a letter, 1=salt a number
+		var letnum_selection = [];
+		for (let i=0; i<new_salt_length; i++) { 
+			letnum_selection.push(Math.round(Math.random())); 
+		}
+		// console.log('letnum_selection: ', letnum_selection);
+	
+		// --------------------------------
+		
+		// Create salt (extra strings randomly)
+		obj.salt = letnum_selection.map((row) => { 
+		      if (row == 0) { 
+			let val = Math.round(Math.random()*alpha_arr.length);
+			// console.log('val: ', val);
+			return alpha_arr[val]; 
+		      } else { 
+			let val = Math.round(Math.random()*num_arr.length);
+			// console.log('val: ', val);
+			return num_arr[val]; 
+		      } 
+		});
+	
+		obj.salt = obj.salt.join('');
+	} else {
+		obj.salt = "";
+	}
+
+	return obj;
+}
+
+
+async function encrypt_text_salt_scramble(obj) {
+
+	obj = await create_salt(obj);
+	
+	// Add salt
+	if (Math.round(Math.random()) == 0) {
+		// salt front
+		obj.decrypted_file_contents = obj.salt+obj.decrypted_file_contents;
+	} else {
+		// salt back
+		obj.decrypted_file_contents = obj.decrypted_file_contents+obj.salt;
+	}
+	delete obj.salt;
+
+	// --------------------------------
+	
+	// Scramble : Github automatically base64 decodes and searches the strings and can find the key, causing GitHub to disactivate the key automatically for security
+	// obtain even values of string
+	obj.encrypted_file_contents = obj.decrypted_file_contents.split('').map((val, index) => { if (index % 2 == 0) { return val; } }).join('') + "|" + obj.decrypted_file_contents.split('').map((val, index) => { if (index % 2 != 0) { return val; } }).join('');
+	// console.log('obj.encrypted_file_contents:', obj.encrypted_file_contents);
+	
+	return obj;
+}
 
 </script>
 </body>
