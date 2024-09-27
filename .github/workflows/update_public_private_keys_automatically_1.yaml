@@ -1,0 +1,51 @@
+name: Updating window.crypto.subtle keys on a schedule
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'launch.txt'
+  
+      
+concurrency: 
+      group: ${{ github.ref }}
+      cancel-in-progress: false
+      
+jobs:
+  update_token:
+    runs-on: ubuntu-latest
+
+    permissions: write-all
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: npm install puppeteer; 
+
+      - name: Load webpage using a headless browser
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const puppeteer = require('puppeteer');
+            try {
+              const URL = "https://codesolutions2.github.io/library_encryption_class/library_encryption_class_update_keys_index1.html";
+              const browser = await puppeteer.launch({headless: true});
+              const page = await browser.newPage();
+              
+              page.on('load', () => { console.log('Page loaded successfully'); });
+              
+              await page.goto(URL);
+
+              await page.evaluate(() => { document.querySelector('#Generate_keys_crypto').click(); });
+              
+              await page.waitForSelector('#Generate_keys_crypto', {visible: true});
+              
+              await browser.close();
+              
+            } catch (error) {
+              console.log('error: ', error);
+            }
