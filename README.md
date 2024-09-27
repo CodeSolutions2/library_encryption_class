@@ -11,3 +11,4 @@ It uses library_to_run_GitHub_Actions.js to automatically save (ie: REST API GIT
 ## In progress
 - The working version of the CRUD library needs to be improved such that all calls to the library_to_run_GitHub_Actions.js are from npm
 - A demonstration html needs to be created to demonstrate the library
+- The library needs to be published on npm/jsdelivr
